@@ -102,13 +102,15 @@ Item {
             id: card
             anchors.horizontalCenter: parent.horizontalCenter
             width: 360
-            avatar: Config.values.avatar !== "" ? Config.values.avatar : root.greet.user === null ? "" : root.greet.user.home + "/.face"
+            avatar: root.greet.avatar
             name: root.greet.user === null ? "No users" : root.greet.user.real
             prompt: root.greet.awaiting ? root.greet.message : "Password"
             secret: !(root.greet.awaiting && root.greet.echo)
             message: root.greet.awaiting ? "" : root.greet.message
             error: root.greet.error
             busy: root.greet.busy
+            typed: root.greet.typed
+            onEdited: text => root.greet.typed = text
             onSubmitted: text => root.greet.submit(text)
         }
 

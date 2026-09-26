@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Quickshell.Wayland
 import Quickshell.Services.Greetd
 import qs
 import qs.services
@@ -28,6 +29,9 @@ Scope {
     property bool echo: false
     property string message: ""
     property string pending: ""
+    property string typed: ""
+    readonly property string avatar: Config.values.avatar.indexOf("/") === 0 ? Config.values.avatar : root.user === null ? "" : root.user.home + "/.face"
+    readonly property var mainScreen: Quickshell.screens.reduce((best, s) => best === null || s.width * s.height > best.width * best.height ? s : best, null)
     property string launched: ""
     property real now: Date.now()
     readonly property var user: root.userIndex >= 0 ? root.users[root.userIndex] : null
@@ -202,15 +206,28 @@ Scope {
         onTriggered: root.now = Date.now()
     }
 
-    FloatingWindow {
-        visible: true
-        color: Theme.base
-        implicitWidth: 1280
-        implicitHeight: 800
+    Variants {
+        model: Quickshell.screens
 
-        GreetView {
-            anchors.fill: parent
-            greet: root
+        PanelWindow {
+            required property var modelData
+            screen: modelData
+            anchors {
+                top: true
+                bottom: true
+                left: true
+                right: true
+            }
+            color: Theme.base
+            exclusionMode: ExclusionMode.Ignore
+            WlrLayershell.layer: WlrLayer.Overlay
+            WlrLayershell.namespace: "sylgreet"
+            WlrLayershell.keyboardFocus: modelData === root.mainScreen ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.OnDemand
+
+            GreetView {
+                anchors.fill: parent
+                greet: root
+            }
         }
     }
 }

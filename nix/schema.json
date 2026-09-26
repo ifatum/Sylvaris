@@ -5,6 +5,7 @@
   "avatar": "~/.face",
   "lockCommand": "loginctl lock-session",
   "terminal": "kitty",
+  "greeterShare": "/var/lib/sylvaris-greet/shared",
   "toggles": [],
   "commands": [],
   "notifications": {

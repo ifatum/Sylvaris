@@ -57,7 +57,7 @@
                   programs.sylvaris.greeter = {
                     enable = true;
                     user = "ada";
-                    theme = "noir";
+                    swayConfig = "output eDP-1 disable";
                   };
                   boot.loader.grub.enable = false;
                   fileSystems."/" = {
@@ -71,12 +71,15 @@
             cfg = host.config;
           in
           pkgs.runCommand "sylvaris-greeter" { } ''
-            grep -q "sylvaris greet" ${cfg.services.greetd.settings.default_session.command}
+            conf=$(grep -o '/nix/store/[^ ]*sylvaris-greet-sway.conf' ${cfg.services.greetd.settings.default_session.command})
+            grep -q "sylvaris greet; " $conf
+            grep -q "output eDP-1 disable" $conf
             grep -q "SYLVARIS_GREET_USER=ada" ${cfg.services.greetd.settings.default_session.command}
             test "${cfg.services.greetd.settings.default_session.user}" = greeter
             grep -q "SYLVARIS_GREET_SESSIONS=/nix/store/.*/share/wayland-sessions" ${cfg.services.greetd.settings.default_session.command}
-            test "${cfg.environment.etc."sylvaris-greet/theme".text}" = noir
-            grep -q '"themeStateFile": "/etc/sylvaris-greet/theme"' ${cfg.environment.etc."sylvaris-greet/sylvaris/config.json".source}
+            grep -q "sway --unsupported-gpu --config" ${cfg.services.greetd.settings.default_session.command}
+            grep -q '"themeStateFile": "/var/lib/sylvaris-greet/shared/theme"' ${cfg.environment.etc."sylvaris-greet/sylvaris/config.json".source}
+            grep -q '"greeterShare": ""' ${cfg.environment.etc."sylvaris-greet/sylvaris/config.json".source}
             test -n "${builtins.toString cfg.security.pam.services.sylvaris.unixAuth}"
             touch $out
           '';

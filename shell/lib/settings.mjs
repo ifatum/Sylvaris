@@ -60,6 +60,7 @@ export const DEFAULT_CONFIG = {
     avatar: "~/.face",
     lockCommand: "loginctl lock-session",
     terminal: "kitty",
+    greeterShare: "/var/lib/sylvaris-greet/shared",
     toggles: [],
     commands: [],
     notifications: { server: true, history: 100 }
@@ -101,7 +102,7 @@ export const DEFAULT_GLASS = { enabled: true, opacity: 0.55, layerOpacity: 0.35,
 const GLASS_RANGES = { opacity: [0, 1], layerOpacity: [0, 1], tint: [0, 1], sheen: [0, 1], flow: [0, 3], rim: [0, 1], grain: [0, 0.2] }
 
 const TOGGLE_ID = /^[a-z0-9_-]+$/
-const STRING_KEYS = ["themesDir", "themeHook", "themeStateFile", "avatar", "lockCommand", "terminal"]
+const STRING_KEYS = ["themesDir", "themeHook", "themeStateFile", "avatar", "lockCommand", "terminal", "greeterShare"]
 const DEFAULT_TOGGLE_ICON = String.fromCodePoint(0xF0521)
 
 function isObject(v) {

@@ -83,6 +83,8 @@ Item {
         message: root.lock.awaiting ? "" : root.lock.message
         error: root.lock.error
         busy: root.lock.busy
+        typed: root.lock.typed
+        onEdited: text => root.lock.typed = text
         onSubmitted: text => root.lock.submit(text)
     }
 

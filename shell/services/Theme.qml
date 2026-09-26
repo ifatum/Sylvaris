@@ -158,6 +158,21 @@ Singleton {
         root.runHook(id);
     }
 
+    function share(): void {
+        const dir = Config.values.greeterShare;
+        if (dir === "" || Demo.enabled || root.currentId === "" || !/^[A-Za-z0-9_.-]+$/.test(root.currentId))
+            return;
+        const copy = Object.assign({}, root.theme, {
+            wallpaper: dir + "/wallpaper",
+            links: {}
+        });
+        shareProc.command = ["sh", "-c", "d=\"$1\"; [ -d \"$d\" ] && [ -w \"$d\" ] || exit 0; mkdir -p \"$d/themes\" || exit 1; for p in wallpaper:\"$3\" avatar:\"$4\"; do n=${p%%:*}; f=${p#*:}; [ -f \"$f\" ] && cp -f \"$f\" \"$d/$n.part\" && mv -f \"$d/$n.part\" \"$d/$n\"; done; printf '%s' \"$5\" > \"$d/themes/$2.json\" && printf '%s' \"$2\" > \"$d/theme\"; chmod -f 664 \"$d/wallpaper\" \"$d/avatar\" \"$d/theme\" \"$d/themes/$2.json\"; exit 0", "sylvaris-share", dir, root.currentId, root.wallpaper, S.expandHome(Config.values.avatar, root.home), JSON.stringify(copy)];
+        shareProc.running = false;
+        shareProc.running = true;
+    }
+
+    onThemeChanged: shareTimer.restart()
+
     function cycle(): void {
         root.apply(T.nextThemeId(root.ids, root.currentId));
     }
@@ -206,6 +221,16 @@ Singleton {
                 root.runHook(next);
             }
         }
+    }
+
+    Timer {
+        id: shareTimer
+        interval: 1500
+        onTriggered: root.share()
+    }
+
+    Process {
+        id: shareProc
     }
 
     Process {

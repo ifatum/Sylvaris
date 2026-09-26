@@ -14,8 +14,15 @@ Item {
     property bool busy: false
     property bool secret: true
     property real shake: 0
+    property string typed: ""
 
     signal submitted(string text)
+    signal edited(string text)
+
+    onTypedChanged: {
+        if (box.text !== root.typed)
+            box.text = root.typed;
+    }
 
     function focusInput(): void {
         box.focusInput();
@@ -112,6 +119,10 @@ Item {
                 password: root.secret
                 placeholder: root.prompt
                 enabled: !root.busy
+                onTextChanged: {
+                    if (box.text !== root.typed)
+                        root.edited(box.text);
+                }
                 onAccepted: {
                     if (!root.busy)
                         root.submitted(box.text);

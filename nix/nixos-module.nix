@@ -11,6 +11,12 @@ let
   json = pkgs.formats.json { };
   package = self.packages.${pkgs.stdenv.hostPlatform.system}.sylvaris;
   configDir = "/etc/sylvaris-greet";
+  shared = "/var/lib/sylvaris-greet/shared";
+  swayConfig = pkgs.writeText "sylvaris-greet-sway.conf" ''
+    default_border none
+    ${greet.swayConfig}
+    exec "${lib.getExe' package "sylvaris"} greet; ${lib.getExe' pkgs.sway "swaymsg"} exit"
+  '';
   launch = pkgs.writeShellScript "sylvaris-greet" ''
     export XDG_CONFIG_HOME=${configDir}
     export SYLVARIS_GREET_STATE=/var/lib/sylvaris-greet
@@ -18,7 +24,7 @@ let
     ${lib.optionalString (greet.user != "") "export SYLVARIS_GREET_USER=${lib.escapeShellArg greet.user}"}
     ${lib.optionalString (greet.session != "") "export SYLVARIS_GREET_SESSION=${lib.escapeShellArg greet.session}"}
     ${lib.optionalString (greet.wallpaper != null) "export SYLVARIS_GREET_WALLPAPER=${greet.wallpaper}"}
-    exec ${lib.getExe' pkgs.cage "cage"} -s -m last -- ${lib.getExe' package "sylvaris"} greet
+    exec ${lib.getExe' pkgs.sway "sway"} --unsupported-gpu --config ${swayConfig}
   '';
 in
 {
@@ -30,7 +36,7 @@ in
     };
 
     greeter = {
-      enable = lib.mkEnableOption "SylGreet as the greetd login screen, running in cage";
+      enable = lib.mkEnableOption "SylGreet as the greetd login screen, running in sway on every screen";
 
       user = lib.mkOption {
         type = lib.types.str;
@@ -45,30 +51,31 @@ in
         description = "Wayland session file name (without .desktop) picked on the first start.";
       };
 
-      theme = lib.mkOption {
-        type = lib.types.str;
-        default = "";
-        example = "noir";
-        description = "Theme id from greeter.themes the login screen uses; empty keeps the built-in look.";
-      };
-
       wallpaper = lib.mkOption {
         type = lib.types.nullOr lib.types.path;
         default = null;
-        description = "Image behind the login screen; defaults to the theme's wallpaper.";
+        description = "Image behind the login screen; defaults to the wallpaper of the theme you last used.";
+      };
+
+      swayConfig = lib.mkOption {
+        type = lib.types.lines;
+        default = "";
+        example = "output eDP-1 disable\ninput * xkb_layout pl";
+        description = "Extra sway config for the login screen, such as outputs to turn off or the keyboard layout.";
+      };
+
+      shareGroup = lib.mkOption {
+        type = lib.types.str;
+        default = "users";
+        description = "Group whose members' Sylvaris copies their current theme, wallpaper and avatar to the login screen.";
       };
 
       settings = lib.mkOption {
         type = json.type;
         default = { };
-        description = "config.json for the login screen, for example a theme or an avatar.";
+        description = "config.json for the login screen, for example glass settings.";
       };
 
-      themes = lib.mkOption {
-        type = lib.types.attrsOf json.type;
-        default = { };
-        description = "Theme bundles the login screen can use, like programs.sylvaris.themes in Home Manager.";
-      };
     };
   };
 
@@ -85,31 +92,20 @@ in
           user = "greeter";
         };
       };
-      systemd.tmpfiles.rules = [ "d /var/lib/sylvaris-greet 0750 greeter greeter -" ];
-      environment.etc = lib.mkMerge [
-        {
-          "sylvaris-greet/sylvaris/config.json".source = json.generate "sylvaris-greet-config.json" (
-            {
-              version = 1;
-            }
-            // lib.optionalAttrs (greet.theme != "") { themeStateFile = "${configDir}/theme"; }
-            // greet.settings
-          );
-        }
-        (lib.mkIf (greet.theme != "") { "sylvaris-greet/theme".text = greet.theme; })
-        (lib.mapAttrs' (
-          name: theme:
-          lib.nameValuePair "sylvaris-greet/sylvaris/themes/${name}.json" {
-            source = json.generate "sylvaris-greet-theme-${name}.json" (
-              {
-                version = 1;
-                id = name;
-              }
-              // theme
-            );
-          }
-        ) greet.themes)
+      systemd.tmpfiles.rules = [
+        "d /var/lib/sylvaris-greet 0755 greeter greeter -"
+        "d ${shared} 2775 greeter ${greet.shareGroup} -"
       ];
+      environment.etc."sylvaris-greet/sylvaris/config.json".source = json.generate "sylvaris-greet-config.json" (
+        {
+          version = 1;
+          themesDir = "${shared}/themes";
+          themeStateFile = "${shared}/theme";
+          avatar = "${shared}/avatar";
+          greeterShare = "";
+        }
+        // greet.settings
+      );
     })
   ];
 }

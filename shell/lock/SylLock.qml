@@ -17,6 +17,7 @@ Scope {
     readonly property string avatar: S.expandHome(Config.values.avatar || "", Quickshell.env("HOME"))
     readonly property string testDir: Demo.enabled ? Quickshell.env("SYLVARIS_PAM_DIR") || "" : ""
     property bool locked: false
+    property string typed: ""
     property bool busy: false
     property bool error: false
     property bool awaiting: false
