@@ -434,6 +434,8 @@ Scope {
                                     anchors.fill: parent
                                     visible: slot.appItem !== null
                                     source: Apps.icon(slot.appEntry)
+                                    layer.enabled: Tokens.iconTint
+                                    layer.effect: IconTint {}
                                     sourceSize.width: root.size * 3
                                     sourceSize.height: root.size * 3
                                     fillMode: Image.PreserveAspectFit

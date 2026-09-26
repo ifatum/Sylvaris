@@ -94,6 +94,7 @@ export const DEFAULT_SETTINGS = {
     plugins: DEFAULT_PLUGINS,
     sync: DEFAULT_SYNC,
     performance: false,
+    iconTint: true,
     parts: partFlags({})
 }
 
@@ -259,6 +260,7 @@ export function validateSettings(raw) {
         reveal: REVEALS.indexOf(motion.reveal) >= 0 ? motion.reveal : d.motion.reveal
     })
     v.performance = v.performance === true
+    v.iconTint = v.iconTint !== false
     v.power = validatePower(v.power)
     v.paper = validatePaper(v.paper)
     v.weather = validateWeather(v.weather)

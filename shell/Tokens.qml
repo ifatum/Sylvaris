@@ -8,6 +8,7 @@ Singleton {
 
     property real motion: 1
     property bool lite: false
+    property bool iconTint: true
     property real textScale: 1
     readonly property real pace: root.lite ? 0.55 : root.motion
     readonly property int enterDuration: Math.round(340 * root.pace)

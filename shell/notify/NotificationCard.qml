@@ -122,6 +122,8 @@ Item {
             id: iconImage
             anchors.fill: parent
             source: root.icon
+            layer.enabled: Tokens.iconTint
+            layer.effect: IconTint {}
             sourceSize.width: Tokens.notifyIcon * 2
             sourceSize.height: Tokens.notifyIcon * 2
             fillMode: Image.PreserveAspectFit

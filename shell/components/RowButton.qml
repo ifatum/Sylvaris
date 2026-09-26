@@ -11,7 +11,7 @@ Rectangle {
     signal clicked
 
     implicitHeight: Tokens.rowHeight
-    implicitWidth: row.implicitWidth + 32
+    implicitWidth: root.label === "" ? Tokens.rowHeight : row.implicitWidth + 32
     radius: Tokens.radiusRow
     scale: area.pressed ? 0.96 : 1
 
@@ -43,9 +43,18 @@ Rectangle {
         onClicked: root.clicked()
     }
 
+    Glyph {
+        anchors.centerIn: parent
+        visible: root.label === ""
+        text: root.icon
+        size: 20
+        color: Theme.accent
+    }
+
     Row {
         id: row
-        x: root.label === "" ? Math.round((root.width - row.width) / 2) : 16
+        x: 16
+        visible: root.label !== ""
         anchors.verticalCenter: parent.verticalCenter
         spacing: 14
 

@@ -479,6 +479,8 @@ Scope {
                                                 id: appIcon
                                                 anchors.fill: parent
                                                 source: Apps.icon(cell.modelData)
+                                                layer.enabled: Tokens.iconTint
+                                                layer.effect: IconTint {}
                                                 sourceSize.width: Tokens.padIcon * 2
                                                 sourceSize.height: Tokens.padIcon * 2
                                                 fillMode: Image.PreserveAspectFit
@@ -790,6 +792,8 @@ Scope {
                             width: 30
                             height: 30
                             source: Apps.icon(rowItem.modelData)
+                            layer.enabled: Tokens.iconTint
+                            layer.effect: IconTint {}
                             sourceSize.width: 60
                             sourceSize.height: 60
                             asynchronous: true

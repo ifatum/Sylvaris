@@ -298,6 +298,8 @@ Scope {
                                 height: width
                                 source: Apps.icon(card.app)
                                 sourceSize.width: width * 2
+                                layer.enabled: Tokens.iconTint
+                                layer.effect: IconTint {}
                                 sourceSize.height: height * 2
                                 fillMode: Image.PreserveAspectFit
                                 asynchronous: true
@@ -313,6 +315,8 @@ Scope {
                             height: 30
                             source: Apps.icon(card.app)
                             sourceSize.width: 60
+                            layer.enabled: Tokens.iconTint
+                            layer.effect: IconTint {}
                             sourceSize.height: 60
                             asynchronous: true
                         }

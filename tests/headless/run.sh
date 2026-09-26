@@ -38,7 +38,12 @@ cleanup() {
 }
 trap cleanup EXIT
 
-env -i HOME="$home" PATH="$PATH" XDG_RUNTIME_DIR="$rt" \
+gpu_env=()
+while IFS= read -r var; do
+    gpu_env+=("$var")
+done < <(env | grep -E '^(__EGL_[A-Z_]+|LD_LIBRARY_PATH|WLR_RENDER_DRM_DEVICE)=' || true)
+
+env -i "${gpu_env[@]}" HOME="$home" PATH="$PATH" XDG_RUNTIME_DIR="$rt" \
     WLR_BACKENDS=headless WLR_LIBINPUT_NO_DEVICES=1 WLR_RENDERER="${HL_RENDERER:-pixman}" \
     sway -c "$out/sway.conf" >"$out/sway.log" 2>&1 &
 sway_pid=$!
@@ -69,6 +74,7 @@ hl_env=(env -i DBUS_SESSION_BUS_ADDRESS="$dbus_addr" HOME="$home" PATH="${HL_QS_
 while IFS= read -r var; do
     hl_env+=("$var")
 done < <(env | grep -E '^(SYLVARIS_GREET_[A-Z]+|GREETD_SOCK)=' || true)
+hl_env+=("${gpu_env[@]}")
 if [ -n "${HL_NIRI_SOCKET:-}" ]; then
     hl_env+=(NIRI_SOCKET="$HL_NIRI_SOCKET")
 fi

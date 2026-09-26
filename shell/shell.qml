@@ -889,6 +889,12 @@ ShellRoot {
 
     Binding {
         target: Tokens
+        property: "iconTint"
+        value: Settings.values.iconTint
+    }
+
+    Binding {
+        target: Tokens
         property: "textScale"
         value: Settings.values.access.text
     }

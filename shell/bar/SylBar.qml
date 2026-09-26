@@ -305,9 +305,6 @@ Scope {
                                 font.family: Tokens.fontUi
                                 font.pixelSize: Tokens.smallSize
                                 font.weight: pill.on ? Font.Bold : Font.DemiBold
-                                font.features: {
-                                    "tnum": 1
-                                }
                             }
 
                             Repeater {
@@ -319,6 +316,8 @@ Scope {
                                     implicitSize: 16
                                     source: entry !== null && entry.icon ? Quickshell.iconPath(entry.icon, true) : ""
                                     visible: source !== ""
+                                    layer.enabled: Tokens.iconTint
+                                    layer.effect: IconTint {}
                                 }
                             }
 
@@ -432,6 +431,8 @@ Scope {
                     implicitSize: 18
                     source: wm.entry !== null && wm.entry.icon ? Quickshell.iconPath(wm.entry.icon, true) : ""
                     visible: source !== ""
+                    layer.enabled: Tokens.iconTint
+                    layer.effect: IconTint {}
                 }
 
                 Text {
@@ -646,6 +647,8 @@ Scope {
                                     anchors.centerIn: parent
                                     implicitSize: 20
                                     source: trayItem.modelData.icon
+                                    layer.enabled: Tokens.iconTint
+                                    layer.effect: IconTint {}
                                     scale: trayArea.pressed ? 0.85 : trayArea.containsMouse ? 1.1 : 1
 
                                     Behavior on scale {

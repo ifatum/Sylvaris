@@ -1182,6 +1182,16 @@ Scope {
                 }
 
                 SettingRow {
+                    title: "Theme-coloured app icons"
+                    subtitle: "App icons in the bar, deck, launcher, switcher and notifications take the theme's accent"
+
+                    Toggle {
+                        checked: Settings.values.iconTint
+                        onToggled: v => Settings.set("iconTint", v)
+                    }
+                }
+
+                SettingRow {
                     title: "Apply directly"
                     last: true
 

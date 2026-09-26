@@ -193,6 +193,7 @@
     }
   },
   "performance": false,
+  "iconTint": true,
   "glass": {
     "enabled": true,
     "opacity": 0.55,
