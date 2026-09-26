@@ -71,6 +71,9 @@ def firefox(op):
             chrome = os.path.join(prof, "chrome")
             results.append({"path": os.path.join(chrome, "sylvaris.css"), "status": write(os.path.join(chrome, "sylvaris.css"), op["content"])})
             results.append({"path": os.path.join(chrome, "userChrome.css"), "status": ensure_line(os.path.join(chrome, "userChrome.css"), '@import "sylvaris.css";', first=True)})
+            if op.get("contentCss"):
+                results.append({"path": os.path.join(chrome, "sylvaris-content.css"), "status": write(os.path.join(chrome, "sylvaris-content.css"), op["contentCss"])})
+                results.append({"path": os.path.join(chrome, "userContent.css"), "status": ensure_line(os.path.join(chrome, "userContent.css"), '@import "sylvaris-content.css";', first=True)})
             results.append({"path": os.path.join(prof, "user.js"), "status": ensure_line(os.path.join(prof, "user.js"), PREF)})
     return results
 
@@ -158,29 +161,31 @@ def set_jsonc_key(text, key, value):
 
 def vscode(op):
     results = []
-    for d in op["dirs"]:
-        if not os.path.isdir(d):
-            results.append({"path": d, "status": "skipped, " + d + " does not exist"})
+    for base in op["dirs"]:
+        if not os.path.isdir(base):
+            results.append({"path": base, "status": "skipped, " + base + " does not exist"})
             continue
-        path = os.path.join(d, "settings.json")
-        if os.path.realpath(path).startswith("/nix/store/"):
-            results.append({"path": path, "status": "failed: settings.json is managed by Nix"})
-            continue
-        try:
-            with open(path) as f:
-                text = f.read()
-        except FileNotFoundError:
-            text = "{}"
-        if text.strip() == "":
-            text = "{}"
-        try:
-            new = set_jsonc_key(text, "workbench.colorCustomizations", op["colors"])
-            new = set_jsonc_key(new, "editor.tokenColorCustomizations", {"textMateRules": op["tokenColors"]})
-        except ValueError as e:
-            results.append({"path": path, "status": "failed: settings.json could not be read, " + str(e)})
-            continue
-        results.append({"path": path, "status": write(path, new)})
+        profiles = os.path.join(base, "profiles")
+        extra = sorted(os.path.join(profiles, n) for n in os.listdir(profiles)) if os.path.isdir(profiles) else []
+        for d in [base] + [e for e in extra if os.path.isdir(e)]:
+            results.extend(vscode_file(os.path.join(d, "settings.json"), op))
     return results
+
+
+def vscode_file(path, op):
+    if os.path.realpath(path).startswith("/nix/store/"):
+        return [{"path": path, "status": "failed: settings.json is managed by Nix"}]
+    try:
+        with open(path) as f:
+            text = f.read()
+    except FileNotFoundError:
+        text = ""
+    try:
+        new = set_jsonc_key(text if text.strip() else "{}", "workbench.colorCustomizations", op["colors"])
+        new = set_jsonc_key(new, "editor.tokenColorCustomizations", {"textMateRules": op["tokenColors"]})
+    except ValueError as e:
+        return [{"path": path, "status": "failed: settings.json could not be read, " + str(e)}]
+    return [{"path": path, "status": write(path, new)}]
 
 
 def apply(ops):

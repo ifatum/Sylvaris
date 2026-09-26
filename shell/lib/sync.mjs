@@ -162,9 +162,46 @@ export function vimColors(p) {
 }
 
 export function firefoxCss(p) {
-    return [":root {", "  --toolbox-bgcolor: " + p.bg + " !important;", "  --toolbox-textcolor: " + p.fg + " !important;", "  --toolbar-bgcolor: " + p.bg2 + " !important;", "  --toolbar-color: " + p.fg + " !important;", "  --lwt-accent-color: " + p.bg + " !important;",
-        "  --lwt-text-color: " + p.fg + " !important;", "  --tab-selected-bgcolor: " + p.bg + " !important;", "  --toolbar-field-background-color: " + p.bg + " !important;",
-        "  --toolbar-field-color: " + p.fg + " !important;", "  --toolbar-field-focus-border-color: " + p.accent + " !important;", "  --tab-loading-fill: " + p.accent + " !important;", "}", "#navigator-toolbox, #TabsToolbar, #titlebar {", "  background-color: " + p.bg + " !important;", "  color: " + p.fg + " !important;", "}", ""].join("\n")
+    const vars = {
+        "--lwt-accent-color": p.bg, "--lwt-accent-color-inactive": p.bg, "--lwt-text-color": p.fg,
+        "--toolbox-bgcolor": p.bg, "--toolbox-bgcolor-inactive": p.bg, "--toolbox-textcolor": p.fg, "--toolbox-textcolor-inactive": p.soft,
+        "--toolbar-bgcolor": p.bg2, "--toolbar-color": p.fg, "--toolbarbutton-icon-fill": p.fg,
+        "--toolbarbutton-hover-background": mix(p.bg2, p.fg, 0.12), "--toolbarbutton-active-background": mix(p.bg2, p.fg, 0.2),
+        "--toolbar-field-background-color": p.bg, "--toolbar-field-color": p.fg, "--toolbar-field-border-color": mix(p.bg, p.fg, 0.12),
+        "--toolbar-field-focus-background-color": p.bg, "--toolbar-field-focus-color": p.fg, "--toolbar-field-focus-border-color": p.accent,
+        "--tab-selected-bgcolor": p.bg2, "--tab-selected-textcolor": p.fg, "--tab-hover-background-color": mix(p.bg, p.fg, 0.08),
+        "--tab-loading-fill": p.accent, "--tab-attention-icon-color": p.accent,
+        "--arrowpanel-background": p.bg2, "--arrowpanel-color": p.fg, "--arrowpanel-border-color": mix(p.bg2, p.fg, 0.12),
+        "--panel-separator-color": mix(p.bg2, p.fg, 0.12), "--urlbarView-highlight-background": p.accent, "--urlbarView-highlight-color": p.onAccent,
+        "--urlbarView-hover-background": mix(p.bg2, p.fg, 0.1), "--sidebar-background-color": p.bg2, "--sidebar-text-color": p.fg,
+        "--sidebar-border-color": mix(p.bg2, p.fg, 0.12), "--button-bgcolor": mix(p.bg2, p.fg, 0.08), "--button-hover-bgcolor": mix(p.bg2, p.fg, 0.14),
+        "--button-primary-bgcolor": p.accent, "--button-primary-color": p.onAccent, "--focus-outline-color": p.accent,
+        "--color-accent-primary": p.accent, "--link-color": p.hi, "--in-content-page-background": p.bg
+    }
+    const root = Object.keys(vars).map(k => "  " + k + ": " + vars[k] + " !important;")
+    const rule = (sel, body) => [sel + " {"].concat(body.map(b => "  " + b + " !important;"), ["}"])
+    return [":root, :root:-moz-lwtheme {"].concat(root, ["}"],
+        rule("#navigator-toolbox, #TabsToolbar, #titlebar, #toolbar-menubar", ["background-color: " + p.bg, "color: " + p.fg, "border-color: transparent"]),
+        rule("#nav-bar, #PersonalToolbar, #sidebar-box, #sidebar-header, #sidebar-main, #sidebar", ["background-color: " + p.bg2, "color: " + p.fg]),
+        rule(".tab-background[selected]", ["background-color: " + p.bg2, "background-image: none"]),
+        rule(".tab-background[selected], .tab-background:is([multiselected])", ["outline-color: " + p.accent]),
+        rule("#urlbar-background, #searchbar", ["background-color: " + p.bg, "border-color: " + mix(p.bg, p.fg, 0.12)]),
+        rule("#urlbar[focused] #urlbar-background, #urlbar[open] #urlbar-background, #searchbar:focus-within", ["background-color: " + p.bg, "border-color: " + p.accent]),
+        rule("#urlbar-input, #urlbar, .urlbarView-title, .urlbarView-url", ["color: " + p.fg]),
+        rule("menupopup, panel, .panel-arrowcontent, .menupopup-arrowscrollbox", ["--panel-background: " + p.bg2, "--panel-color: " + p.fg, "--panel-border-color: " + mix(p.bg2, p.fg, 0.12), "color: " + p.fg]),
+        rule("menu:where([_moz-menuactive]:not([disabled])), menuitem:where([_moz-menuactive]:not([disabled]))", ["background-color: " + p.accent, "color: " + p.onAccent]),
+        rule("#statuspanel-label", ["background-color: " + p.bg2, "color: " + p.fg, "border-color: " + mix(p.bg2, p.fg, 0.12)]),
+        rule("::selection", ["background-color: " + p.accent, "color: " + p.onAccent]),
+        [""]).join("\n")
+}
+
+export function firefoxContentCss(p) {
+    const pages = ["about:newtab", "about:home", "about:blank", "about:privatebrowsing", "about:preferences", "about:addons", "about:config"].map(u => "url-prefix(\"" + u + "\")").join(", ")
+    return ["@-moz-document " + pages + " {", "  :root, body {", "    --newtab-background-color: " + p.bg + " !important;", "    --newtab-background-color-secondary: " + p.bg2 + " !important;",
+        "    --newtab-text-primary-color: " + p.fg + " !important;", "    --in-content-page-background: " + p.bg + " !important;", "    --in-content-page-color: " + p.fg + " !important;",
+        "    --in-content-box-background: " + p.bg2 + " !important;", "    --in-content-primary-button-background: " + p.accent + " !important;",
+        "    --in-content-primary-button-text-color: " + p.onAccent + " !important;", "    --in-content-accent-color: " + p.accent + " !important;",
+        "    --color-accent-primary: " + p.accent + " !important;", "    background-color: " + p.bg + " !important;", "    color: " + p.fg + " !important;", "  }", "}", ""].join("\n")
 }
 
 export function plan(p, targets, configHome, home) {
@@ -208,7 +245,7 @@ export function plan(p, targets, configHome, home) {
     }
     target = "firefox"
     if (targets.firefox)
-        ops.push({ op: "firefox", target: target, content: firefoxCss(p), roots: [configHome + "/mozilla/firefox", home + "/.mozilla/firefox", home + "/.librewolf", home + "/.zen", home + "/.mullvad-browser/Browser/TorBrowser/Data/Browser"] })
+        ops.push({ op: "firefox", target: target, content: firefoxCss(p), contentCss: firefoxContentCss(p), roots: [configHome + "/mozilla/firefox", home + "/.mozilla/firefox", home + "/.librewolf", home + "/.zen", home + "/.mullvad-browser/Browser/TorBrowser/Data/Browser"] })
     return ops
 }
 

@@ -1,6 +1,6 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
-import { palette, summary, ansi, gtkCss, kittyConf, footIni, qtColors, vscodeTheme, zedTheme, nvimLua, vimColors, firefoxCss, plan, TARGETS, DEFAULT_SYNC, validateSync } from "../shell/lib/sync.mjs"
+import { palette, summary, ansi, gtkCss, kittyConf, footIni, qtColors, vscodeTheme, zedTheme, nvimLua, vimColors, firefoxCss, firefoxContentCss, plan, TARGETS, DEFAULT_SYNC, validateSync } from "../shell/lib/sync.mjs"
 
 const colors = { base: "#181310", surface: "#281f1a", accent: "#c9702f", accentHi: "#e0955c", accentDeep: "#a85c32", onAccent: "#181310", text: "#e7dac6", textDim: "#b2967b", textSoft: "#d3b9a1", danger: "#d9674a" }
 
@@ -24,7 +24,9 @@ test("generators use the palette", () => {
     assert.equal(JSON.parse(zedTheme(p)).themes[0].style.background, "#181310ff")
     assert.ok(nvimLua(p).includes("vim.g.colors_name = \"sylvaris\""))
     assert.ok(vimColors(p).includes("let g:colors_name = \"sylvaris\""))
-    assert.ok(firefoxCss(p).includes("--toolbar-bgcolor: #281f1a"))
+    assert.ok(firefoxCss(p).includes("--toolbar-bgcolor: #281f1a !important;"))
+    assert.ok(firefoxCss(p).includes("#urlbar[focused] #urlbar-background"))
+    assert.ok(firefoxContentCss(p).startsWith("@-moz-document url-prefix(\"about:newtab\")"))
 })
 
 test("plan writes only the chosen targets and asks for include lines", () => {

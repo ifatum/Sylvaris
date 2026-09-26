@@ -26,9 +26,12 @@ class JsoncTest(unittest.TestCase):
         os.makedirs(user)
         with open(os.path.join(user, "settings.json"), "w") as f:
             f.write('{\n  "editor.minimap.enabled": false,\n}\n')
+        os.makedirs(os.path.join(user, "profiles", "-1a2b"))
         res = sync.apply([{"op": "vscode", "target": "vscode", "colors": {"editor.background": "#101010"}, "tokenColors": [], "dirs": [user, user + "x"]}])
-        self.assertEqual([r["status"] for r in res][0], "written")
-        self.assertTrue(res[1]["status"].startswith("skipped"))
+        self.assertEqual([r["status"] for r in res], ["written", "written", res[2]["status"]])
+        self.assertTrue(res[2]["status"].startswith("skipped"))
+        with open(os.path.join(user, "profiles", "-1a2b", "settings.json")) as f:
+            self.assertIn('"editor.background": "#101010"', f.read())
         with open(os.path.join(user, "settings.json")) as f:
             text = f.read()
         self.assertIn('"editor.background": "#101010"', text)
