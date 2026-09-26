@@ -374,14 +374,17 @@ Scope {
             property var screenRef: null
             property var win: null
             property var active: null
+            property var parked: null
             property string title: ""
+            readonly property bool parkedAlive: wm.parked !== null && Compositor.windows.some(w => w.handle === wm.parked.handle)
+            readonly property bool resting: wm.active !== null && wm.parked !== null && wm.active.handle === wm.parked.handle && Compositor.activeWindow === null
             readonly property var entry: wm.active === null ? null : DesktopEntries.heuristicLookup(wm.active.appId)
             implicitWidth: wm.active === null ? 0 : Math.ceil((Math.min(titleRow.implicitWidth, Tokens.barTitleMax) + 12) / 24) * 24
             implicitHeight: Tokens.barItemHeight
             property bool wanted: !root.vertical && wm.active !== null && wm.title !== ""
 
             function settle(force: bool): void {
-                const next = Compositor.activeWindow;
+                const next = Compositor.activeWindow !== null ? Compositor.activeWindow : wm.parkedAlive ? wm.parked : null;
                 if (next === null && wm.active !== null && !force) {
                     holdTimer.restart();
                     return;
@@ -420,11 +423,34 @@ Scope {
                 }
             }
 
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: {
+                    if (wm.resting) {
+                        Compositor.restore(wm.parked);
+                        wm.parked = null;
+                    } else if (wm.active !== null) {
+                        wm.parked = wm.active;
+                        Compositor.minimize(wm.active);
+                    }
+                    settleTimer.restart();
+                }
+            }
+
             Row {
                 id: titleRow
                 x: 6
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: 8
+                opacity: wm.resting ? 0.5 : 1
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: Tokens.stateDuration
+                    }
+                }
 
                 IconImage {
                     anchors.verticalCenter: parent.verticalCenter

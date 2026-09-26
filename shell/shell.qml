@@ -767,6 +767,8 @@ ShellRoot {
                 focus: (...a) => Compositor.run("focus", a),
                 move: (...a) => Compositor.run("move", a),
                 close: () => Compositor.run("close", []),
+                minimize: () => Compositor.minimize(Compositor.activeWindow),
+                restore: () => Compositor.restore(Compositor.windows.find(w => w.minimized) || Compositor.windows[0] || null),
                 fullscreen: () => Compositor.run("fullscreen", []),
                 float: () => Compositor.run("float", []),
                 exec: (...a) => Compositor.run("exec", a),

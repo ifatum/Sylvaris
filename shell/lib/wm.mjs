@@ -15,8 +15,21 @@ function direction(arg) {
     return arg
 }
 
-function lua(verb, arg) {
+function address(arg) {
+    const s = String(arg === undefined ? "" : arg)
+    if (!/^(0x)?[0-9a-f]+$/.test(s))
+        throw new Error("expected a window address")
+    return s.indexOf("0x") === 0 ? s : "0x" + s
+}
+
+function lua(verb, arg, rest) {
     switch (verb) {
+    case "minimize":
+        return "hl.dsp.window.move({ workspace = \"special:minimized\", follow = false })"
+    case "restore":
+        return "hl.dsp.window.move({ workspace = " + target(rest[0]) + ", window = \"address:" + address(arg) + "\" })"
+    case "focus-window":
+        return "hl.dsp.focus({ window = \"address:" + address(arg) + "\" })"
     case "workspace": {
         const t = target(arg)
         return "hl.dsp.focus({ workspace = " + (t === "next" ? "\"e+1\"" : t === "prev" ? "\"e-1\"" : t) + " })"
@@ -41,9 +54,15 @@ function lua(verb, arg) {
     return null
 }
 
-function hyprClassic(verb, arg) {
+function hyprClassic(verb, arg, rest) {
     const dir = { left: "l", right: "r", up: "u", down: "d" }
     switch (verb) {
+    case "minimize":
+        return "movetoworkspacesilent special:minimized"
+    case "restore":
+        return "movetoworkspace " + target(rest[0]) + ",address:" + address(arg)
+    case "focus-window":
+        return "focuswindow address:" + address(arg)
     case "workspace": {
         const t = target(arg)
         return "workspace " + (t === "next" ? "e+1" : t === "prev" ? "e-1" : t)
@@ -70,6 +89,10 @@ function hyprClassic(verb, arg) {
 
 function sway(verb, arg) {
     switch (verb) {
+    case "minimize":
+        return "move scratchpad"
+    case "restore":
+        return "scratchpad show"
     case "workspace": {
         const t = target(arg)
         return t === "next" ? "workspace next_on_output" : t === "prev" ? "workspace prev_on_output" : "workspace number " + t
@@ -124,7 +147,7 @@ function niri(verb, arg) {
     return null
 }
 
-export const VERBS = ["workspace", "move-to", "focus", "move", "close", "fullscreen", "float", "exec", "reload", "quit"]
+export const VERBS = ["workspace", "move-to", "focus", "move", "close", "fullscreen", "float", "exec", "reload", "quit", "minimize", "restore", "focus-window"]
 
 export function translate(name, usingLua, verb, args) {
     if (VERBS.indexOf(verb) < 0)
@@ -138,12 +161,14 @@ export function translate(name, usingLua, verb, args) {
     if (name === "hyprland") {
         if (verb === "reload")
             return { via: "exec", command: ["hyprctl", "reload"] }
-        return { via: "hyprland", command: usingLua ? lua(verb, arg) : hyprClassic(verb, arg) }
+        return { via: "hyprland", command: usingLua ? lua(verb, arg, args.slice(1)) : hyprClassic(verb, arg, args.slice(1)) }
     }
     if (name === "sway")
         return { via: "i3", command: sway(verb, arg) }
-    if (name === "niri")
-        return { via: "exec", command: ["niri", "msg", "action"].concat(niri(verb, arg)) }
+    if (name === "niri") {
+        const a = niri(verb, arg)
+        return { via: "exec", command: a === null || a === undefined ? null : ["niri", "msg", "action"].concat(a) }
+    }
     throw new Error("no supported compositor is running")
 }
 

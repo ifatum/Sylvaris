@@ -91,6 +91,41 @@ Singleton {
             w.handle.activate();
     }
 
+    function addressOf(handle: var): string {
+        if (root.name !== "hyprland" || handle === null)
+            return "";
+        const t = Hyprland.toplevels.values.find(x => x.wayland === handle);
+        return t ? t.address : "";
+    }
+
+    function minimize(w: var): void {
+        if (!w || !w.handle || Demo.enabled)
+            return;
+        try {
+            root.run("minimize", []);
+        } catch (e) {
+            w.handle.minimized = true;
+        }
+    }
+
+    function restore(w: var): void {
+        if (!w || !w.handle || Demo.enabled)
+            return;
+        const addr = root.addressOf(w.handle);
+        const here = root.workspaces.find(x => x.focused);
+        try {
+            if (root.name === "hyprland") {
+                root.run("restore", [addr, String(here ? here.index : 1)]);
+                root.run("focus-window", [addr]);
+            } else {
+                root.run("restore", []);
+            }
+        } catch (e) {
+            w.handle.minimized = false;
+            w.handle.activate();
+        }
+    }
+
     function closeWindow(w: var): void {
         if (w && w.handle)
             w.handle.close();

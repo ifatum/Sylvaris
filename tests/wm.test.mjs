@@ -77,3 +77,13 @@ test("bindSnippet writes a keybind in each compositor's own syntax", () => {
     assert.equal(bindSnippet("niri", false, "XF86AudioPlay", "sylvaris media toggle"), "XF86AudioPlay { spawn \"sylvaris\" \"media\" \"toggle\"; }")
     assert.equal(bindSnippet("sway", false, "XF86AudioPlay", "sylvaris media toggle"), "bindsym XF86AudioPlay exec sylvaris media toggle")
 })
+
+test("minimize parks the window where each compositor can bring it back", () => {
+    assert.equal(translate("hyprland", true, "minimize", []).command, "hl.dsp.window.move({ workspace = \"special:minimized\", follow = false })")
+    assert.equal(translate("hyprland", true, "restore", ["55aa", "3"]).command, "hl.dsp.window.move({ workspace = 3, window = \"address:0x55aa\" })")
+    assert.equal(translate("hyprland", false, "restore", ["0x55aa", "2"]).command, "movetoworkspace 2,address:0x55aa")
+    assert.equal(translate("hyprland", true, "focus-window", ["0x1"]).command, "hl.dsp.focus({ window = \"address:0x1\" })")
+    assert.equal(translate("sway", false, "minimize", []).command, "move scratchpad")
+    assert.equal(translate("niri", false, "minimize", []).command, null)
+    assert.throws(() => translate("hyprland", true, "restore", ["x; rm", "1"]))
+})
