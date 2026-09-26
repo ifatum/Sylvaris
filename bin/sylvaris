@@ -18,6 +18,7 @@ Usage: sylvaris [command]
   get <key>                    print a setting
   set <key> <value>            change a setting (JSON or plain text)
   settings [open <section>]    open SylSettings
+  pick [prompt]                choose one of the lines on stdin in SylPad, like dmenu
   config                       print where the configuration lives
   reload                       reload the shell
   list                         print every part and its actions
@@ -62,6 +63,16 @@ greet)
     ;;
 view)
     run center view "${@:2}"
+    ;;
+pick)
+    tmp="$(mktemp -d)"
+    trap 'rm -rf "$tmp"' EXIT
+    cat >"$tmp/in"
+    mkfifo "$tmp/out"
+    run pad pick "$tmp/in" "$tmp/out" "${@:2}" >/dev/null
+    choice="$(cat "$tmp/out")"
+    [ -n "$choice" ] || exit 1
+    printf '%s\n' "$choice"
     ;;
 reload)
     run shell reload

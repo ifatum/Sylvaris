@@ -18,6 +18,7 @@ let
     exec "${lib.getExe' package "sylvaris"} greet; ${lib.getExe' pkgs.sway "swaymsg"} exit"
   '';
   launch = pkgs.writeShellScript "sylvaris-greet" ''
+    ${lib.concatStrings (lib.mapAttrsToList (k: v: "export ${k}=${lib.escapeShellArg v}\n") greet.environment)}
     export XDG_CONFIG_HOME=${configDir}
     export SYLVARIS_GREET_STATE=/var/lib/sylvaris-greet
     export SYLVARIS_GREET_SESSIONS=${config.services.displayManager.sessionData.desktops}/share/wayland-sessions
@@ -62,6 +63,15 @@ in
         default = "";
         example = "output eDP-1 disable\ninput * xkb_layout pl";
         description = "Extra sway config for the login screen, such as outputs to turn off or the keyboard layout.";
+      };
+
+      environment = lib.mkOption {
+        type = lib.types.attrsOf lib.types.str;
+        default = { };
+        example = {
+          WLR_NO_HARDWARE_CURSORS = "1";
+        };
+        description = "Environment for the login screen's sway, for example what an NVIDIA card needs.";
       };
 
       shareGroup = lib.mkOption {

@@ -680,7 +680,8 @@ ShellRoot {
             pad: {
                 toggle: () => root.need("pad").toggle(),
                 open: () => root.need("pad").open(),
-                close: () => root.need("pad").close()
+                close: () => root.need("pad").close(),
+                pick: (input, output, ...prompt) => root.need("pad").pick(input || "", output || "", prompt.join(" "))
             },
             sync: {
                 default: "state",

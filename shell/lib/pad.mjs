@@ -86,3 +86,7 @@ export function move(index, key, count, columns, perPage) {
         next = (page + 1) * perPage
     return Math.max(0, Math.min(count - 1, next))
 }
+
+export function pickItems(text) {
+    return String(text || "").split("\n").filter(l => l.trim() !== "").map((l, i) => ({ id: "pick-" + i, name: l, pick: l, genericName: "", keywords: [] }))
+}

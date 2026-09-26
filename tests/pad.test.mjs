@@ -1,7 +1,7 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
 import { readFileSync } from "node:fs"
-import { score, search, visible, pages, move } from "../shell/lib/pad.mjs"
+import { score, search, visible, pages, move, pickItems } from "../shell/lib/pad.mjs"
 import { MODULES, tiles } from "../shell/lib/modules.mjs"
 
 const apps = [
@@ -74,4 +74,10 @@ test("every part has a product name for the Parts card", async () => {
     const { PRODUCT } = await import("../shell/lib/modules.mjs")
     for (const name of Object.keys(PARTS))
         assert.ok(PRODUCT[name], name)
+})
+
+test("pickItems turns stdin lines into pickable entries", () => {
+    const items = pickItems("kitty  one\n\nfirefox  two\n")
+    assert.deepEqual(items.map(i => i.pick), ["kitty  one", "firefox  two"])
+    assert.deepEqual(search(items, "fire").map(i => i.pick), ["firefox  two"])
 })

@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import Quickshell.Io
 import Quickshell.Wayland
 import qs
 import qs.services
@@ -23,10 +24,14 @@ Scope {
     readonly property int columns: Settings.values.pad.columns
     readonly property int rows: Settings.values.pad.rows
     readonly property int perPage: root.columns * root.rows
-    readonly property var results: P.search(Apps.list.concat(root.tiles), root.query)
+    property var pickItems: null
+    property string pickOut: ""
+    property string pickPrompt: ""
+    readonly property bool picking: root.pickItems !== null
+    readonly property var results: P.search(root.picking ? root.pickItems : Apps.list.concat(root.tiles), root.query)
     readonly property var pageList: P.pages(root.results, root.perPage)
     property int page: 0
-    readonly property bool listMode: Settings.values.pad.mode === "list"
+    readonly property bool listMode: root.picking || Settings.values.pad.mode === "list"
     property int wave: 0
 
     function phase(a: real, b: real): real {
@@ -67,6 +72,12 @@ Scope {
     signal opened
     signal settingsRequested(string section)
 
+    FileView {
+        id: pickFile
+        blockLoading: true
+        printErrors: false
+    }
+
     function open(): void {
         if (root.wanted)
             return;
@@ -85,7 +96,31 @@ Scope {
         });
     }
 
+    function pick(inFile: string, outFile: string, prompt: string): void {
+        root.answer("");
+        pickFile.path = inFile;
+        pickFile.reload();
+        root.pickItems = P.pickItems(pickFile.text());
+        root.pickOut = outFile;
+        root.pickPrompt = prompt;
+        if (root.wanted) {
+            root.query = "";
+            root.selected = 0;
+        } else {
+            root.open();
+        }
+    }
+
+    function answer(text: string): void {
+        if (root.pickOut === "")
+            return;
+        Quickshell.execDetached(["sh", "-c", "printf '%s' \"$1\" > \"$2\"", "sylvaris-pick", text, root.pickOut]);
+        root.pickOut = "";
+        root.pickItems = null;
+    }
+
     function close(): void {
+        root.answer("");
         root.wanted = false;
         if (!root.shown)
             return;
@@ -117,6 +152,8 @@ Scope {
     }
 
     function launch(app: var): void {
+        if (app.pick !== undefined)
+            root.answer(app.pick);
         root.close();
         if (app.section !== undefined)
             root.settingsRequested(app.section);
@@ -627,7 +664,7 @@ Scope {
                         anchors.leftMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
                         visible: listSearch.text === ""
-                        text: "Run an application"
+                        text: root.picking ? root.pickPrompt || "Pick one" : "Run an application"
                         color: Theme.textDim
                         font.family: Tokens.fontUi
                         font.pixelSize: Tokens.bodySize

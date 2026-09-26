@@ -70,6 +70,7 @@ sylvaris notify              # toggle the notification center (also: clear, dism
 sylvaris pad                 # toggle SylPad, the app launcher (also: open, close)
 sylvaris wm workspace 3      # the same compositor commands everywhere (see SylCompositor)
 sylvaris settings            # open SylSettings (also: open <section>)
+sylvaris pick [prompt]       # pick one line from stdin in SylPad, like dmenu or rofi -dmenu
 sylvaris config              # where the configuration lives
 sylvaris reload              # reload the shell
 sylvaris media open [tab]    # SylMedia on playing, sound or devices (media toggle/next/previous/seek control playback)
@@ -245,7 +246,7 @@ programs.sylvaris.greeter = {
 };
 ```
 
-It runs in a small sway session (`swayConfig` sets up its screens and keyboard) with its own config under `/etc/sylvaris-greet`, and reboot and shutdown are one click away. It always looks like your desktop: whenever you switch themes, Sylvaris copies the theme, its wallpaper and your avatar to `/var/lib/sylvaris-greet/shared` (`greeterShare` in `config.json`; the folder belongs to the `users` group, `greeter.shareGroup`), and the login screen uses them the next time it shows. `wallpaper` pins one image instead.
+It runs in a small sway session (`swayConfig` sets up its screens and keyboard, `environment` adds variables such as `WLR_NO_HARDWARE_CURSORS = "1"` for NVIDIA) with its own config under `/etc/sylvaris-greet`, and reboot and shutdown are one click away. It always looks like your desktop: whenever you switch themes, Sylvaris copies the theme, its wallpaper and your avatar to `/var/lib/sylvaris-greet/shared` (`greeterShare` in `config.json`; the folder belongs to the `users` group, `greeter.shareGroup`), and the login screen uses them the next time it shows. `wallpaper` pins one image instead.
 
 ## SylPolkit
 
