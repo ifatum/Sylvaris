@@ -124,7 +124,7 @@ Panels are built when you open them and freed shortly after they close, so Sylva
 
 ## 📖 Learn more
 
-The [guide](docs/guide.md) covers every part, command and setting, theme bundles, plugins and development.
+The [guide](docs/guide.md) covers every part, command and setting, theme bundles, plugins and development. [ARCHITECTURE.md](ARCHITECTURE.md) explains how the shell is built, [CONTRIBUTING.md](CONTRIBUTING.md) how to work on it, and [CHANGELOG.md](CHANGELOG.md) what changed.
 
 ## 💛 Credits
 
