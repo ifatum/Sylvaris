@@ -1,0 +1,94 @@
+import QtQuick
+import qs
+import qs.services
+import qs.components
+import "../lib/icons.mjs" as Icons
+
+Column {
+    required property var host
+
+    spacing: 24
+
+    Card {
+        title: "Theme"
+
+        SettingRow {
+            title: Theme.theme.name || "Built-in"
+            subtitle: Theme.theme.description || "The active theme"
+
+            Chip {
+                text: "Open the theme picker"
+                glyph: Icons.GLYPHS.theme
+                onClicked: host.hand("theme", "")
+            }
+        }
+
+        SettingRow {
+            title: "Theme-coloured app icons"
+            subtitle: "App icons in the bar, deck, launcher, switcher and notifications take the theme's accent"
+
+            Toggle {
+                checked: Settings.values.iconTint
+                onToggled: v => Settings.set("iconTint", v)
+            }
+        }
+
+        SettingRow {
+            title: "Apply directly"
+            last: true
+
+            Flow {
+                width: 420
+                spacing: 6
+                layoutDirection: Qt.RightToLeft
+
+                Repeater {
+                    model: Theme.ids
+
+                    delegate: Chip {
+                        required property string modelData
+                        text: Theme.catalog[modelData] !== undefined ? Theme.catalog[modelData].name : modelData
+                        lit: modelData === Theme.currentId
+                        onClicked: Theme.apply(modelData)
+                    }
+                }
+            }
+        }
+    }
+
+    Card {
+        title: "Resin Glass"
+        note: "Every panel, tile and card is drawn in translucent glass. Blur comes from your compositor."
+
+        GlassPreview {}
+
+        SettingRow {
+            title: "Glass"
+            subtitle: "Off brings back solid panels"
+
+            Toggle {
+                checked: Resin.enabled
+                onToggled: v => Settings.set("glass.enabled", v)
+            }
+        }
+
+        Repeater {
+            model: host.glassKeys
+
+            delegate: SettingRow {
+                required property var modelData
+                required property int index
+                title: modelData.label
+                last: index === host.glassKeys.length - 1
+                opacity: Resin.enabled ? 1 : 0.45
+
+                Slider {
+                    width: 300
+                    value: host.glass(modelData.key) / modelData.max
+                    label: host.glass(modelData.key).toFixed(modelData.max < 1 ? 3 : 2)
+                    onMoved: v => Settings.set("glass." + modelData.key, Math.round(v * modelData.max * 1000) / 1000)
+                }
+            }
+        }
+    }
+}

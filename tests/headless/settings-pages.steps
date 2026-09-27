@@ -1,0 +1,75 @@
+sleep 1.5
+write sylvaris/settings.json {"version":1,"motion":{"reduced":true},"constellation":{"stars":false,"ring":false,"links":false}}
+sleep 1
+syl settings open general
+sleep 1.2
+shot general
+syl settings open appearance
+sleep 1.2
+shot appearance
+syl settings open motion
+sleep 1.2
+shot motion
+syl settings open wallpaper
+sleep 1.2
+shot wallpaper
+syl settings open bar
+sleep 1.2
+shot bar
+syl settings open deck
+sleep 1.2
+shot deck
+syl settings open launcher
+sleep 1.2
+shot launcher
+syl settings open notifications
+sleep 1.2
+shot notifications
+syl settings open sound
+sleep 1.2
+shot sound
+syl settings open displays
+sleep 1.2
+shot displays
+syl settings open clock
+sleep 1.2
+shot clock
+syl settings open weather
+sleep 1.2
+shot weather
+syl settings open power
+sleep 1.2
+shot power
+syl settings open diver
+sleep 1.2
+shot diver
+syl settings open switcher
+sleep 1.2
+shot switcher
+syl settings open lock
+sleep 1.2
+shot lock
+syl settings open polkit
+sleep 1.2
+shot polkit
+syl settings open clip
+sleep 1.2
+shot clip
+syl settings open capture
+sleep 1.2
+shot capture
+syl settings open access
+sleep 1.2
+shot access
+syl settings open plugins
+sleep 1.2
+shot plugins
+syl settings open sync
+sleep 1.2
+shot sync
+syl settings open keybinds
+sleep 1.2
+shot keybinds
+syl settings open commands
+sleep 1.2
+shot commands
