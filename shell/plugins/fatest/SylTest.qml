@@ -21,7 +21,7 @@ Popup {
     readonly property string historyPath: Quickshell.env("HOME") + "/.fatest_history.json"
     readonly property real headline: root.st.phase === "download" || root.st.phase === "upload" ? root.st.live : root.st.phase === "done" ? root.st.download : root.st.phase === "error" ? 0 : root.history.length > 0 ? root.history[0].download : 0
 
-    namespace: "syltest"
+    namespace: "FaTest"
     corner: "top-right"
     panelWidth: Tokens.testWidth
     panelHeight: Tokens.testHeight
@@ -97,7 +97,7 @@ Popup {
             else if (root.st.phase !== "done" && root.st.phase !== "error")
                 root.st = F.reduce(root.st, {
                     event: "error",
-                    message: code === 2 && root.st.phase === "server" ? "This FaTest is too old for SylTest, update it to 2.1 or newer" : "FaTest stopped with exit code " + code
+                    message: code === 2 && root.st.phase === "server" ? "This FaTest is too old for FaTest, update it to 2.1 or newer" : "FaTest stopped with exit code " + code
                 });
             root.stopping = false;
         }
@@ -132,7 +132,7 @@ Popup {
                 width: parent.width - 30
 
                 Text {
-                    text: "SylTest"
+                    text: "FaTest"
                     color: Theme.text
                     font.family: Tokens.fontUi
                     font.pixelSize: Tokens.titleSize
@@ -205,7 +205,7 @@ Popup {
 
         Card {
             title: "History"
-            note: root.history.length === 0 ? "Runs from SylTest and the fatest command show up here." : ""
+            note: root.history.length === 0 ? "Runs from FaTest and the fatest command show up here." : ""
 
             Repeater {
                 model: root.history.slice(0, 3)

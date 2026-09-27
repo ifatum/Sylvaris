@@ -9,7 +9,7 @@ All notable changes to Sylvaris are listed here. The format follows [Keep a Chan
 - Add optional SylCenter tiles: speed test, AirPods, screenshot, record, clipboard and lock
 - Add a Control Center page to SylSettings: tiles, volume slider, now playing card, corner and hotspot
 - Add a Show seconds option to the lock screen clock
-- Add SylTest, a built-in plugin that runs FaTest speed tests and shares its history
+- Add FaTest, a built-in plugin that runs FaTest speed tests and shares its history
 - Ship Diver and AirPods as built-in plugins that stay off until turned on
 - Scaffold Sylvaris flake, launcher and headless harness
 - Add config and settings validation logic

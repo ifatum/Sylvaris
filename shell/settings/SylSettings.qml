@@ -122,7 +122,7 @@ Scope {
         },
         {
             key: "fatest",
-            label: "SylTest",
+            label: "FaTest",
             glyph: Icons.GLYPHS.speed,
             group: "apps"
         },

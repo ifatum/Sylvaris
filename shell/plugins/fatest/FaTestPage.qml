@@ -39,7 +39,7 @@ Column {
 
     Process {
         id: saver
-        onExited: code => page.message = code === 0 ? "Saved for SylTest and the fatest command" : "fatest config failed with exit code " + code
+        onExited: code => page.message = code === 0 ? "Saved for FaTest and the fatest command" : "fatest config failed with exit code " + code
     }
 
     FileView {
@@ -66,8 +66,8 @@ Column {
     }
 
     Card {
-        title: "SylTest"
-        note: page.available ? "Internet speed tests run by FaTest. Results land in the same history as the fatest command." : "FaTest is not installed. Install it from github.com/ifatum/FaTest and SylTest picks it up."
+        title: "FaTest"
+        note: page.available ? "Internet speed tests run by FaTest. Results land in the same history as the fatest command." : "FaTest is not installed. Install it from github.com/ifatum/FaTest and FaTest picks it up."
 
         SettingRow {
             title: "Last result"
@@ -85,13 +85,13 @@ Column {
 
         SettingRow {
             last: true
-            title: "Speed test"
+            title: "Speed Test"
             subtitle: "“sylvaris fatest run” starts one from anywhere"
 
             Chip {
                 enabled: page.available
                 opacity: enabled ? 1 : 0.4
-                text: "Open SylTest"
+                text: "Open FaTest"
                 glyph: Icons.GLYPHS.speed
                 onClicked: page.host.hand("fatest", "")
             }

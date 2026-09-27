@@ -395,7 +395,7 @@ ShellRoot {
         id: fatestLoader
         active: root.on("fatest")
 
-        SylTest {
+        FaTest {
             id: fatestPart
             onOpened: root.solo(fatestPart)
         }
@@ -748,7 +748,7 @@ ShellRoot {
                 stop: () => root.need("fatest").stop(),
                 history: () => root.need("fatest").history,
                 state: () => root.need("fatest").state()
-            }, () => root.part("fatest") !== null, "SylTest is off; turn it on in SylSettings › Plugins or with: sylvaris plugins enable fatest"),
+            }, () => root.part("fatest") !== null, "FaTest is off; turn it on in SylSettings › Plugins or with: sylvaris plugins enable fatest"),
             capture: {
                 toggle: () => root.need("capture").toggle(),
                 open: () => root.need("capture").open(),

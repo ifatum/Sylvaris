@@ -1,5 +1,5 @@
 export const EXTRAS = [
-    { key: "fatest", label: "Speed test", glyph: "speed", plugin: "fatest" },
+    { key: "fatest", label: "Speed Test", glyph: "speed", plugin: "fatest" },
     { key: "airpods", label: "AirPods", glyph: "headphones", plugin: "airpods" },
     { key: "screenshot", label: "Screenshot", glyph: "camera", plugin: "" },
     { key: "record", label: "Record", glyph: "record", plugin: "" },
