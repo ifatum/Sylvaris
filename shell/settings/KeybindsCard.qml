@@ -21,7 +21,7 @@ Card {
     }
 
     title: "Key bindings"
-    note: Keybinds.supported ? "Click an action, then press the keys. Sylvaris adds the binding to " + (Compositor.name === "hyprland" ? "Hyprland" : "sway") + " right away. Esc cancels, Backspace removes it. Bindings already in your compositor config show up here too." + (Keybinds.included ? "" : " To have them land in your config as well, add " + Keybinds.include + " to your config.") : "Your compositor cannot take new bindings at runtime; copy the lines from Features › Commands into its config instead."
+    note: Keybinds.supported ? "Click an action, then press the keys. Sylvaris adds the binding to " + (Compositor.name === "hyprland" ? "Hyprland" : "sway") + " right away. Esc cancels; Backspace or × removes the binding. Bindings already in your compositor config show up here too." + (Keybinds.included ? "" : " To have them land in your config as well, add " + Keybinds.include + " to your config.") : "Your compositor cannot take new bindings at runtime; copy the lines from Features › Commands into its config instead."
 
     Repeater {
         model: K.ACTIONS
@@ -51,6 +51,7 @@ Card {
 
                 Text {
                     anchors.centerIn: parent
+                    anchors.horizontalCenterOffset: clearGlyph.visible ? -10 : 0
                     text: row.active ? "Press keys…" : row.combo === "" ? "Not set" : row.combo.split("+").join(" + ")
                     color: row.active ? Theme.onAccent : row.combo === "" ? Theme.textDim : Theme.text
                     font.family: row.combo === "" || row.active ? Tokens.fontUi : Tokens.fontMono
@@ -66,6 +67,32 @@ Card {
                     onClicked: {
                         root.capturing = row.modelData.id;
                         catcher.forceActiveFocus();
+                    }
+                }
+
+                Glyph {
+                    id: clearGlyph
+                    anchors.right: parent.right
+                    anchors.rightMargin: 12
+                    anchors.verticalCenter: parent.verticalCenter
+                    visible: Keybinds.supported && (row.active || row.own !== "")
+                    text: Icons.GLYPHS.close
+                    size: 14
+                    color: row.active ? Theme.onAccent : clearArea.containsMouse ? Theme.text : Theme.textDim
+                    opacity: clearArea.pressed ? 0.6 : 1
+
+                    MouseArea {
+                        id: clearArea
+                        anchors.fill: parent
+                        anchors.margins: -8
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            if (row.active)
+                                root.capturing = "";
+                            else
+                                root.assign(row.modelData.id, "");
+                        }
                     }
                 }
             }
