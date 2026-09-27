@@ -77,6 +77,8 @@ All notable changes to Sylvaris are listed here. The format follows [Keep a Chan
 - Add a clear button to key binding pills
 - Add sylvaris doctor for bug reports
 - Version config and settings files and migrate them step by step
+- Keep compositor capabilities in one table and document it
+- Add a screenshot editor and many capture and recording options
 
 ### Changed
 
@@ -88,6 +90,7 @@ All notable changes to Sylvaris are listed here. The format follows [Keep a Chan
 - Recolour every VS Code profile and theme far more of Firefox, including its own pages
 - Mirror SylLock and SylGreet on every screen, run SylGreet in sway and let it follow the last used theme
 - Center icon-only buttons and workspace numbers, tint app icons with the theme and pass GPU variables to headless runs
+- Move each SylSettings page into its own file
 
 ### Fixed
 
@@ -113,6 +116,9 @@ All notable changes to Sylvaris are listed here. The format follows [Keep a Chan
 - Name every part properly in the Parts card
 - Only count the stored performance toggle when a custom one exists
 - Give slurp an empty stdin so area capture does not hang
+- Keep cryptography in the dev shell python next to vncdotool
+- Keep key capture running while the settings window is not focused
+- Cancel recordings stopped early, never overwrite captures, keep editor keys working
 
 ### Security
 
@@ -120,3 +126,5 @@ All notable changes to Sylvaris are listed here. The format follows [Keep a Chan
 - Run SylLock in its own process so a shell crash cannot drop the lock
 - Empty the password field as soon as it is submitted
 - Show the commit and a permissions warning before installing a plugin
+- Relock a lock screen that is still closing and report locks that fail
+- Never prompt or hang on plugin clones and unfreeze settings once the file is gone
