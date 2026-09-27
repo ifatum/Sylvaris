@@ -105,7 +105,7 @@ Card {
         height: 0
         focus: false
         onActiveFocusChanged: {
-            if (!activeFocus)
+            if (!activeFocus && Window.activeFocusItem !== null)
                 root.capturing = "";
         }
         Keys.onPressed: event => {

@@ -1,0 +1,19 @@
+sleep 1.5
+write sylvaris/settings.json {"version":1,"keybinds":{"clip toggle":"SUPER+V","capture toggle":"Print"}}
+sleep 1
+syl settings open keybinds
+sleep 1.5
+pointer move 1567 909 click 1
+sleep 0.6
+shot keybinds-capturing
+bg wtype -k Shift_L -k Escape
+sleep 0.8
+shot keybinds-escaped
+syl state keybinds
+check tail -n 3 "$OUT/ipc.log" | grep -q '"clip toggle":"SUPER+V"'
+pointer move 1645 909 click 1
+sleep 0.8
+syl state keybinds
+shot keybinds-cleared
+check tail -n 3 "$OUT/ipc.log" | grep -q '"capture toggle":"Print"'
+check ! tail -n 3 "$OUT/ipc.log" | grep -q 'clip toggle'
