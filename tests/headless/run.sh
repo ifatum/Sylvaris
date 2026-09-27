@@ -108,7 +108,7 @@ while read -r cmd rest; do
         printf '\n' >>"$out/ipc.log"
         ;;
     bg)
-        "${hl_env[@]}" SYLVARIS_DIR="$shell_dir" PATH="$repo/bin:$PATH" sh -c "$rest" &
+        "${hl_env[@]}" SYLVARIS_DIR="$shell_dir" PATH="$repo/bin:$PATH" OUT="$out" SHELL_PID="$qs_pid" sh -c "$rest" &
         ;;
     shot)
         env -i XDG_RUNTIME_DIR="$rt" WAYLAND_DISPLAY="$display" PATH="$PATH" grim "$out/$rest.png"
@@ -124,7 +124,7 @@ while read -r cmd rest; do
         printf 'MARK %s %s\n' "$rest" "$(date +%s%3N)" >>"$out/ipc.log"
         ;;
     check)
-        if ! "${hl_env[@]}" SYLVARIS_DIR="$shell_dir" PATH="$repo/bin:$PATH" OUT="$out" sh -c "$rest" >>"$out/ipc.log" 2>&1; then
+        if ! "${hl_env[@]}" SYLVARIS_DIR="$shell_dir" PATH="$repo/bin:$PATH" OUT="$out" SHELL_PID="$qs_pid" sh -c "$rest" >>"$out/ipc.log" 2>&1; then
             printf 'CHECK FAILED: %s\n' "$rest" | tee -a "$out/ipc.log" >&2
             checks_failed=1
         fi

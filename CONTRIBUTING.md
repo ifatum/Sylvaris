@@ -28,6 +28,7 @@ Run the checks for what you touched while you work, and all of them before you o
 | Runtime and visuals | `tests/headless/run.sh OUT tests/headless/<name>.steps tests/fixtures/seed/warm` |
 | Every headless scenario | `tests/headless/all.sh` |
 | Everything, as CI does | `nix flake check` |
+| Memory and CPU | `tests/bench/bench.sh [OUT]` (see the README for what it measures) |
 
 New logic in `shell/lib` comes with a failing node test first. New or changed behaviour you can see or trigger gets a headless scenario.
 
@@ -44,7 +45,7 @@ New logic in `shell/lib` comes with a failing node test first. New or changed be
 | `shot <name>` | screenshot to `OUT/<name>.png` |
 | `write <path> <text>` | write a file under the test home's `.config` |
 | `sway <args>` | run `swaymsg` |
-| `check <shell>` | assert: the run fails if the command exits non-zero (`$OUT` is the output folder) |
+| `check <shell>` | assert: the run fails if the command exits non-zero (`$OUT` is the output folder, `$SHELL_PID` the shell's process) |
 | `killshell` | kill the main shell process with SIGKILL |
 | `mark <label>` | write a timestamp to `ipc.log` |
 

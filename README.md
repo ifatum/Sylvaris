@@ -6,7 +6,7 @@
 
 <p align="center">
   <b>A glass desktop shell for Hyprland, niri and sway.</b><br>
-  One light process, twenty parts, and every one of them optional.
+  One process, twenty parts, and every one of them optional.
 </p>
 
 <p align="center">
@@ -118,9 +118,17 @@ sylvaris set bar.position left
 sylvaris list             # everything else
 ```
 
-## 🪶 Light by design
+## 🪶 Only what you enable
 
-Panels are built when you open them and freed shortly after they close, so Sylvaris holds little memory when idle. Everything you leave out with `parts` is never loaded, and its tools stay off your `PATH`.
+Parts you turn off in `parts` are never loaded, and their tools stay off your `PATH`. Panels are built when you open them and freed 20 seconds after they close.
+
+| Measured in the headless harness | Software rendering | GPU (NVIDIA) |
+|---|---:|---:|
+| Idle, all 20 parts | 170 MB · 1.0 % CPU | 293 MB · 0.8 % CPU |
+| After opening every panel once, 25 s later | 192 MB | 368 MB |
+| Idle, only the bar and notifications | 110 MB · 0.8 % CPU | 251 MB · 2.6 % CPU |
+
+Resident memory of the Sylvaris process, including Quickshell, Qt and, with a GPU, the driver's mappings; CPU is a share of one core over 20 idle seconds. Demo data on one 2560×1440 output with Quickshell 0.3.1. Run `tests/bench/bench.sh` to measure on your machine (`BENCH_SETTINGS` takes a `settings.json` to compare setups; set `HL_RENDERER=gles2 HL_QT_BACKEND=rhi` for GPU rendering).
 
 ## 📖 Learn more
 
