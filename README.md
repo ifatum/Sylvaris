@@ -48,8 +48,8 @@
       <h3>🎨 System</h3>
       <b>SylTheme</b> themes with live preview<br>
       <b>SylSync</b> apps follow your theme<br>
-      <b>SylLock</b> · <b>SylGreet</b> lock and login<br>
-      <b>SylPolkit</b> password prompts<br>
+      <b>SylLock</b> · <b>SylGreet</b> lock and login <i>(experimental)</i><br>
+      <b>SylPolkit</b> password prompts <i>(experimental)</i><br>
       <b>SylAccessibility</b> zoom and filters<br>
       <b>SylPlugins</b> your own widgets
     </td>
@@ -69,7 +69,7 @@
   </tr>
 </table>
 
-<p align="center"><img src="docs/demo/lock.gif" width="560" alt="SylLock"><br><sub><b>SylLock</b>, and SylGreet looks the same at login</sub></p>
+<p align="center"><img src="docs/demo/lock.gif" width="560" alt="SylLock"><br><sub><b>SylLock</b>, and SylGreet looks the same at login (both experimental)</sub></p>
 
 ## 📦 Install
 

@@ -224,9 +224,13 @@ Alt+Tab for every compositor. Bind `sylvaris switcher next` to Alt+Tab and `sylv
 
 ## SylLock
 
-`sylvaris lock` locks every screen with the session-lock protocol, mirroring what you type on all of them, so nothing can draw over it and the compositor keeps it locked even if Sylvaris stops. It looks like the rest of Sylvaris: your wallpaper, a large clock and a password field that shakes on a wrong password. Passwords are checked by PAM with the first of the `sylvaris`, `hyprlock`, `swaylock` or `login` services that exists (`lock.pam` picks one). The NixOS module adds the `sylvaris` service. Point `lockCommand` at `sylvaris lock` to use it from SylPower, and turn on `lock.logind` to lock whenever something runs `loginctl lock-session`, such as hypridle.
+> **Experimental.** Test it on your machine before you depend on it, and keep another way to unlock, log in or authorize at hand.
+
+`sylvaris lock` locks every screen with the session-lock protocol, mirroring what you type on all of them, so nothing can draw over it and the compositor keeps it locked even if Sylvaris stops. The lock runs as its own Quickshell process (`lock.qml`), separate from the bar and every other part and plugin, so a crash in the main shell leaves the lock screen up and working. It looks like the rest of Sylvaris: your wallpaper, a large clock and a password field that shakes on a wrong password. Passwords are checked by PAM with the first of the `sylvaris`, `hyprlock`, `swaylock` or `login` services that exists (`lock.pam` picks one). The NixOS module adds the `sylvaris` service. Point `lockCommand` at `sylvaris lock` to use it from SylPower, and turn on `lock.logind` to lock whenever something runs `loginctl lock-session`, such as hypridle.
 
 ## SylGreet
+
+> **Experimental.** Test it on your machine before you depend on it, and keep another way to unlock, log in or authorize at hand.
 
 A login screen for greetd in the same style as SylLock, shown on every screen with what you type mirrored on all of them. The session button in the bottom left (or F2) lists every installed session, such as Hyprland, niri or sway; ↑ ↓ pick the user. Type the password and it starts that session and remembers both for next time. Turn it on in NixOS:
 
@@ -247,6 +251,8 @@ programs.sylvaris.greeter = {
 It runs in a small sway session (`swayConfig` sets up its screens and keyboard, `environment` adds variables such as `WLR_NO_HARDWARE_CURSORS = "1"` for NVIDIA) with its own config under `/etc/sylvaris-greet`, and reboot and shutdown are one click away. It always looks like your desktop: whenever you switch themes, Sylvaris copies the theme, its wallpaper and your avatar to `/var/lib/sylvaris-greet/shared` (`greeterShare` in `config.json`; the folder belongs to the `users` group, `greeter.shareGroup`), and the login screen uses them the next time it shows. `wallpaper` pins one image instead.
 
 ## SylPolkit
+
+> **Experimental.** Test it on your machine before you depend on it, and keep another way to unlock, log in or authorize at hand.
 
 When an app asks for extra rights, SylPolkit shows a Sylvaris password prompt with what is being asked and why. Only one polkit agent can run, so stop hyprpolkitagent or polkit-gnome for it to take over. `sylvaris polkit preview` shows a sample request (the password `right` completes it).
 

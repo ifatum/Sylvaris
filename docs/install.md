@@ -136,6 +136,8 @@ To update, `git pull` and run `sudo make install` again. To remove it, `sudo mak
 
 ## SylGreet, the login screen
 
+> **Experimental.** Keep a second way to log in (another greeter or a text console) until you have tested it on your machine.
+
 SylGreet runs under greetd inside sway, so it shows on every screen and looks like SylLock.
 
 ```sh
