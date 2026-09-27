@@ -66,7 +66,7 @@ export function bindArgs(compositor, usingLua, combo, action) {
     const c = split(combo)
     const cmd = "sylvaris " + action
     if (compositor === "hyprland")
-        return usingLua ? ["hyprctl", "eval", "hl.bind(\"" + c.mods.concat([c.key]).join(" + ") + "\", hl.dsp.exec_cmd(\"" + cmd + "\"))"] : ["hyprctl", "keyword", "bind", c.mods.join(" ") + "," + c.key + ",exec," + cmd]
+        return usingLua ? ["hyprctl", "eval", "pcall(hl.unbind, \"" + c.mods.concat([c.key]).join(" + ") + "\") hl.bind(\"" + c.mods.concat([c.key]).join(" + ") + "\", hl.dsp.exec_cmd(\"" + cmd + "\"))"] : ["hyprctl", "keyword", "bind", c.mods.join(" ") + "," + c.key + ",exec," + cmd]
     if (compositor === "sway")
         return ["swaymsg", "bindsym", c.mods.map(m => SWAY[m]).concat([c.key.length === 1 ? c.key.toLowerCase() : c.key]).join("+"), "exec", cmd]
     return null
@@ -107,4 +107,134 @@ export function diff(applied, wanted) {
         if (applied[id] !== wanted[id])
             bind.push([wanted[id], id])
     return { unbind: unbind, bind: bind }
+}
+
+const SHORT = { lock: "lock now", switcher: "switcher next" }
+
+export function actionFor(command) {
+    const words = String(command || "").trim().split(/\s+/)
+    if (words.length === 0 || !/(^|\/)sylvaris$/.test(words[0]))
+        return ""
+    const rest = words.slice(1)
+    const ids = ACTIONS.map(a => a.id)
+    const id = rest.join(" ")
+    if (ids.indexOf(id) >= 0)
+        return id
+    if (rest.length === 1) {
+        if (SHORT[rest[0]])
+            return SHORT[rest[0]]
+        if (ids.indexOf(rest[0] + " toggle") >= 0)
+            return rest[0] + " toggle"
+    }
+    return ""
+}
+
+function luaValue(expr, vars) {
+    let out = ""
+    for (const raw of expr.split("..")) {
+        const p = raw.trim()
+        const lit = /^(["'])(.*)\1$/.exec(p)
+        if (lit)
+            out += lit[2]
+        else if (/^[A-Za-z_]\w*$/.test(p) && vars[p] !== undefined)
+            out += vars[p]
+        else
+            return null
+    }
+    return out
+}
+
+export function parseLuaBinds(text) {
+    const src = String(text || "").split("\n").filter(l => !/^\s*--/.test(l)).join("\n")
+    const vars = {}
+    const assign = /local\s+([A-Za-z_]\w*)\s*=\s*(["'])(.*?)\2/g
+    let m
+    while ((m = assign.exec(src)) !== null)
+        vars[m[1]] = m[3]
+    const out = []
+    const bind = /hl\.bind\(\s*([^,]+?)\s*,\s*hl\.dsp\.exec_cmd\(\s*([^)]+?)\s*\)/g
+    while ((m = bind.exec(src)) !== null) {
+        const combo = luaValue(m[1], vars)
+        const command = luaValue(m[2], vars)
+        if (combo !== null && command !== null && normalize(combo) !== "")
+            out.push({ combo: normalize(combo), command: command })
+    }
+    return out
+}
+
+const MASK = [[64, "SUPER"], [4, "CTRL"], [8, "ALT"], [1, "SHIFT"]]
+
+export function parseHyprBinds(list) {
+    return (Array.isArray(list) ? list : []).filter(b => b && b.dispatcher === "exec" && typeof b.arg === "string").map(b => ({
+        combo: normalize(MASK.filter(x => (b.modmask & x[0]) !== 0).map(x => x[1]).concat([String(b.key || "")]).join("+")),
+        command: b.arg
+    })).filter(b => b.combo !== "")
+}
+
+const SWAY_MODS = { mod4: "SUPER", mod1: "ALT", ctrl: "CTRL", control: "CTRL", shift: "SHIFT" }
+
+export function parseSwayBinds(text) {
+    const vars = {}
+    const out = []
+    for (const line of String(text || "").split("\n")) {
+        const set = /^\s*set\s+(\$\w+)\s+(\S+)/.exec(line)
+        if (set) {
+            vars[set[1]] = set[2]
+            continue
+        }
+        const b = /^\s*bindsym\s+((?:--\S+\s+)*)(\S+)\s+exec\s+(.+)$/.exec(line)
+        if (!b)
+            continue
+        const combo = b[2].replace(/\$\w+/g, v => vars[v] || v).split("+").map(p => SWAY_MODS[p.toLowerCase()] || p).join("+")
+        const n = normalize(combo)
+        if (n !== "")
+            out.push({ combo: n, command: b[3].replace(/^["']|["']$/g, "") })
+    }
+    return out
+}
+
+export function externalBinds(pairs) {
+    const out = {}
+    for (const p of pairs) {
+        const id = actionFor(p.command)
+        if (id !== "" && out[id] === undefined)
+            out[id] = p.combo
+    }
+    return out
+}
+
+export function bindsFile(compositor, usingLua, wanted) {
+    const ids = Object.keys(wanted).sort()
+    if (compositor === "hyprland" && usingLua)
+        return ids.map(id => {
+            const c = split(wanted[id]).mods.concat([split(wanted[id]).key]).join(" + ")
+            return "pcall(hl.unbind, \"" + c + "\")\nhl.bind(\"" + c + "\", hl.dsp.exec_cmd(\"sylvaris " + id + "\"))"
+        }).join("\n") + "\n"
+    if (compositor === "hyprland")
+        return ids.map(id => {
+            const c = split(wanted[id])
+            return "unbind = " + c.mods.join(" ") + ", " + c.key + "\nbind = " + c.mods.join(" ") + ", " + c.key + ", exec, sylvaris " + id
+        }).join("\n") + "\n"
+    if (compositor === "sway")
+        return ids.map(id => {
+            const c = split(wanted[id])
+            return "bindsym --no-warn " + c.mods.map(m => SWAY[m]).concat([c.key.length === 1 ? c.key.toLowerCase() : c.key]).join("+") + " exec sylvaris " + id
+        }).join("\n") + "\n"
+    return ""
+}
+
+export function bindsPath(compositor, usingLua, configHome) {
+    if (compositor === "hyprland")
+        return configHome + "/hypr/sylvaris-keybinds." + (usingLua ? "lua" : "conf")
+    if (compositor === "sway")
+        return configHome + "/sway/sylvaris-keybinds"
+    return ""
+}
+
+export function includeLine(compositor, usingLua) {
+    if (compositor === "hyprland")
+        return usingLua ? "pcall(require, \"sylvaris-keybinds\")" : "source = ~/.config/hypr/sylvaris-keybinds.conf"
+    if (compositor === "sway")
+        return "include ~/.config/sway/sylvaris-keybinds"
+    return ""
 }

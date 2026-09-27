@@ -277,6 +277,16 @@ programs.sylvaris.keybinds = {
 };
 ```
 
+It works both ways with your compositor config. Binds you write yourself that run a Sylvaris action (`hl.bind("SUPER + V", hl.dsp.exec_cmd("sylvaris clip toggle"))`, `bind = SUPER, V, exec, sylvaris clip toggle` or `bindsym $mod+v exec sylvaris clip toggle`) show up on the page marked "from your compositor config". The ones you pick on the page are written to a file your config can include, so they stay even when Sylvaris is not running:
+
+| Compositor | File | Line to add |
+| --- | --- | --- |
+| Hyprland (Lua) | `~/.config/hypr/sylvaris-keybinds.lua` | `pcall(require, "sylvaris-keybinds")` |
+| Hyprland (classic) | `~/.config/hypr/sylvaris-keybinds.conf` | `source = ~/.config/hypr/sylvaris-keybinds.conf` |
+| sway | `~/.config/sway/sylvaris-keybinds` | `include ~/.config/sway/sylvaris-keybinds` |
+
+Add the line after your own binds so the page wins when both set the same keys. A bind picked on the page takes the place of the one in your config for that action.
+
 niri cannot take bindings at runtime, so there the page shows lines to copy into its config.
 
 ## SylPlugins

@@ -21,7 +21,7 @@ Card {
     }
 
     title: "Key bindings"
-    note: Keybinds.supported ? "Click an action, then press the keys. Sylvaris adds the binding to " + (Compositor.name === "hyprland" ? "Hyprland" : "sway") + " right away. Esc cancels, Backspace removes it. They can also go in config.json or Home Manager as keybinds." : "Your compositor cannot take new bindings at runtime; copy the lines from Features › Commands into its config instead."
+    note: Keybinds.supported ? "Click an action, then press the keys. Sylvaris adds the binding to " + (Compositor.name === "hyprland" ? "Hyprland" : "sway") + " right away. Esc cancels, Backspace removes it. Bindings already in your compositor config show up here too." + (Keybinds.included ? "" : " To have them land in your config as well, add " + Keybinds.include + " to your config.") : "Your compositor cannot take new bindings at runtime; copy the lines from Features › Commands into its config instead."
 
     Repeater {
         model: K.ACTIONS
@@ -31,9 +31,10 @@ Card {
             required property var modelData
             required property int index
             readonly property bool active: root.capturing === row.modelData.id
-            readonly property string combo: root.binds[row.modelData.id] || ""
+            readonly property string own: root.binds[row.modelData.id] || ""
+            readonly property string combo: row.own || Keybinds.external[row.modelData.id] || ""
             title: row.modelData.label
-            subtitle: "sylvaris " + row.modelData.id
+            subtitle: "sylvaris " + row.modelData.id + (row.own === "" && row.combo !== "" ? " · from your compositor config" : "")
             last: index === K.ACTIONS.length - 1
 
             Item {

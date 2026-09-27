@@ -12,11 +12,15 @@ for steps in "$here"/*.steps; do
     theme*) seed="$seeds/tp" ;;
     broken | notice) seed="$seeds/broken" ;;
     blackout) seed="$seeds/blackout" ;;
+    keybinds-sync) seed="$seeds/keybinds-sync" ;;
     *) seed="$seeds/warm" ;;
     esac
     extra=()
     if [ "$name" = niri-toggles ]; then
         extra=(env HL_NIRI_SOCKET=/nonexistent PATH="$here/fake-niri:$PATH")
+    fi
+    if [ "$name" = keybinds-sync ]; then
+        extra=(env SYLVARIS_DEMO=0)
     fi
     if [ "$name" = lock ]; then
         extra=(env SYLVARIS_PAM_DIR="$here/../fixtures/pam")

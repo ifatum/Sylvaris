@@ -3,6 +3,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Hyprland
+import Quickshell.Io
 import "../lib/keys.mjs" as K
 import "../lib/perf.mjs" as P
 
@@ -12,6 +13,12 @@ Singleton {
     readonly property var wanted: Settings.values.keybinds
     readonly property bool supported: Compositor.name === "hyprland" || Compositor.name === "sway"
     property var applied: ({})
+    property var external: ({})
+    property bool included: false
+    readonly property string configHome: Quickshell.env("XDG_CONFIG_HOME") || Quickshell.env("HOME") + "/.config"
+    readonly property string file: K.bindsPath(Compositor.name, Compositor.usingLua, root.configHome)
+    readonly property string include: K.includeLine(Compositor.name, Compositor.usingLua)
+    readonly property string dir: Compositor.name === "hyprland" ? root.configHome + "/hypr" : root.configHome + "/sway"
     readonly property bool lite: Settings.values.performance || Config.values.toggles.some(t => t.id === "performance") && Settings.values.toggleState.performance === true
 
     function apply(force: bool): void {
@@ -26,6 +33,23 @@ Singleton {
         for (const b of d.bind)
             Quickshell.execDetached(K.bindArgs(Compositor.name, Compositor.usingLua, b[0], b[1]));
         root.applied = root.wanted;
+        root.save();
+    }
+
+    function save(): void {
+        if (root.file === "")
+            return;
+        writer.command = ["sh", "-c", "[ -d \"$(dirname \"$1\")\" ] && printf %s \"$2\" > \"$1\"", "sh", root.file, K.bindsFile(Compositor.name, Compositor.usingLua, root.wanted)];
+        writer.running = true;
+    }
+
+    function refresh(): void {
+        if (Demo.enabled || !root.supported)
+            return;
+        reader.command = Compositor.name === "hyprland" && !Compositor.usingLua ? ["hyprctl", "binds", "-j"] : ["sh", "-c", "find -L \"$1\" -maxdepth 2 -type f ! -name 'sylvaris-keybinds*' -exec cat {} + 2>/dev/null", "sh", root.dir];
+        reader.running = true;
+        probe.command = ["grep", "-Rqs", "--exclude=sylvaris-keybinds*", "sylvaris-keybinds", root.dir];
+        probe.running = true;
     }
 
     function trim(on: bool): void {
@@ -41,8 +65,34 @@ Singleton {
     onLiteChanged: root.trim(root.lite)
     Component.onCompleted: {
         root.apply(false);
+        root.refresh();
         if (root.lite)
             root.trim(true);
+    }
+
+    Process {
+        id: writer
+        onExited: root.refresh()
+    }
+
+    Process {
+        id: reader
+        stdout: StdioCollector {
+            onStreamFinished: {
+                let pairs = [];
+                try {
+                    pairs = Compositor.name === "sway" ? K.parseSwayBinds(text) : Compositor.usingLua ? K.parseLuaBinds(text) : K.parseHyprBinds(JSON.parse(text));
+                } catch (e) {
+                    pairs = [];
+                }
+                root.external = K.externalBinds(pairs);
+            }
+        }
+    }
+
+    Process {
+        id: probe
+        onExited: code => root.included = code === 0
     }
 
     Timer {
@@ -58,6 +108,7 @@ Singleton {
             if (event.name !== "configreloaded")
                 return;
             root.apply(true);
+            root.refresh();
             if (root.lite)
                 root.trim(true);
         }

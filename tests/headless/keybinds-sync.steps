@@ -1,0 +1,4 @@
+sleep 2
+syl settings open keybinds
+sleep 1.2
+shot keybinds-sync
