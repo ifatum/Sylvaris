@@ -86,6 +86,7 @@ ipc() {
     "${hl_env[@]}" "$qs_bin" -p "$entry" ipc call sylvaris run "$*"
 }
 
+checks_failed=0
 for _ in $(seq 100); do
     "${hl_env[@]}" "$qs_bin" -p "$entry" ipc show 2>/dev/null | grep -q sylvaris && break
     sleep 0.1
@@ -122,6 +123,15 @@ while read -r cmd rest; do
     mark)
         printf 'MARK %s %s\n' "$rest" "$(date +%s%3N)" >>"$out/ipc.log"
         ;;
+    check)
+        if ! "${hl_env[@]}" SYLVARIS_DIR="$shell_dir" PATH="$repo/bin:$PATH" OUT="$out" sh -c "$rest" >>"$out/ipc.log" 2>&1; then
+            printf 'CHECK FAILED: %s\n' "$rest" | tee -a "$out/ipc.log" >&2
+            checks_failed=1
+        fi
+        ;;
+    killshell)
+        kill -9 "$qs_pid"
+        ;;
     write)
         target="$home/.config/${rest%% *}"
         mkdir -p "$(dirname "$target")"
@@ -133,3 +143,4 @@ while read -r cmd rest; do
         ;;
     esac
 done <"$steps"
+exit "$checks_failed"

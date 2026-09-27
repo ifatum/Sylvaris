@@ -1,15 +1,35 @@
 sleep 1.5
+bg sylvaris watch > "$HOME/watch.log"
+sleep 0.5
 syl lock now
-sleep 1.5
+sleep 2.5
 syl state lock
+check grep -q '"locked":true' "$XDG_RUNTIME_DIR/sylvaris/lock.json"
 shot lock
 bg wtype -k Shift_L wrong -k Return
 sleep 1.5
 syl state lock
+check grep -q '"message":"Wrong password"' "$XDG_RUNTIME_DIR/sylvaris/lock.json"
 shot lock-wrong
-bg wtype -k Shift_L right -k Return
+bg wtype -k Shift_L zq8Unlock
+sleep 0.8
+syl state
+check ! grep -q zq8 "$OUT/ipc.log" "$HOME/watch.log" "$XDG_RUNTIME_DIR/sylvaris/lock.json"
+bg wtype -k Shift_L -k Return
 sleep 1.5
 syl state lock
+check grep -q '"locked":false' "$XDG_RUNTIME_DIR/sylvaris/lock.json"
 syl lock now
-sleep 1.5
+sleep 2.5
 shot lock-relock
+check grep -q '"locked":true' "$XDG_RUNTIME_DIR/sylvaris/lock.json"
+killshell
+sleep 1.5
+check grep -q '"locked":true' "$XDG_RUNTIME_DIR/sylvaris/lock.json"
+shot lock-orphan
+bg wtype -k Shift_L zq8Unlock -k Return
+sleep 1.5
+check grep -q '"locked":false' "$XDG_RUNTIME_DIR/sylvaris/lock.json"
+shot lock-orphan-unlocked
+check ! grep -q zq8 "$OUT/ipc.log" "$OUT/qs.log" "$HOME/watch.log"
+check for f in "$XDG_RUNTIME_DIR"/quickshell/by-id/*/log.qslog; do qs log "$f"; done > "$OUT/all-logs.txt"; ! grep -q zq8 "$OUT/all-logs.txt"
