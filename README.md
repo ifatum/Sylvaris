@@ -136,7 +136,7 @@ The [guide](docs/guide.md) covers every part, command and setting, theme bundles
 
 ## 💛 Credits
 
-The constellation idea is inspired by [ilyamiro/serpantinum](https://github.com/ilyamiro/serpantinum). Weather by [Open-Meteo](https://open-meteo.com). AirPods support follows the protocol documented by LibrePods.
+The constellation idea is inspired by [ilyamiro/serpantinum](https://github.com/ilyamiro/serpantinum). Weather by [Open-Meteo](https://open-meteo.com). AirPods support follows the protocol documented by LibrePods. Made with AI assistance, all changes tested, reviewed and used daily by a real group of people.
 
 ## 📄 License
 
