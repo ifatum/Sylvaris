@@ -10,7 +10,7 @@ Singleton {
 
     readonly property string dir: (Quickshell.env("XDG_CONFIG_HOME") || Quickshell.env("HOME") + "/.config") + "/sylvaris/plugins"
     readonly property var cfg: Settings.values.plugins
-    property var list: []
+    property var list: P.withBuiltins([])
     property string problem: ""
     property var pending: null
     readonly property string staging: root.dir + "/.staging"
@@ -111,6 +111,8 @@ Singleton {
     function remove(id: string): void {
         if (!P.isPluginModule("plugin:" + id) || !root.list.some(p => p.id === id))
             throw new Error("no plugin called " + id);
+        if (P.BUILTIN.some(b => b.id === id))
+            throw new Error(id + " comes with Sylvaris and cannot be removed; turn it off with: sylvaris plugins disable " + id);
         const next = Object.assign({}, root.cfg.enabled);
         delete next[id];
         Settings.set("plugins.enabled", next);
@@ -130,6 +132,7 @@ Singleton {
                         ok: p.ok,
                         error: p.error,
                         kind: p.ok ? p.manifest.kind : "",
+                        builtin: p.builtin === true,
                         enabled: root.isEnabled(p.id)
                     }))
         };
@@ -141,7 +144,7 @@ Singleton {
         id: scan
         command: ["sh", "-c", "for d in \"$0\"/*/; do [ -d \"$d\" ] || continue; printf '@@%s\\n' \"$d\"; cat \"$d/plugin.json\" 2>/dev/null; echo; done", root.dir]
         stdout: StdioCollector {
-            onStreamFinished: root.list = P.parseScan(text)
+            onStreamFinished: root.list = P.withBuiltins(P.parseScan(text))
         }
     }
 

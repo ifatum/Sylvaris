@@ -3,6 +3,7 @@ import QtQuick.Shapes
 import Quickshell
 import qs
 import qs.services
+import qs.plugins.diver
 import qs.components
 import "../lib/calendar.mjs" as C
 import "../lib/sky.mjs" as K
@@ -679,7 +680,7 @@ Popup {
                             anchors.fill: parent
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
-                            onClicked: root.picked = root.picked === dayCell.key ? "" : dayCell.key
+                            onClicked: root.picked = root.picked === dayCell.key || !Diver.plugged ? "" : dayCell.key
                         }
 
                         Rectangle {

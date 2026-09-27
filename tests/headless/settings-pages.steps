@@ -40,6 +40,8 @@ shot weather
 syl settings open power
 sleep 1.2
 shot power
+syl plugins enable diver
+sleep 0.6
 syl settings open diver
 sleep 1.2
 shot diver

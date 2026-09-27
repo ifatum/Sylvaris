@@ -3,8 +3,8 @@ import qs
 import qs.services
 import qs.components
 import qs.settings
-import "../lib/plan.mjs" as P
-import "../lib/icons.mjs" as Icons
+import "../../lib/plan.mjs" as P
+import "../../lib/icons.mjs" as Icons
 
 Item {
     id: root

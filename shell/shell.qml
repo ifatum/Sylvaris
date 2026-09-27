@@ -14,7 +14,7 @@ import qs.media
 import qs.settings
 import qs.power
 import qs.paper
-import qs.diver
+import qs.plugins.diver
 import qs.switcher
 import qs.lock
 import qs.polkit
@@ -32,7 +32,7 @@ ShellRoot {
     id: root
 
     readonly property bool ready: Config.ready && Settings.ready
-    readonly property var live: root.ready ? S.liveParts(Settings.values.parts).concat(S.liveServices(Settings.values.parts)) : []
+    readonly property var live: root.ready ? S.liveParts(Settings.values.parts, Settings.values.plugins).concat(S.liveServices(Settings.values.parts, Settings.values.plugins)) : []
     readonly property var loaders: ({
             center: centerLoader,
             theme: themeLoader,
@@ -319,7 +319,7 @@ ShellRoot {
 
         SylPad {
             id: padPart
-            tiles: root.on("settings") ? M.tiles() : []
+            tiles: root.on("settings") ? M.tiles().filter(t => t.id !== "sylvaris.diver" || Diver.plugged) : []
             onOpened: root.solo(padPart)
             onSettingsRequested: section => root.need("settings").showSection(section)
         }
@@ -596,7 +596,7 @@ ShellRoot {
                 get: key => Settings.get(key) === undefined ? null : Settings.get(key),
                 set: (key, ...rest) => root.setting(key || "", rest.join(" "))
             },
-            diver: {
+            diver: I.gated({
                 default: "state",
                 state: () => Diver.state(),
                 sync: () => Diver.sync(),
@@ -656,7 +656,7 @@ ShellRoot {
                     };
                 },
                 dismiss: () => Diver.dismiss()
-            },
+            }, () => Diver.plugged, Diver.offText),
             weather: {
                 default: "state",
                 state: () => Weather.state(),
@@ -883,7 +883,7 @@ ShellRoot {
         });
         const out = {};
         for (const name of Object.keys(all)) {
-            if (root.owners[name] === undefined || root.on(root.owners[name]))
+            if (root.owners[name] === undefined || root.on(root.owners[name]) || name === "diver" && Settings.values.parts.diver !== false)
                 out[name] = all[name];
         }
         return out;

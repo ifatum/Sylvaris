@@ -77,3 +77,14 @@ export function parseValue(text) {
         return text
     }
 }
+
+export function gated(table, isOn, reason) {
+    const out = {}
+    for (const key of Object.keys(table))
+        out[key] = typeof table[key] !== "function" ? table[key] : (...args) => {
+            if (!isOn())
+                throw new Error(reason)
+            return table[key](...args)
+        }
+    return out
+}

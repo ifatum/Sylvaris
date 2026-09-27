@@ -1,4 +1,6 @@
 sleep 1.5
+syl plugins enable diver
+sleep 0.6
 syl diver add stretch in 1 min
 syl state diver
 sleep 85

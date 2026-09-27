@@ -1,4 +1,6 @@
 sleep 1.5
+syl plugins enable airpods
+sleep 0.6
 syl media open
 sleep 0.8
 shot media-playing

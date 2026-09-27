@@ -2,7 +2,8 @@ import QtQuick
 import qs
 import qs.services
 import qs.components
-import "../lib/icons.mjs" as Icons
+import qs.settings
+import "../../lib/icons.mjs" as Icons
 
 Column {
     required property var host

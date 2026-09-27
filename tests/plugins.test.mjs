@@ -1,6 +1,6 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
-import { checkManifest, parseScan, skeleton, validatePlugins, DEFAULT_PLUGINS, isPluginModule, KINDS, parseGitSource, readCommit, pendingSummary, INSTALL_WARNING } from "../shell/lib/plugins.mjs"
+import { checkManifest, parseScan, skeleton, validatePlugins, DEFAULT_PLUGINS, isPluginModule, KINDS, parseGitSource, readCommit, pendingSummary, INSTALL_WARNING, BUILTIN, builtinOn, withBuiltins } from "../shell/lib/plugins.mjs"
 import { validateBar } from "../shell/lib/bar.mjs"
 
 const good = { id: "uptime", name: "Uptime", version: "1.0.0", kind: "bar", entry: "Plugin.qml", description: "Shows uptime", author: "ada" }
@@ -66,4 +66,21 @@ test("pendingSummary names the commit and warns about permissions", () => {
     assert.match(INSTALL_WARNING, /full user permissions/)
     assert.match(text, /sylvaris plugins confirm/)
     assert.equal(pendingSummary(null), "")
+})
+
+test("Diver and AirPods ship as built-in plugins that are off until turned on", () => {
+    assert.deepEqual(BUILTIN.map(p => p.id), ["diver", "airpods"])
+    for (const p of BUILTIN) {
+        assert.equal(p.kind, "builtin")
+        assert.ok(p.name !== "" && p.description !== "")
+        assert.equal(builtinOn(DEFAULT_PLUGINS, p.id), false)
+        assert.equal(builtinOn(validatePlugins({}), p.id), false)
+        assert.equal(builtinOn(validatePlugins({ enabled: { [p.id]: true } }), p.id), true)
+    }
+    assert.equal(builtinOn(undefined, "diver"), false)
+    assert.equal(builtinOn({ enabled: { diver: "yes" } }, "diver"), false)
+    const scanned = parseScan("@@/p/diver/\n" + JSON.stringify(Object.assign({}, good, { id: "diver" })))
+    assert.equal(withBuiltins(scanned).filter(p => p.id === "diver").length, 1)
+    assert.equal(withBuiltins(scanned).find(p => p.id === "diver").builtin, true)
+    assert.equal(withBuiltins([]).every(p => p.ok && p.builtin), true)
 })

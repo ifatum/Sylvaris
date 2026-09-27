@@ -22,6 +22,7 @@ bin/sylvaris          CLI: starts the shell, forwards commands over the IPC sock
 shell/shell.qml       main entry: loads parts, services, the command table and the state snapshot
 shell/<part>/         one QML module per part (import qs.<part>), entry file SylX.qml
 shell/services/       singletons (pragma Singleton), imported as qs.services
+shell/plugins/        SylPlugins, plus the built-in plugins Diver (plugins/diver, qs.plugins.diver) and AirPods (plugins/airpods)
 shell/components/     shared visual building blocks: Glass, Toggle, Segmented, Card, AuthCard, ...
 shell/lib/*.mjs       pure logic, unit-tested with node
 shell/helpers/        small Python and shell helpers run as processes (AirPods, Diver, theme sync, doctor facts)
@@ -34,7 +35,7 @@ A part is a directory with an entry file `SylX.qml` that exposes `open()`, `clos
 
 ## Services
 
-Services are singletons in `shell/services/`. The main shell lists the ones it always needs (`Tokens`, `Ipc`, `Config`, `Settings`, `Theme`, `Resin`, `Compositor`, `Keybinds`) in `boot`; the rest are started only when an enabled part depends on them (`PARTS` and `SERVICE_DEPS` in `lib/settings.mjs`). A service owns one concern: audio, network, Bluetooth, media, notifications, weather, Diver sync, and so on. Parts read service properties and call service functions; they do not talk to each other directly.
+Services are singletons in `shell/services/`. The main shell lists the ones it always needs (`Tokens`, `Ipc`, `Config`, `Settings`, `Theme`, `Resin`, `Compositor`, `Keybinds`) in `boot`; the rest are started only when an enabled part depends on them (`PARTS` and `SERVICE_DEPS` in `lib/settings.mjs`). A service owns one concern: audio, network, Bluetooth, media, notifications, weather, Diver sync, and so on. Parts read service properties and call service functions; they do not talk to each other directly. Built-in plugins (`BUILTIN` in `lib/plugins.mjs`) own parts and services that stay out of `live` until `plugins.enabled.<id>` is true; their command tables are wrapped with `gated` from `lib/ipc.mjs` so every verb explains how to turn them on.
 
 ## lib/ is pure
 

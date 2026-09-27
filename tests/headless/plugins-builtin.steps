@@ -1,0 +1,24 @@
+sleep 1.5
+syl state diver
+syl diver state
+syl headphones noise anc
+syl plugins remove diver
+check sylvaris diver state 2>&1 | grep -q 'Diver plugin is off'
+check sylvaris headphones noise anc 2>&1 | grep -q 'AirPods plugin is off'
+check sylvaris plugins remove diver 2>&1 | grep -q 'cannot be removed'
+syl settings open plugins
+sleep 1.5
+shot plugins-builtin
+syl plugins enable diver
+syl plugins enable airpods
+sleep 1
+syl diver state
+syl state diver
+check sylvaris diver state | grep -q '"today"'
+check sylvaris headphones noise transparency
+syl settings open diver
+sleep 1.2
+shot plugins-builtin-diver
+syl plugins disable diver
+sleep 1
+check sylvaris diver state 2>&1 | grep -q 'Diver plugin is off'

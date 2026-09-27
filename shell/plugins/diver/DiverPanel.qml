@@ -3,7 +3,7 @@ import qs
 import qs.services
 import qs.components
 import qs.settings
-import "../lib/icons.mjs" as Icons
+import "../../lib/icons.mjs" as Icons
 
 Popup {
     id: root

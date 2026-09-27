@@ -1,6 +1,6 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
-import { SEP, dispatch, format, describe, parseRequest, topics, changed, parseValue } from "../shell/lib/ipc.mjs"
+import { SEP, dispatch, format, describe, parseRequest, topics, changed, parseValue, gated } from "../shell/lib/ipc.mjs"
 
 const calls = []
 const commands = {
@@ -59,4 +59,14 @@ test("parseValue reads JSON and keeps anything else as text", () => {
     assert.equal(parseValue("true"), true)
     assert.equal(parseValue("0.5"), 0.5)
     assert.equal(parseValue("top-left"), "top-left")
+})
+
+test("gated refuses every action with the reason while the switch is off", () => {
+    let on = false
+    const table = gated({ default: "state", state: () => 1, add: (...w) => w.join(" ") }, () => on, "the Diver plugin is off")
+    assert.deepEqual(describe({ diver: table }), { diver: ["state", "add"] })
+    assert.deepEqual(dispatch({ diver: table }, ["diver"]), { ok: false, error: "the Diver plugin is off" })
+    on = true
+    assert.deepEqual(dispatch({ diver: table }, ["diver"]), { ok: true, result: 1 })
+    assert.deepEqual(dispatch({ diver: table }, ["diver", "add", "a", "b"]), { ok: true, result: "a b" })
 })

@@ -104,3 +104,17 @@ export function pendingSummary(p) {
         return ""
     return p.id + " from " + p.url + " at commit " + p.commit + "\n" + INSTALL_WARNING + "\nRun “sylvaris plugins confirm” to install it or “sylvaris plugins discard” to drop it."
 }
+
+export const BUILTIN = [
+    { id: "diver", name: "Diver", kind: "builtin", part: "diver", services: ["Diver"], description: "Plans, reminders and alarms from diver.fatum.cc in SylClock, SylCenter, the bar and the SylDiver panel. Pair it in SylSettings › Diver." },
+    { id: "airpods", name: "AirPods", kind: "builtin", part: "", services: [], description: "Battery, listening modes and conversation awareness for AirPods in SylMedia › Devices." }
+]
+
+export function builtinOn(plugins, id) {
+    return plugins !== null && typeof plugins === "object" && plugins.enabled !== null && typeof plugins.enabled === "object" && plugins.enabled[id] === true
+}
+
+export function withBuiltins(scanned) {
+    const own = BUILTIN.map(b => ({ dir: "", id: b.id, ok: true, error: "", builtin: true, manifest: b }))
+    return own.concat(scanned.filter(p => !BUILTIN.some(b => b.id === p.id)))
+}

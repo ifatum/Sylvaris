@@ -3,14 +3,15 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import "../lib/diver.mjs" as D
-import "../lib/plan.mjs" as P
+import qs.services
+import "../../lib/diver.mjs" as D
+import "../../lib/plan.mjs" as P
 
 Singleton {
     id: root
 
     readonly property var cfg: Settings.values.diver
-    readonly property string helper: Qt.resolvedUrl("../helpers/diver.py").toString().replace("file://", "")
+    readonly property string helper: Qt.resolvedUrl("../../helpers/diver.py").toString().replace("file://", "")
     readonly property string tonePath: (Quickshell.env("XDG_CACHE_HOME") || Quickshell.env("HOME") + "/.cache") + "/sylvaris/diver-alarm.wav"
     property bool paired: false
     property var data: []
@@ -29,7 +30,8 @@ Singleton {
     property string focusTitle: ""
     property real focusEnd: 0
     property int focusMinutes: 0
-    readonly property bool active: root.cfg.enabled && (root.paired || Demo.enabled)
+    readonly property bool plugged: Settings.values.plugins.enabled.diver === true
+    readonly property bool active: root.plugged && root.cfg.enabled && (root.paired || Demo.enabled)
     readonly property string today: D.dayKey(root.now)
     readonly property var agendaToday: root.agenda(root.today)
     readonly property var next: {
@@ -40,6 +42,7 @@ Singleton {
         return null;
     }
 
+    readonly property string offText: "the Diver plugin is off; turn it on in SylSettings › Plugins or with: sylvaris plugins enable diver"
     property bool planner: false
     property string remindersSent: ""
 
@@ -67,12 +70,14 @@ Singleton {
     }
 
     function sync(): void {
-        if (Demo.enabled || !root.paired || pullProc.running)
+        if (!root.plugged || Demo.enabled || !root.paired || pullProc.running)
             return;
         pullProc.running = true;
     }
 
     function pair(code: string): void {
+        if (!root.plugged)
+            throw new Error(root.offText);
         if (code.trim() === "")
             throw new Error("usage: diver pair <code from diver settings>");
         pairProc.command = ["python3", root.helper, "pair", code.trim()];
@@ -279,7 +284,7 @@ Singleton {
     }
 
     function push(): void {
-        if (Demo.enabled || !root.paired)
+        if (!root.plugged || Demo.enabled || !root.paired)
             return;
         if (pushProc.running) {
             root.pushAgain = true;
@@ -293,7 +298,7 @@ Singleton {
     }
 
     function uploadReminders(): void {
-        if (Demo.enabled || !root.paired || remindersProc.running)
+        if (!root.plugged || Demo.enabled || !root.paired || remindersProc.running)
             return;
         const items = P.reminderItems(root.data, Date.now());
         const key = JSON.stringify(items);
@@ -456,7 +461,9 @@ Singleton {
         }
     }
 
-    Component.onCompleted: {
+    function start(): void {
+        if (!root.plugged)
+            return;
         if (Demo.enabled) {
             root.data = root.demo();
             return;
@@ -464,6 +471,9 @@ Singleton {
         statusProc.running = true;
         toneProc.running = true;
     }
+
+    onPluggedChanged: root.start()
+    Component.onCompleted: root.start()
 
     Timer {
         interval: Math.max(0, root.focusEnd - Date.now())

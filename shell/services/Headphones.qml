@@ -8,6 +8,7 @@ import Quickshell.Services.UPower
 Singleton {
     id: root
 
+    readonly property bool plugged: Settings.values.plugins.enabled.airpods === true
     readonly property var device: root.findDevice()
     readonly property string address: root.device === null ? "" : root.device.key
     readonly property string name: root.device === null ? "" : root.device.name
@@ -33,6 +34,8 @@ Singleton {
     readonly property var devices: root.batteryDevices()
 
     function findDevice(): var {
+        if (!root.plugged)
+            return null;
         if (Demo.enabled)
             return {
                 key: "00:11:22:33:44:01",
@@ -55,6 +58,8 @@ Singleton {
     }
 
     function setNoise(mode: string): void {
+        if (!root.plugged)
+            throw new Error("the AirPods plugin is off; turn it on in SylSettings › Plugins or with: sylvaris plugins enable airpods");
         if (["off", "anc", "transparency", "adaptive"].indexOf(mode) < 0)
             throw new Error("expected off, anc, transparency or adaptive");
         if (!root.connected)
@@ -67,6 +72,8 @@ Singleton {
     }
 
     function setAwareness(v: bool): void {
+        if (!root.plugged)
+            throw new Error("the AirPods plugin is off; turn it on in SylSettings › Plugins or with: sylvaris plugins enable airpods");
         if (!root.connected)
             throw new Error("no AirPods connected");
         root.awareness = v;

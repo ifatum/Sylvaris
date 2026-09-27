@@ -4,7 +4,7 @@ import Quickshell.Wayland
 import qs
 import qs.services
 import qs.components
-import "../lib/icons.mjs" as Icons
+import "../../lib/icons.mjs" as Icons
 
 Scope {
     id: root

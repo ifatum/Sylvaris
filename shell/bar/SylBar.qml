@@ -6,6 +6,7 @@ import Quickshell.Services.SystemTray
 import Quickshell.Services.UPower
 import qs
 import qs.services
+import qs.plugins.diver
 import qs.components
 import "../lib/icons.mjs" as Icons
 import "../lib/bar.mjs" as B

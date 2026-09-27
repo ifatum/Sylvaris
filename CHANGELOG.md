@@ -6,6 +6,7 @@ All notable changes to Sylvaris are listed here. The format follows [Keep a Chan
 
 ### Added
 
+- Ship Diver and AirPods as built-in plugins that stay off until turned on
 - Scaffold Sylvaris flake, launcher and headless harness
 - Add config and settings validation logic
 - Add theme validation and color tokens

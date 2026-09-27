@@ -1,6 +1,7 @@
 import QtQuick
 import qs
 import qs.services
+import qs.plugins.diver
 import "../lib/icons.mjs" as Icons
 
 Item {
@@ -88,7 +89,7 @@ Item {
 
         Text {
             visible: root.items.length === 0
-            text: Diver.paired || Demo.enabled ? "Nothing planned" : "Pair Diver in SylSettings to see your plans"
+            text: Diver.plugged && (Diver.paired || Demo.enabled) ? "Nothing planned" : "Pair Diver in SylSettings to see your plans"
             color: Theme.textDim
             font.family: Tokens.fontUi
             font.pixelSize: Tokens.smallSize
@@ -198,7 +199,7 @@ Item {
         anchors.bottom: parent.bottom
         width: parent.width
         height: 30
-        visible: Diver.paired || Demo.enabled
+        visible: Diver.plugged && (Diver.paired || Demo.enabled)
 
         Rectangle {
             anchors.fill: parent

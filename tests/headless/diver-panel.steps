@@ -1,4 +1,6 @@
 sleep 1.5
+syl plugins enable diver
+sleep 0.6
 syl diver open
 sleep 1
 shot diver-today

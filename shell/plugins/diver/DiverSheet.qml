@@ -3,9 +3,9 @@ import qs
 import qs.services
 import qs.components
 import qs.settings
-import "../lib/diver.mjs" as D
-import "../lib/plan.mjs" as P
-import "../lib/icons.mjs" as Icons
+import "../../lib/diver.mjs" as D
+import "../../lib/plan.mjs" as P
+import "../../lib/icons.mjs" as Icons
 
 Item {
     id: root

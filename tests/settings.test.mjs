@@ -238,10 +238,11 @@ test("shell.qml loads every part only through its parts flag", () => {
 test("PARTS lists every service a part references", () => {
     const root = new URL("../shell/", import.meta.url)
     const core = ["Config", "Settings", "Ipc", "Demo", "Theme", "Resin", "Compositor", "Keybinds"]
-    const services = readdirSync(new URL("services/", root)).map(f => f.replace(".qml", "")).filter(n => !core.includes(n))
+    const services = readdirSync(new URL("services/", root)).map(f => f.replace(".qml", "")).filter(n => !core.includes(n)).concat("Diver")
+    const dirOf = name => name === "diver" ? "plugins/diver" : name
     const refs = dir => {
         const found = new Set()
-        for (const f of readdirSync(new URL(dir + "/", root), { recursive: true }).filter(f => f.endsWith(".qml"))) {
+        for (const f of readdirSync(new URL(dir + "/", root), { recursive: true }).filter(f => f.endsWith(".qml") && (dir !== "plugins" || !f.includes("/")))) {
             const text = readFileSync(new URL(dir + "/" + f, root), "utf8")
             for (const svc of services.concat("DayAgenda"))
                 if (new RegExp("\\b" + svc + "[.{]").test(text))
@@ -251,7 +252,7 @@ test("PARTS lists every service a part references", () => {
     }
     const agenda = refs("components").has("Diver")
     for (const name of Object.keys(PARTS)) {
-        const used = refs(name)
+        const used = refs(dirOf(name))
         if (used.has("DayAgenda") && agenda)
             used.add("Diver")
         used.delete("DayAgenda")
@@ -273,4 +274,15 @@ test("switcher shows previews and titles unless turned off, and is a part", () =
     assert.deepEqual(validateSettings({ switcher: { previews: false, titles: "no" } }).switcher, { previews: false, titles: true })
     assert.deepEqual(PARTS.switcher, ["Apps"])
     assert.equal(validateSettings({ parts: { switcher: false } }).parts.switcher, false)
+})
+
+test("the diver part and its service only run while the Diver plugin is on", () => {
+    const off = { enabled: {} }
+    const on = { enabled: { diver: true } }
+    assert.equal(liveParts(DEFAULT_SETTINGS.parts, off).includes("diver"), false)
+    assert.equal(liveParts(DEFAULT_SETTINGS.parts, on).includes("diver"), true)
+    assert.equal(liveParts({ ...DEFAULT_SETTINGS.parts, diver: false }, on).includes("diver"), false)
+    assert.equal(liveServices(DEFAULT_SETTINGS.parts, off).includes("Diver"), false)
+    assert.equal(liveServices(DEFAULT_SETTINGS.parts, on).includes("Diver"), true)
+    assert.equal(liveParts(DEFAULT_SETTINGS.parts, off).includes("clock"), true)
 })

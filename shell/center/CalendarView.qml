@@ -1,6 +1,7 @@
 import QtQuick
 import qs
 import qs.services
+import qs.plugins.diver
 import qs.components
 import "../lib/calendar.mjs" as C
 import "../lib/icons.mjs" as Icons

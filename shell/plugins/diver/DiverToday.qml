@@ -1,8 +1,8 @@
 import QtQuick
 import qs
 import qs.services
-import "../lib/diver.mjs" as D
-import "../lib/plan.mjs" as P
+import "../../lib/diver.mjs" as D
+import "../../lib/plan.mjs" as P
 
 Flickable {
     id: root

@@ -1,4 +1,6 @@
 sleep 1.5
+syl plugins enable diver
+sleep 0.6
 syl clock day today
 sleep 1.5
 shot clock-day

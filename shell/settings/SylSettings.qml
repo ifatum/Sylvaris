@@ -191,7 +191,7 @@ Scope {
     ]
     property string group: "settings"
     property real flip: 1
-    readonly property var shownSections: root.sections.filter(s => s.group === root.group)
+    readonly property var shownSections: root.sections.filter(s => s.group === root.group && (s.key !== "diver" || Settings.values.plugins.enabled.diver === true))
     readonly property var corners: [
         {
             key: "top-left",
@@ -1166,8 +1166,10 @@ Scope {
     Component {
         id: diverPage
 
-        DiverPage {
-            host: root
+        Loader {
+            Component.onCompleted: setSource("../plugins/diver/DiverPage.qml", {
+                host: root
+            })
         }
     }
 

@@ -3,7 +3,7 @@ import { DEFAULT_CLIP, validateClip } from "./clip.mjs"
 import { DEFAULT_CAPTURE, validateCapture } from "./capture.mjs"
 import { DEFAULT_ACCESS, validateAccess } from "./access.mjs"
 import { validateKeybinds } from "./keys.mjs"
-import { DEFAULT_PLUGINS, validatePlugins } from "./plugins.mjs"
+import { DEFAULT_PLUGINS, validatePlugins, BUILTIN, builtinOn } from "./plugins.mjs"
 import { DEFAULT_SYNC, validateSync } from "./sync.mjs"
 import { DEFAULT_BAR, DEFAULT_DECK, validateBar, validateDeck } from "./bar.mjs"
 import { DEFAULT_EQ, validateEq } from "./eq.mjs"
@@ -343,20 +343,24 @@ export function validateSettings(raw) {
     return v
 }
 
-export function liveParts(parts) {
-    return Object.keys(PARTS).filter(name => !isObject(parts) || parts[name] !== false)
+function pluggedOff(plugins, key, name) {
+    return plugins !== undefined && BUILTIN.some(b => (key === "part" ? b.part === name : b.services.includes(name)) && !builtinOn(plugins, b.id))
 }
 
-export function liveServices(parts) {
+export function liveParts(parts, plugins) {
+    return Object.keys(PARTS).filter(name => (!isObject(parts) || parts[name] !== false) && !pluggedOff(plugins, "part", name))
+}
+
+export function liveServices(parts, plugins) {
     const out = []
     const add = name => {
-        if (out.includes(name))
+        if (out.includes(name) || pluggedOff(plugins, "service", name))
             return
         out.push(name)
         for (const dep of SERVICE_DEPS[name] || [])
             add(dep)
     }
-    for (const name of liveParts(parts))
+    for (const name of liveParts(parts, plugins))
         PARTS[name].forEach(add)
     return out
 }

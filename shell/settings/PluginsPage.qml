@@ -28,14 +28,14 @@ Column {
 
     Card {
         title: "Installed"
-        note: "Plugins live in " + Plugins.dir + ". They run with the same rights as Sylvaris, so only turn on ones you trust. A bar plugin shows up once you add plugin:<id> to a bar group; a panel opens with “sylvaris plugins open <id>”."
+        note: "Diver and AirPods come with Sylvaris and stay off until you turn them on. Your own plugins live in " + Plugins.dir + ". They run with the same rights as Sylvaris, so only turn on ones you trust. A bar plugin shows up once you add plugin:<id> to a bar group; a panel opens with “sylvaris plugins open <id>”."
 
         Text {
-            visible: Plugins.list.length === 0
+            visible: Plugins.list.every(p => p.builtin === true)
             width: parent.width
             topPadding: 4
             bottomPadding: 8
-            text: "No plugins yet. Make one below or install one from a Git address."
+            text: "No plugins of your own yet. Make one below or install one from a Git address."
             color: Theme.textDim
             font.family: Tokens.fontUi
             font.pixelSize: Tokens.smallSize
@@ -47,7 +47,7 @@ Column {
             delegate: SettingRow {
                 required property var modelData
                 required property int index
-                title: modelData.ok ? modelData.manifest.name + "  ·  " + modelData.manifest.kind : modelData.id
+                title: modelData.ok ? modelData.manifest.name + "  ·  " + (modelData.builtin ? "built in" : modelData.manifest.kind) : modelData.id
                 subtitle: modelData.ok ? (modelData.manifest.description || modelData.id) + (modelData.manifest.version ? " · " + modelData.manifest.version : "") : "Not loaded: " + modelData.error
                 last: index === Plugins.list.length - 1
 
@@ -56,6 +56,7 @@ Column {
 
                     Chip {
                         anchors.verticalCenter: parent.verticalCenter
+                        visible: modelData.builtin !== true
                         text: root.armed === modelData.id ? "Really remove?" : "Remove"
                         glyph: Icons.GLYPHS.trash
                         lit: root.armed === modelData.id
