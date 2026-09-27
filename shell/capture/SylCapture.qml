@@ -79,11 +79,11 @@ Popup {
             const dir = K.expand(root.kind === "video" ? root.cfg.videos : root.cfg.folder, root.home);
             const name = K.fileName(root.kind, new Date());
             if (root.kind === "video") {
-                recorder.command = ["sh", "-c", "mkdir -p \"$0\"; f=\"$0/$1\"; if [ \"$2\" = region ]; then g=$(slurp -d) || exit 3; set -- -g \"$g\"; else set -- -o \"$3\"; fi; if [ \"$4\" = 1 ]; then set -- \"$@\" \"--audio=$(pactl get-default-sink).monitor\"; fi; echo \"$f\"; exec wf-recorder \"$@\" -f \"$f\"", dir, name, root.mode, out, root.cfg.audio ? "1" : "0"];
+                recorder.command = ["sh", "-c", "mkdir -p \"$0\"; f=\"$0/$1\"; if [ \"$2\" = region ]; then g=$(slurp -d </dev/null) || exit 3; set -- -g \"$g\"; else set -- -o \"$3\"; fi; if [ \"$4\" = 1 ]; then set -- \"$@\" \"--audio=$(pactl get-default-sink).monitor\"; fi; echo \"$f\"; exec wf-recorder \"$@\" -f \"$f\"", dir, name, root.mode, out, root.cfg.audio ? "1" : "0"];
                 recorder.running = true;
                 root.recordStart = Date.now();
             } else {
-                shooter.command = ["sh", "-c", "mkdir -p \"$0\"; f=\"$0/$1\"; [ \"$5\" = 1 ] || f=\"${XDG_RUNTIME_DIR:-/tmp}/sylvaris-shot.png\"; case \"$2\" in region) g=$(slurp -d) || exit 3 ;; window) g=$(printf '%s\\n' \"$6\" | slurp -r) || exit 3 ;; *) g= ;; esac; sleep \"$3\"; if [ -n \"$g\" ]; then grim -g \"$g\" \"$f\"; else grim -o \"$7\" \"$f\"; fi || exit 4; [ \"$4\" = 1 ] && wl-copy -t image/png < \"$f\"; echo \"$f\"", dir, name, root.mode, String(root.cfg.delay), root.cfg.copy ? "1" : "0", root.cfg.save ? "1" : "0", root.rects.join("\n"), out];
+                shooter.command = ["sh", "-c", "mkdir -p \"$0\"; f=\"$0/$1\"; [ \"$5\" = 1 ] || f=\"${XDG_RUNTIME_DIR:-/tmp}/sylvaris-shot.png\"; case \"$2\" in region) g=$(slurp -d </dev/null) || exit 3 ;; window) g=$(printf '%s\\n' \"$6\" | slurp -r) || exit 3 ;; *) g= ;; esac; sleep \"$3\"; if [ -n \"$g\" ]; then grim -g \"$g\" \"$f\"; else grim -o \"$7\" \"$f\"; fi || exit 4; [ \"$4\" = 1 ] && wl-copy -t image/png < \"$f\"; echo \"$f\"", dir, name, root.mode, String(root.cfg.delay), root.cfg.copy ? "1" : "0", root.cfg.save ? "1" : "0", root.rects.join("\n"), out];
                 shooter.running = true;
             }
         }

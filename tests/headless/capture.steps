@@ -3,6 +3,11 @@ syl capture open
 sleep 0.8
 shot capture
 syl capture close
+syl capture shot area
+sleep 1.5
+shot capture-slurp
+bg wtype -k Shift_L -k Escape
+sleep 1
 syl capture shot screen
 sleep 2
 syl state capture
