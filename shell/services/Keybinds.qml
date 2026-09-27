@@ -11,7 +11,7 @@ Singleton {
     id: root
 
     readonly property var wanted: Settings.values.keybinds
-    readonly property bool supported: Compositor.name === "hyprland" || Compositor.name === "sway"
+    readonly property bool supported: Compositor.can("keybinds")
     property var applied: ({})
     property var external: ({})
     property bool included: false

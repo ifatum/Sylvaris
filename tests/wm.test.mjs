@@ -87,3 +87,39 @@ test("minimize parks the window where each compositor can bring it back", () => 
     assert.equal(translate("niri", false, "minimize", []).command, null)
     assert.throws(() => translate("hyprland", true, "restore", ["x; rm", "1"]))
 })
+
+test("the capability table matches what each compositor's code path can do", async () => {
+    const { CAPABILITIES, COMPOSITORS, can } = await import("../shell/lib/wm.mjs")
+    const { perfArgs } = await import("../shell/lib/perf.mjs")
+    const { supports } = await import("../shell/lib/access.mjs")
+    const { bindArgs, bindsFile } = await import("../shell/lib/keys.mjs")
+    const { rectsCommand } = await import("../shell/lib/capture.mjs")
+    assert.deepEqual(COMPOSITORS, ["hyprland", "niri", "sway"])
+    for (const name of COMPOSITORS) {
+        assert.equal(can(name, "keybinds"), bindArgs(name, false, "SUPER+V", "clip toggle") !== null && bindsFile(name, false, { "clip toggle": "SUPER+V" }) !== "", name)
+        assert.equal(can(name, "performance"), perfArgs(name, false, true) !== null, name)
+        assert.equal(can(name, "zoom"), supports(name).zoom, name)
+        assert.equal(can(name, "filters"), supports(name).filter, name)
+        assert.equal(can(name, "minimize"), translate(name, false, "minimize", []).command !== null, name)
+        assert.equal(can(name, "windowShot"), rectsCommand(name) !== null, name)
+    }
+    assert.equal(can("unknown", "keybinds"), false)
+    for (const caps of Object.values(CAPABILITIES))
+        assert.deepEqual(Object.keys(caps).sort(), Object.keys(CAPABILITIES.hyprland).sort())
+})
+
+test("the capability table in docs/guide.md is generated from lib/wm.mjs", async () => {
+    const { capabilityTable } = await import("../shell/lib/wm.mjs")
+    const { readFileSync } = await import("node:fs")
+    const guide = readFileSync(new URL("../docs/guide.md", import.meta.url), "utf8")
+    const start = guide.indexOf("## Compositor support")
+    assert.ok(start >= 0, "docs/guide.md needs a Compositor support section")
+    const rows = guide.slice(start).split("\n").filter(l => l.startsWith("|"))
+    const table = []
+    for (const l of rows) {
+        if (table.length > 0 && !l.startsWith("|"))
+            break
+        table.push(l)
+    }
+    assert.equal(table.slice(0, capabilityTable().split("\n").length).join("\n"), capabilityTable(), "run: node -e 'import(\"./shell/lib/wm.mjs\").then(w => console.log(w.capabilityTable()))'")
+})

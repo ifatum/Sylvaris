@@ -18,7 +18,7 @@ Scope {
     property var order: []
     property var list: []
     property var pending: null
-    readonly property bool previews: root.cfg.previews && Compositor.name === "hyprland" && !Demo.enabled
+    readonly property bool previews: root.cfg.previews && Compositor.can("previews") && !Demo.enabled
     readonly property bool live: root.shown || root.phase > 0
 
     signal opened

@@ -251,3 +251,34 @@ export function bindSnippet(name, usingLua, key, command) {
         return "bindsym " + (bare ? key : "$mod+" + key.toLowerCase()) + " exec " + command
     return command
 }
+
+export const COMPOSITORS = ["hyprland", "niri", "sway"]
+
+export const CAPABILITY_LABELS = {
+    keybinds: "Key bindings from SylSettings applied live",
+    previews: "Window previews in SylSwitch",
+    minimize: "Minimize by clicking the title in SylBar",
+    windowShot: "Screenshot of a single window",
+    zoom: "Screen zoom in SylAccessibility",
+    filters: "Colour filters in SylAccessibility",
+    performance: "Performance mode also trims the compositor"
+}
+
+export const CAPABILITIES = {
+    hyprland: { keybinds: true, previews: true, minimize: true, windowShot: true, zoom: true, filters: true, performance: true },
+    niri: { keybinds: false, previews: false, minimize: false, windowShot: false, zoom: false, filters: false, performance: false },
+    sway: { keybinds: true, previews: false, minimize: true, windowShot: true, zoom: false, filters: false, performance: true }
+}
+
+export function can(name, capability) {
+    const caps = CAPABILITIES[name]
+    return caps !== undefined && caps[capability] === true
+}
+
+export function capabilityTable() {
+    const names = { hyprland: "Hyprland", niri: "niri", sway: "sway" }
+    const lines = ["| | " + COMPOSITORS.map(c => names[c]).join(" | ") + " |", "|---|" + COMPOSITORS.map(() => ":---:").join("|") + "|"]
+    for (const key of Object.keys(CAPABILITY_LABELS))
+        lines.push("| " + CAPABILITY_LABELS[key] + " | " + COMPOSITORS.map(c => can(c, key) ? "yes" : "no").join(" | ") + " |")
+    return lines.join("\n")
+}

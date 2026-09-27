@@ -27,6 +27,24 @@ function pad(n) {
     return String(n).padStart(2, "0")
 }
 
+export function rectsCommand(compositor) {
+    if (compositor === "hyprland")
+        return ["sh", "-c", "hyprctl -j clients; echo; echo '\u001e'; hyprctl -j monitors"]
+    if (compositor === "sway")
+        return ["swaymsg", "-t", "get_tree"]
+    return null
+}
+
+export function parseRects(compositor, text) {
+    if (compositor === "hyprland") {
+        const parts = String(text).split("\u001e")
+        return hyprRects(JSON.parse(parts[0]), JSON.parse(parts[1]))
+    }
+    if (compositor === "sway")
+        return swayRects(JSON.parse(text))
+    return []
+}
+
 export function fileName(kind, d) {
     const stamp = d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) + " " + pad(d.getHours()) + "-" + pad(d.getMinutes()) + "-" + pad(d.getSeconds())
     return kind === "video" ? "Recording " + stamp + ".mp4" : "Screenshot " + stamp + ".png"

@@ -131,6 +131,10 @@ Singleton {
             w.handle.close();
     }
 
+    function can(capability: string): bool {
+        return W.can(root.name, capability);
+    }
+
     function state(): var {
         return {
             name: root.name,

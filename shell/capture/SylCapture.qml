@@ -46,7 +46,9 @@ Popup {
         root.mode = mode;
         root.problem = "";
         root.close();
-        if (mode === "window" && root.kind === "shot")
+        if (mode === "window" && root.kind === "shot" && !Compositor.can("windowShot"))
+            root.mode = "region";
+        if (root.mode === "window" && root.kind === "shot")
             rectsProc.running = true;
         else
             later.restart();
@@ -91,18 +93,11 @@ Popup {
 
     Process {
         id: rectsProc
-        command: Compositor.name === "hyprland" ? ["sh", "-c", "hyprctl -j clients; echo; echo '\u001e'; hyprctl -j monitors"] : Compositor.name === "sway" ? ["swaymsg", "-t", "get_tree"] : ["true"]
+        command: K.rectsCommand(Compositor.name) || ["true"]
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
-                    if (Compositor.name === "hyprland") {
-                        const parts = text.split("\u001e");
-                        root.rects = K.hyprRects(JSON.parse(parts[0]), JSON.parse(parts[1]));
-                    } else if (Compositor.name === "sway") {
-                        root.rects = K.swayRects(JSON.parse(text));
-                    } else {
-                        root.rects = [];
-                    }
+                    root.rects = K.parseRects(Compositor.name, text);
                 } catch (e) {
                     root.rects = [];
                 }
@@ -318,7 +313,7 @@ Popup {
                         label: "Screen",
                         glyph: Icons.GLYPHS.displays
                     }
-                ]
+                ].filter(t => t.key !== "window" || Compositor.can("windowShot"))
 
                 delegate: Item {
                     id: tile

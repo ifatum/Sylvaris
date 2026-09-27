@@ -145,6 +145,22 @@ In `config.json`, `notifications.server = false` hands notifications back to ano
 
 The state is the same shape everywhere: each workspace has `index`, `name`, `output`, `active`, `focused`, `urgent` and a window count, read live from Hyprland's and sway's IPC and from niri's event stream. Windows come from the Wayland foreign-toplevel protocol, which all three support.
 
+## Compositor support
+
+Everything else works the same on all three. These features depend on what the compositor offers; where one is missing, Sylvaris hides the control or says why instead of failing. The table is generated from `CAPABILITIES` in `shell/lib/wm.mjs`, and a test keeps it in step with the code.
+
+| | Hyprland | niri | sway |
+|---|:---:|:---:|:---:|
+| Key bindings from SylSettings applied live | yes | no | yes |
+| Window previews in SylSwitch | yes | no | no |
+| Minimize by clicking the title in SylBar | yes | no | yes |
+| Screenshot of a single window | yes | no | yes |
+| Screen zoom in SylAccessibility | yes | no | no |
+| Colour filters in SylAccessibility | yes | no | no |
+| Performance mode also trims the compositor | yes | no | yes |
+
+Resin Glass blurs behind panels through the `ext-background-effect-v1` protocol when the compositor offers it; sway does not, so panels there are tinted glass without blur.
+
 ## SylBar
 
 The bar runs on every screen and reserves its space. It can sit on any edge (`bar.position`: `top`, `bottom`, `left` or `right`; the side ones are vertical) and comes as separate glass islands for each side or as one slab (`bar.style`: `islands` or `slab`). Tray apps live in a drawer behind an arrow that points where it opens, so the bar stays calm. Everything opens where you clicked: the clock opens SylClock, the options button (󰘮) opens SylCenter, the bell opens SylNotify (middle-click toggles Do Not Disturb), the apps button opens SylPad, and the Wi-Fi, Bluetooth and volume items open their SylCenter views. Scroll over the workspaces to switch, over the volume to change it, over the media title to skip tracks. Right-click tray icons for their menus.
