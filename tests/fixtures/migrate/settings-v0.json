@@ -1,0 +1,7 @@
+{
+  "cc": { "corner": "top-left" },
+  "clock": { "corner": "top-right" },
+  "parts": { "diver": false },
+  "keybinds": { "clip toggle": "SUPER+V" },
+  "someFutureToggle": true
+}

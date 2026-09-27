@@ -1,4 +1,4 @@
-import { parseJson, validateConfig, effectiveSettings, liveParts, PARTS } from "./settings.mjs"
+import { parseJson, validateConfig, effectiveSettings, liveParts, PARTS, migrateConfig, migrateSettings } from "./settings.mjs"
 
 export const PART_PACKAGES = {
     bar: ["pulseaudio", "pipewire", "python", "libnotify"],
@@ -115,22 +115,30 @@ export function problems(raw, valid, prefix) {
     return out
 }
 
-function fileLines(name, file, check) {
+function fileLines(name, file, migrate, check) {
     const head = name + " (" + file.path + "): "
     if (file.text === null || file.text === undefined)
         return [head + "not found, defaults in use"]
     const r = parseJson(file.text)
     if (!r.ok)
         return [head + "not valid JSON (" + r.error + "), " + (name === "config.json" ? "defaults" : "the last good settings or defaults") + " in use"]
-    const list = check(r.value)
+    const m = migrate(r.value)
+    if (!m.ok)
+        return [head + m.error]
+    const list = check(m.value)
     if (list.length === 0)
         return [head + "ok"]
     return [head + list.length + (list.length === 1 ? " problem" : " problems")].concat(list.map(p => "  " + p))
 }
 
 export function report(f) {
-    const config = f.config.text === null || f.config.text === undefined ? {} : parseJson(f.config.text).value || {}
-    const raw = f.settings.text === null || f.settings.text === undefined ? {} : parseJson(f.settings.text).value || {}
+    const load = (file, migrate) => {
+        const r = file.text === null || file.text === undefined ? { ok: false } : parseJson(file.text)
+        const m = r.ok ? migrate(r.value) : { ok: false }
+        return m.ok ? m.value : {}
+    }
+    const config = load(f.config, migrateConfig)
+    const raw = load(f.settings, migrateSettings)
     const settings = effectiveSettings(validateConfig(config), raw)
     const on = liveParts(settings.parts)
     const off = Object.keys(PARTS).filter(p => on.indexOf(p) < 0)
@@ -150,8 +158,8 @@ export function report(f) {
         lines.push("Missing tools:")
     for (const k of keys)
         lines.push("  " + k + ": " + missing[k].join(", "))
-    return lines.concat(fileLines("config.json", f.config, v => problems(v, validateConfig(v))))
-        .concat(fileLines("settings.json", f.settings, v => problems(v, effectiveSettings({}, v))))
+    return lines.concat(fileLines("config.json", f.config, migrateConfig, v => problems(v, validateConfig(v))))
+        .concat(fileLines("settings.json", f.settings, migrateSettings, v => problems(v, effectiveSettings({}, v))))
         .join("\n")
 }
 

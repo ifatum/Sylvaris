@@ -78,6 +78,11 @@ test("report handles missing and broken files", () => {
     assert.match(r, /^Missing tools: none$/m)
 })
 
+test("report shows a file from a newer Sylvaris as refused", () => {
+    const r = report(Object.assign({}, facts, { settings: { path: "/c/settings.json", text: "{\"version\":42}" } }))
+    assert.match(r, /^settings\.json \(\/c\/settings\.json\): settings\.json is version 42 but this Sylvaris understands up to version 1/m)
+})
+
 test("parseFacts reads the gathering script's key=value lines", () => {
     const f = parseFacts("quickshell=quickshell 0.3.1\ncompositor=hyprland v0.51.0\ngpu=0x10de nvidia\ngpu=0x8086 \nbin=qs\nbin=grim\ncommit=abc1234\nnoise\n")
     assert.deepEqual(f, {

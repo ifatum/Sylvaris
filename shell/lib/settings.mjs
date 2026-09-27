@@ -52,8 +52,11 @@ function partFlags(parts) {
     return out
 }
 
+export const CONFIG_VERSION = 1
+export const SETTINGS_VERSION = 1
+
 export const DEFAULT_CONFIG = {
-    version: 1,
+    version: CONFIG_VERSION,
     themesDir: "~/.config/sylvaris/themes",
     themeHook: "",
     themeStateFile: "~/.local/state/sylvaris/theme",
@@ -67,7 +70,7 @@ export const DEFAULT_CONFIG = {
 }
 
 export const DEFAULT_SETTINGS = {
-    version: 1,
+    version: SETTINGS_VERSION,
     center: { corner: "top-right" },
     clock: { corner: "top-center" },
     nightLight: { enabled: false, temperature: 4000 },
@@ -155,6 +158,39 @@ export function deepMerge(base, over) {
         out[key] = isObject(base[key]) && isObject(over[key]) ? deepMerge(base[key], over[key]) : clone(over[key])
     }
     return out
+}
+
+const CONFIG_STEPS = [v => v]
+
+const SETTINGS_STEPS = [v => {
+    if (isObject(v.cc) && v.center === undefined) {
+        v.center = v.cc
+        delete v.cc
+    }
+    return v
+}]
+
+function chain(name, raw, steps, current) {
+    const v = isObject(raw) ? clone(raw) : {}
+    const from = Object.prototype.hasOwnProperty.call(v, "version") ? v.version : 0
+    if (!Number.isInteger(from) || from < 0)
+        return { ok: false, from: -1, value: null, error: name + " version must be a whole number, found " + JSON.stringify(from) + "; the file is left untouched and defaults are in use" }
+    if (from > current)
+        return { ok: false, from: from, value: null, error: name + " is version " + from + " but this Sylvaris understands up to version " + current + "; update Sylvaris. The file is left untouched and defaults are in use" }
+    let out = v
+    for (let i = from; i < current; i++) {
+        out = steps[i](out)
+        out.version = i + 1
+    }
+    return { ok: true, from: from, value: out, error: "" }
+}
+
+export function migrateConfig(raw) {
+    return chain("config.json", raw, CONFIG_STEPS, CONFIG_VERSION)
+}
+
+export function migrateSettings(raw) {
+    return chain("settings.json", raw, SETTINGS_STEPS, SETTINGS_VERSION)
 }
 
 export function migrate(raw) {

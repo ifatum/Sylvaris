@@ -28,8 +28,14 @@ Singleton {
             root.values = S.validateConfig({});
             return;
         }
+        const m = S.migrateConfig(r.value);
+        if (!m.ok) {
+            root.notice = m.error;
+            root.values = S.validateConfig({});
+            return;
+        }
         root.notice = "";
-        root.values = S.validateConfig(r.value);
+        root.values = S.validateConfig(m.value);
     }
 
     FileView {

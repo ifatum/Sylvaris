@@ -9,7 +9,8 @@ let
   cfg = config.programs.sylvaris;
   json = pkgs.formats.json { };
   parts = (cfg.settings.parts or { }) // cfg.parts;
-  schema = lib.importJSON ./schema.json;
+  schemaFile = lib.importJSON ./schema.json;
+  schema = builtins.removeAttrs schemaFile [ "version" ];
   typeOf =
     v:
     if builtins.isBool v then
@@ -87,7 +88,7 @@ in
     xdg.configFile = lib.mkMerge [
       {
         "sylvaris/config.json".source = json.generate "sylvaris-config.json" (
-          { version = 1; } // lib.recursiveUpdate typed cfg.settings // lib.optionalAttrs (parts != { }) { inherit parts; }
+          { inherit (schemaFile) version; } // lib.recursiveUpdate typed cfg.settings // lib.optionalAttrs (parts != { }) { inherit parts; }
         );
       }
       (lib.mapAttrs' (

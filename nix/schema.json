@@ -1,4 +1,5 @@
 {
+  "version": 1,
   "themesDir": "~/.config/sylvaris/themes",
   "themeHook": "",
   "themeStateFile": "~/.local/state/sylvaris/theme",

@@ -16,6 +16,7 @@ Singleton {
     property string notice: ""
     property string lastWritten: ""
     property bool loadedOnce: false
+    property bool frozen: false
     property bool ready: false
 
     onNoticeChanged: {
@@ -28,6 +29,8 @@ Singleton {
     }
 
     function trySet(key: string, value: var): bool {
+        if (root.frozen)
+            return false;
         const next = S.effectiveSettings(Config.values, S.setPath(root.raw, key, value));
         if (JSON.stringify(S.getPath(next, key)) !== JSON.stringify(value))
             return false;
@@ -36,6 +39,8 @@ Singleton {
     }
 
     function set(key: string, value: var): void {
+        if (root.frozen)
+            return;
         root.raw = S.setPath(root.raw, key, value);
         writeTimer.restart();
     }
@@ -54,9 +59,18 @@ Singleton {
             root.raw = {};
             return;
         }
-        root.notice = "";
+        const m = S.migrateSettings(r.value);
         root.loadedOnce = true;
-        root.raw = r.value;
+        if (!m.ok) {
+            writeTimer.stop();
+            root.frozen = true;
+            root.notice = m.error;
+            root.raw = {};
+            return;
+        }
+        root.frozen = false;
+        root.notice = "";
+        root.raw = m.value;
     }
 
     Component.onCompleted: Quickshell.execDetached(["mkdir", "-p", root.dir])
@@ -65,7 +79,11 @@ Singleton {
         id: writeTimer
         interval: 300
         onTriggered: {
-            const text = S.serialize(root.raw);
+            if (root.frozen)
+                return;
+            const text = S.serialize(Object.assign({
+                version: S.SETTINGS_VERSION
+            }, root.raw));
             root.lastWritten = text;
             file.setText(text);
         }

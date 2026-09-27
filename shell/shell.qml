@@ -499,6 +499,8 @@ ShellRoot {
     function setting(key: string, value: string): string {
         if (key === "")
             throw new Error("usage: set <key> <value>");
+        if (Settings.frozen)
+            throw new Error(Settings.notice);
         if (!Settings.trySet(key, I.parseValue(value)))
             throw new Error("invalid value for " + key + ", it stays " + JSON.stringify(Settings.get(key)));
         return JSON.stringify(Settings.get(key));

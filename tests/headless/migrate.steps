@@ -1,0 +1,19 @@
+sleep 1
+write sylvaris/settings.json {"version":99,"center":{"corner":"bottom-left"},"newThing":{"x":1}}
+sleep 1
+syl state settingsNotice
+check grep -q 'settings.json is version 99 but this Sylvaris understands up to version 1' "$OUT/ipc.log"
+syl set bar.position bottom
+sleep 1
+check grep -q 'error: settings.json is version 99' "$OUT/ipc.log"
+check [ "$(cat "$HOME/.config/sylvaris/settings.json")" = '{"version":99,"center":{"corner":"bottom-left"},"newThing":{"x":1}}' ]
+write sylvaris/settings.json {"cc":{"corner":"top-left"},"someFutureToggle":true}
+sleep 1
+syl get center.corner
+check tail -n 3 "$OUT/ipc.log" | grep -q top-left
+syl set bar.position bottom
+sleep 1
+check grep -q '"version": *1' "$HOME/.config/sylvaris/settings.json"
+check grep -q '"someFutureToggle": *true' "$HOME/.config/sylvaris/settings.json"
+check grep -q '"center"' "$HOME/.config/sylvaris/settings.json"
+check ! grep -q '"cc"' "$HOME/.config/sylvaris/settings.json"

@@ -354,6 +354,8 @@ Everything lives in one folder, `~/.config/sylvaris/` (`sylvaris config` prints 
 - `settings.json` belongs to Sylvaris: it holds only what you change in SylSettings, SylCenter or with `sylvaris set`.
 - `themes/` holds theme bundles.
 
+Both files carry a `version` (currently 1; Home Manager writes it for you). A file without one is treated as version 0 and upgraded step by step in memory, keeping every key it does not know about; `settings.json` is written back in the new format the next time you change something. A file from a newer Sylvaris is refused with a clear message in `sylvaris doctor` and `sylvaris state settingsNotice`: defaults are used and the file is never overwritten, so downgrading cannot damage it.
+
 Every key of `settings.json` can also be written in `config.json`, where it becomes the default: declare your bar, deck, equalizer or panel positions in Nix, and anything you change in the UI is saved as an override in `settings.json` and wins. Remove a key from `settings.json` to fall back to your declared value. Both files are watched, so changes apply live.
 
 ```nix
