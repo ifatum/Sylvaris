@@ -1,0 +1,47 @@
+name: Bug report
+description: Something in Sylvaris does not work as it should
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time. Please run `sylvaris doctor` first: it prints the versions, your compositor and GPU, which parts are on, missing tools and any config problems.
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Output of `sylvaris doctor`
+      description: Paste the whole output. It contains no passwords or tokens.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. sylvaris center open
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Anything relevant from the terminal you started Sylvaris from, or from `qs log --pid <pid>` (`qs list --all` shows the pid). Check that it contains no secrets before posting.
+      render: text
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before posting
+      options:
+        - label: I searched the existing issues and this is not a duplicate.
+          required: true
