@@ -1,0 +1,29 @@
+#!/bin/sh
+case "$*" in
+"test --stream")
+    echo '{"event": "status", "phase": "server"}'
+    sleep 0.4
+    echo '{"event": "server", "server": "Orange Polska S.A. (Warsaw, Poland)", "id": "4166", "ping": 18.7}'
+    for v in 90 180 260 301; do
+        sleep 0.3
+        echo "{\"event\": \"download\", \"mbps\": $v}"
+    done
+    sleep 1.2
+    echo '{"event": "download", "mbps": 318.77, "done": true}'
+    for v in 20 38; do
+        sleep 0.3
+        echo "{\"event\": \"upload\", \"mbps\": $v}"
+    done
+    echo '{"event": "upload", "mbps": 43.78, "done": true}'
+    entry='{"server": "Orange Polska S.A. (Warsaw, Poland)", "ping": 18.7, "download": 318.77, "upload": 43.78, "timestamp": "2026-09-27T22:20:21", "client_ip": "192.0.2.1"}'
+    printf '[{"server": "RETN (Warsaw, Poland)", "ping": 21.2, "download": 290.1, "upload": 41.5, "timestamp": "2026-09-26T19:02:10"}, %s]\n' "$entry" >"$HOME/.fatest_history.json"
+    echo "{\"event\": \"result\", \"result\": $entry}"
+    ;;
+config*)
+    shift
+    printf '{"country": "%s", "server_id": "%s"}\n' "$2" "$4" >"$HOME/.fatest_config.json"
+    ;;
+*)
+    exit 2
+    ;;
+esac
