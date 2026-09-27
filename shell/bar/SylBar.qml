@@ -323,12 +323,30 @@ Scope {
                             Repeater {
                                 model: pill.apps.shown
 
-                                delegate: IconImage {
+                                delegate: Item {
+                                    id: appIcon
                                     required property string modelData
                                     readonly property var entry: DesktopEntries.heuristicLookup(modelData)
-                                    implicitSize: 16
-                                    source: entry !== null && entry.icon ? Quickshell.iconPath(entry.icon, true) : ""
-                                    visible: source !== ""
+                                    readonly property string icon: entry !== null && entry.icon ? Quickshell.iconPath(entry.icon, true) : ""
+                                    visible: icon !== ""
+                                    width: 20
+                                    height: 20
+
+                                    Rectangle {
+                                        anchors.fill: parent
+                                        visible: Tokens.iconTint
+                                        radius: width / 2
+                                        antialiasing: true
+                                        color: Qt.alpha(Theme.onAccent, 0.85)
+                                    }
+
+                                    IconImage {
+                                        anchors.centerIn: parent
+                                        implicitSize: Tokens.iconTint ? 13 : 18
+                                        source: appIcon.icon
+                                        layer.enabled: Tokens.iconTint
+                                        layer.effect: IconTint {}
+                                    }
                                 }
                             }
 
