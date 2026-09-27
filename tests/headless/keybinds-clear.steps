@@ -6,9 +6,9 @@ sleep 1.5
 pointer move 1567 909 click 1
 sleep 0.6
 shot keybinds-capturing
-bg wtype -k Shift_L -k Escape
-sleep 0.8
-shot keybinds-escaped
+pointer move 1645 909 click 1
+sleep 0.6
+shot keybinds-cancelled
 syl state keybinds
 check tail -n 3 "$OUT/ipc.log" | grep -q '"clip toggle":"SUPER+V"'
 pointer move 1645 909 click 1
