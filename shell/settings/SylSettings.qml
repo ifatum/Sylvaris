@@ -14,6 +14,7 @@ import "../lib/power.mjs" as Pw
 import "../lib/icons.mjs" as Icons
 import "../lib/settings.mjs" as S
 import "../lib/modules.mjs" as M
+import "../lib/version.mjs" as V
 
 Scope {
     id: root
@@ -30,7 +31,7 @@ Scope {
     property int hovered: -1
     property string memory: ""
     property string uptimeText: ""
-    readonly property string version: "0.2.0"
+    readonly property string version: V.VERSION
     readonly property bool hasBattery: UPower.displayDevice !== null && UPower.displayDevice.isLaptopBattery
     readonly property var cons: Settings.values.constellation
     readonly property var sections: [

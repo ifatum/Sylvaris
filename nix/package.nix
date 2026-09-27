@@ -21,6 +21,7 @@
   wf-recorder,
   git,
   sylvarisParts ? { },
+  commit ? "unknown",
 }:
 
 let
@@ -102,7 +103,7 @@ let
 in
 stdenvNoCC.mkDerivation {
   pname = "sylvaris";
-  version = "0.1.0";
+  version = "0.2.0";
 
   src = lib.fileset.toSource {
     root = ../.;
@@ -118,6 +119,7 @@ stdenvNoCC.mkDerivation {
     runHook preInstall
     mkdir -p $out/share/sylvaris
     cp -r shell/. $out/share/sylvaris/
+    printf '%s\n' ${lib.escapeShellArg commit} > $out/share/sylvaris/COMMIT
     install -Dm755 bin/sylvaris $out/bin/sylvaris
     wrapProgram $out/bin/sylvaris \
       --set-default SYLVARIS_DIR $out/share/sylvaris \

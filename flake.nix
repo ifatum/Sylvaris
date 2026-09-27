@@ -14,7 +14,9 @@
     in
     {
       packages = forAll (pkgs: rec {
-        sylvaris = pkgs.callPackage ./nix/package.nix { };
+        sylvaris = pkgs.callPackage ./nix/package.nix {
+          commit = self.shortRev or self.dirtyShortRev or "unknown";
+        };
         default = sylvaris;
       });
 

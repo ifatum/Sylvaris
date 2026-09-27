@@ -88,6 +88,8 @@ sylvaris watch [topic...]    # stream state changes as JSON lines
 
 A part with no action runs its default (usually `toggle`). Errors print `error: ...` and exit with 1, so scripts can rely on the exit code.
 
+`sylvaris doctor` prints what a bug report needs: the Sylvaris version and commit, the Quickshell version, the compositor and its version, the GPUs and their drivers, which parts are on and off, the programs each enabled part needs but cannot find, and every value in `config.json` and `settings.json` that is not valid, with the value used instead. It only reads; it runs even when the shell is not running.
+
 `sylvaris watch` connects to `$XDG_RUNTIME_DIR/sylvaris/ipc.sock`. It prints every requested topic once, then a line each time one changes: `{"topic":"audio","data":{...}}`. Tools can talk to the socket directly: send one request per line, either plain words (`center toggle`) or a JSON array (`["center","view","orbit-wifi:My Network"]`), and read one JSON reply per line (`{"ok":true,"result":...}`). Sending `["watch","audio"]` turns the connection into a stream.
 
 SylTheme opens on the focused monitor with the current theme in front. Arrow keys, the mouse wheel, dragging or clicking a side card move the carousel; once it rests for half a second the whole desktop previews that theme, including its `links`. It slides up over everything, including your bar, and hides the cursor until you move the mouse. Start typing to search themes by name or description (`sylvaris theme search <text>` does it from scripts). Enter or **Apply theme** keeps it, Esc or a click on the backdrop brings back the theme you started with. SylCenter's Theme button and `sylvaris view theme` open it too.

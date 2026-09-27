@@ -15,6 +15,7 @@ install:
 	rm -rf $(sharedir)
 	mkdir -p $(sharedir)
 	cp -r shell/. $(sharedir)/
+	git rev-parse --short HEAD > $(sharedir)/COMMIT 2>/dev/null || echo unknown > $(sharedir)/COMMIT
 
 install-pam:
 	[ -e $(DESTDIR)/etc/pam.d/sylvaris ] || install -Dm644 dist/pam/sylvaris $(DESTDIR)/etc/pam.d/sylvaris

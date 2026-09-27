@@ -29,6 +29,7 @@ Usage: sylvaris [command]
   reload                       reload the shell
   list                         print every part and its actions
   watch [topic...]             stream state changes as JSON lines
+  doctor                       print versions, missing tools and config problems for bug reports
 EOF
 }
 
@@ -121,6 +122,16 @@ get)
     ;;
 set)
     run settings set "${@:2}"
+    ;;
+doctor)
+    out="$(mktemp)"
+    trap 'rm -f "$out"' EXIT
+    SYLVARIS_DOCTOR_OUT="$out" QT_QPA_PLATFORM=offscreen timeout 20 qs -p "$dir/doctor.qml" >/dev/null 2>&1 || true
+    if [ ! -s "$out" ]; then
+        echo "doctor could not start quickshell (qs) with $dir/doctor.qml" >&2
+        exit 1
+    fi
+    cat "$out"
     ;;
 plugins)
     if [ "${2:-}" = install ]; then install_plugin "${@:3}"; else run "$@"; fi
