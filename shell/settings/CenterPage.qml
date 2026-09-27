@@ -3,6 +3,7 @@ import qs
 import qs.services
 import qs.components
 import "../lib/icons.mjs" as Icons
+import "../lib/center.mjs" as C
 
 Column {
     id: page
@@ -42,18 +43,23 @@ Column {
             glyph: Icons.GLYPHS.hotspot
         }
     ], page.toggleTiles.slice(1))
-    readonly property var shownTiles: page.tiles.filter(t => page.cfg.hidden.indexOf(t.key) < 0)
+    readonly property var extras: C.offeredExtras(Settings.values.plugins).map(e => ({
+                key: e.key,
+                label: e.label,
+                glyph: Icons.GLYPHS[e.glyph]
+            }))
+    readonly property var shownTiles: page.tiles.filter(t => page.cfg.hidden.indexOf(t.key) < 0).concat(page.extras.filter(e => page.cfg.extra.indexOf(e.key) >= 0))
 
     spacing: 24
 
-    function flip(key: string): void {
-        const hidden = page.cfg.hidden.slice();
-        const i = hidden.indexOf(key);
+    function flip(list: string, key: string): void {
+        const next = page.cfg[list].slice();
+        const i = next.indexOf(key);
         if (i < 0)
-            hidden.push(key);
+            next.push(key);
         else
-            hidden.splice(i, 1);
-        Settings.set("center.hidden", hidden);
+            next.splice(i, 1);
+        Settings.set("center." + list, next);
     }
 
     Card {
@@ -190,7 +196,29 @@ Column {
                         text: modelData.label
                         glyph: modelData.glyph
                         lit: page.cfg.hidden.indexOf(modelData.key) < 0
-                        onClicked: page.flip(modelData.key)
+                        onClicked: page.flip("hidden", modelData.key)
+                    }
+                }
+            }
+        }
+
+        SettingRow {
+            title: "Extra tiles"
+            subtitle: "Speed test and AirPods show up here once their plugins are on"
+
+            Flow {
+                width: 360
+                spacing: 8
+
+                Repeater {
+                    model: page.extras
+
+                    delegate: Chip {
+                        required property var modelData
+                        text: modelData.label
+                        glyph: modelData.glyph
+                        lit: page.cfg.extra.indexOf(modelData.key) >= 0
+                        onClicked: page.flip("extra", modelData.key)
                     }
                 }
             }

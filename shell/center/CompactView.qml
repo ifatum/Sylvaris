@@ -5,11 +5,15 @@ import qs.services
 import qs.components
 import "../lib/icons.mjs" as Icons
 import "../lib/settings.mjs" as S
+import "../lib/center.mjs" as C
 
 Item {
     id: root
 
     signal openView(string name)
+    signal dismiss
+
+    property var peers: ({})
 
     property date now: new Date()
     readonly property var toggles: Toggles.items
@@ -81,7 +85,81 @@ Item {
             });
         for (let i = 1; i < root.toggles.length; i++)
             out.push(root.toggleTile(root.toggles[i]));
+        for (const e of C.offeredExtras(Settings.values.plugins)) {
+            const t = root.cfg.extra.indexOf(e.key) >= 0 ? root.extraTile(e) : null;
+            if (t !== null)
+                out.push(t);
+        }
         return out;
+    }
+
+    function extraTile(e: var): var {
+        const p = root.peers[e.key === "screenshot" || e.key === "record" ? "capture" : e.key];
+        const tile = {
+            key: e.key,
+            icon: Icons.GLYPHS[e.glyph],
+            title: e.label,
+            subtitle: "",
+            active: false,
+            detail: "extra"
+        };
+        if (e.key === "airpods") {
+            if (!Headphones.plugged)
+                return null;
+            tile.subtitle = C.airpodsLine(Headphones.connected, Headphones.battery);
+            tile.active = Headphones.connected && Headphones.noise !== "" && Headphones.noise !== "off";
+            return tile;
+        }
+        if (p === undefined || p === null)
+            return null;
+        if (e.key === "fatest") {
+            tile.subtitle = C.speedLine(p.st.phase, p.st.live, p.history.length > 0 ? p.history[0] : null);
+            tile.active = p.running;
+        } else if (e.key === "record") {
+            tile.subtitle = p.recording ? "Recording" : "Select an area";
+            tile.active = p.recording;
+        } else {
+            tile.subtitle = e.key === "screenshot" ? "Select an area" : e.key === "clip" ? "History" : "Lock the screen";
+        }
+        return tile;
+    }
+
+    function extraIcon(key: string): void {
+        const cap = root.peers.capture;
+        if (key === "fatest") {
+            const p = root.peers.fatest;
+            if (p.running)
+                p.stop();
+            else
+                p.run();
+        } else if (key === "airpods") {
+            if (Headphones.connected)
+                Headphones.setNoise(Headphones.noise === "anc" ? "transparency" : "anc");
+            else
+                root.extraOpen(key);
+        } else if (key === "record" && cap.recording) {
+            cap.stop();
+        } else {
+            root.extraOpen(key);
+        }
+    }
+
+    function extraOpen(key: string): void {
+        const cap = root.peers.capture;
+        root.dismiss();
+        if (key === "fatest")
+            root.peers.fatest.open();
+        else if (key === "airpods" && root.peers.media) {
+            root.peers.media.openTab("devices");
+            root.peers.media.open();
+        } else if (key === "screenshot")
+            cap.shoot("region");
+        else if (key === "record")
+            cap.recording ? cap.stop() : cap.record("region");
+        else if (key === "clip")
+            root.peers.clip.open();
+        else if (key === "lock")
+            root.peers.lock.lock();
     }
 
     function iconAction(key: string): void {
@@ -98,6 +176,8 @@ Item {
                 Hotspot.stop();
             else if (!Hotspot.resume())
                 root.openView("hotspot");
+        } else if (C.EXTRAS.some(e => e.key === key)) {
+            root.extraIcon(key);
         } else if (key.indexOf("toggle:") === 0) {
             const id = key.slice(7);
             for (const t of root.toggles) {
@@ -108,7 +188,9 @@ Item {
     }
 
     function bodyAction(tile: var): void {
-        if (tile.detail !== "")
+        if (tile.detail === "extra")
+            root.extraOpen(tile.key);
+        else if (tile.detail !== "")
             root.openView(tile.detail);
         else
             root.iconAction(tile.key);

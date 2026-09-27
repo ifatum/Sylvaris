@@ -274,6 +274,7 @@ ShellRoot {
 
         SylCenter {
             id: centerPart
+            peers: root.parts
             onPartRequested: name => {
                 const p = root.part(name);
                 if (p !== null)

@@ -28,6 +28,8 @@ Scope {
     readonly property bool expanded: root.view !== "compact"
     signal partRequested(string name)
 
+    property var peers: ({})
+
     readonly property var views: ["compact", "orbit-bluetooth", "orbit-wifi", "calendar", "outputs", "displays", "hotspot"]
 
     function applyView(name: string): void {
@@ -344,7 +346,9 @@ Scope {
                     opacity: root.expanded ? 0 : 1
                     visible: opacity > 0
                     enabled: !root.expanded
+                    peers: root.peers
                     onOpenView: name => name === "theme" || name === "media" || name === "settings" ? root.handOff(name) : root.applyView(name)
+                    onDismiss: root.close()
 
                     Behavior on opacity {
                         enabled: root.settled

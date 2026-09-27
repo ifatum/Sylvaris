@@ -8,3 +8,12 @@ syl set center.volume false
 sleep 1
 shot compact-trimmed
 check sylvaris get center.hidden | grep -q dnd
+syl set center.hidden []
+syl plugins enable fatest
+syl plugins enable airpods
+syl set center.extra ["fatest","airpods","screenshot","record","clip","lock"]
+sleep 1.5
+syl center open
+sleep 1
+shot compact-extra
+check sylvaris get center.extra | grep -q airpods

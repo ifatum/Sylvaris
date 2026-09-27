@@ -19,6 +19,7 @@
   "center": {
     "corner": "top-right",
     "hidden": [],
+    "extra": [],
     "volume": true,
     "media": true
   },

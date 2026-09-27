@@ -96,7 +96,7 @@ SylTheme opens on the focused monitor with the current theme in front. Arrow key
 
 Views: `compact`, `orbit-bluetooth`, `orbit-wifi`, `calendar`, `outputs`, `displays`, `hotspot`. Add `:<key>` to focus a device or network, for example `sylvaris view orbit-bluetooth:AA:BB:CC:DD:EE:FF`.
 
-SylSettings › Control Center picks what SylCenter shows: `center.hidden` lists tiles to leave out (`wifi`, `bluetooth`, `night`, `dnd`, `hotspot` or `toggle:<id>` for one of your toggles), and `center.volume` and `center.media` turn the volume slider and the now playing card off. The same page sets the corner and the hotspot's network name and band.
+SylSettings › Control Center picks what SylCenter shows: `center.hidden` lists tiles to leave out (`wifi`, `bluetooth`, `night`, `dnd`, `hotspot` or `toggle:<id>` for one of your toggles), and `center.volume` and `center.media` turn the volume slider and the now playing card off. `center.extra` adds optional tiles: `screenshot` and `record` (an area, or stop a recording), `clip` (clipboard history), `lock`, and, once their plugins are on, `fatest` (the icon starts or stops a speed test, the tile opens SylTest) and `airpods` (the icon switches noise control and transparency, the tile opens SylMedia › Devices). The same page sets the corner and the hotspot's network name and band.
 
 ## SylClock
 

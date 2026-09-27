@@ -2,6 +2,7 @@ import { DEFAULT_LOCK, validateLock } from "./lock.mjs"
 import { DEFAULT_CLIP, validateClip } from "./clip.mjs"
 import { DEFAULT_CAPTURE, validateCapture } from "./capture.mjs"
 import { DEFAULT_ACCESS, validateAccess } from "./access.mjs"
+import { EXTRAS } from "./center.mjs"
 import { validateKeybinds } from "./keys.mjs"
 import { DEFAULT_PLUGINS, validatePlugins, BUILTIN, builtinOn } from "./plugins.mjs"
 import { DEFAULT_SYNC, validateSync } from "./sync.mjs"
@@ -17,7 +18,7 @@ export const CENTER_TILES = ["wifi", "bluetooth", "night", "dnd", "hotspot"]
 
 export const PARTS = {
     bar: ["Audio", "BluetoothService", "NetworkService", "Diver", "Dnd", "Media", "Notifications", "Plugins"],
-    center: ["Audio", "BluetoothService", "NetworkService", "Hotspot", "Displays", "NightLight", "Diver", "Dnd", "Toggles", "Media"],
+    center: ["Audio", "BluetoothService", "NetworkService", "Hotspot", "Displays", "NightLight", "Diver", "Dnd", "Toggles", "Media", "Headphones"],
     clock: ["Diver", "Weather", "Sky"],
     deck: ["Apps"],
     diver: ["Diver"],
@@ -73,7 +74,7 @@ export const DEFAULT_CONFIG = {
 
 export const DEFAULT_SETTINGS = {
     version: SETTINGS_VERSION,
-    center: { corner: "top-right", hidden: [], volume: true, media: true },
+    center: { corner: "top-right", hidden: [], extra: [], volume: true, media: true },
     clock: { corner: "top-center" },
     nightLight: { enabled: false, temperature: 4000 },
     displays: { layouts: {} },
@@ -248,6 +249,7 @@ export function validateSettings(raw) {
     v.center = Object.assign({}, center, {
         corner: CORNERS.includes(center.corner) ? center.corner : d.center.corner,
         hidden: hidden.filter((t, i) => hidden.indexOf(t) === i),
+        extra: Array.isArray(center.extra) ? center.extra.filter((t, i) => EXTRAS.some(e => e.key === t) && center.extra.indexOf(t) === i) : [],
         volume: typeof center.volume === "boolean" ? center.volume : d.center.volume,
         media: typeof center.media === "boolean" ? center.media : d.center.media
     })
