@@ -102,6 +102,7 @@ Singleton {
         }
         onLoadFailed: error => {
             root.ready = true;
+            root.frozen = false;
             if (error !== FileViewError.FileNotFound)
                 root.notice = "settings.json could not be read";
         }

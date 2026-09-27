@@ -73,11 +73,11 @@ Singleton {
             throw new Error(g.id + " is already installed");
         if (root.busy)
             throw new Error("another install is still running");
+        root.discard();
         root.problem = "";
-        root.pending = null;
         root.fetching = true;
         installer.target = g;
-        installer.command = ["sh", "-c", "rm -rf \"$1\" && mkdir -p \"$(dirname \"$1\")\" && git clone -q --depth 1 -- \"$0\" \"$1\" 2>&1 && git -C \"$1\" rev-parse HEAD", g.url, root.staging + "/" + g.id];
+        installer.command = ["sh", "-c", "rm -rf \"$1\" && mkdir -p \"$(dirname \"$1\")\" && GIT_TERMINAL_PROMPT=0 GIT_ASKPASS=true timeout 120 git clone -q --depth 1 -- \"$0\" \"$1\" 2>&1 && git -C \"$1\" rev-parse HEAD", g.url, root.staging + "/" + g.id];
         installer.running = true;
         return "fetching " + g.id + "; nothing is installed until you confirm";
     }
@@ -164,7 +164,7 @@ Singleton {
                     }, installer.target);
                     root.problem = "";
                 } else {
-                    root.problem = lines[lines.length - 1] || "git clone failed";
+                    root.problem = lines[lines.length - 1] || "git clone failed or took longer than two minutes";
                 }
             }
         }
@@ -174,7 +174,7 @@ Singleton {
         id: mover
         onExited: code => {
             if (code !== 0)
-                root.problem = "could not move the plugin into place; a folder with that name exists";
+                root.problem = "could not move the plugin into place; it may already exist in " + root.dir;
             root.refresh();
         }
     }
