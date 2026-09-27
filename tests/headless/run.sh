@@ -142,7 +142,7 @@ while read -r cmd rest; do
             done
         fi
         read -r -a args <<<"$rest"
-        vncdo -s "127.0.0.1::$vnc_port" "${args[@]}" >>"$out/ipc.log" 2>&1 || printf 'pointer failed: %s\n' "$rest" >>"$out/ipc.log"
+        timeout 30 vncdo -s "127.0.0.1::$vnc_port" "${args[@]}" >>"$out/ipc.log" 2>&1 || printf 'pointer failed: %s\n' "$rest" >>"$out/ipc.log"
         ;;
     write)
         target="$home/.config/${rest%% *}"
