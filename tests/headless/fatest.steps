@@ -1,0 +1,18 @@
+sleep 1.5
+syl fatest state
+syl plugins enable fatest
+syl fatest run
+sleep 2.4
+shot fatest-live
+check sylvaris fatest state | grep -q '"phase":"download"'
+sleep 3.5
+shot fatest-done
+check sylvaris fatest state | grep -q '"phase":"done"'
+check sylvaris fatest history | grep -q 'RETN'
+syl fatest close
+syl settings open fatest
+sleep 1.5
+shot fatest-settings
+syl plugins disable fatest
+sleep 1
+check ! sylvaris fatest state

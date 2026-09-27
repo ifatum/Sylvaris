@@ -20,6 +20,7 @@ export const PARTS = {
     clock: ["Diver", "Weather", "Sky"],
     deck: ["Apps"],
     diver: ["Diver"],
+    fatest: [],
     media: ["Headphones", "Equalizer", "Media"],
     notify: ["Dnd", "Notifications"],
     pad: ["Apps"],

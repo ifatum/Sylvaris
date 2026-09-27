@@ -239,7 +239,7 @@ test("PARTS lists every service a part references", () => {
     const root = new URL("../shell/", import.meta.url)
     const core = ["Config", "Settings", "Ipc", "Demo", "Theme", "Resin", "Compositor", "Keybinds"]
     const services = readdirSync(new URL("services/", root)).map(f => f.replace(".qml", "")).filter(n => !core.includes(n)).concat("Diver")
-    const dirOf = name => name === "diver" ? "plugins/diver" : name
+    const dirOf = name => name === "diver" || name === "fatest" ? "plugins/" + name : name
     const refs = dir => {
         const found = new Set()
         for (const f of readdirSync(new URL(dir + "/", root), { recursive: true }).filter(f => f.endsWith(".qml") && (dir !== "plugins" || !f.includes("/")))) {

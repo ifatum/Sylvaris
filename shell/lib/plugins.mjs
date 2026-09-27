@@ -107,7 +107,8 @@ export function pendingSummary(p) {
 
 export const BUILTIN = [
     { id: "diver", name: "Diver", kind: "builtin", part: "diver", services: ["Diver"], description: "Plans, reminders and alarms from diver.fatum.cc in SylClock, SylCenter, the bar and the SylDiver panel. Pair it in SylSettings › Diver." },
-    { id: "airpods", name: "AirPods", kind: "builtin", part: "", services: [], description: "Battery, listening modes and conversation awareness for AirPods in SylMedia › Devices." }
+    { id: "airpods", name: "AirPods", kind: "builtin", part: "", services: [], description: "Battery, listening modes and conversation awareness for AirPods in SylMedia › Devices." },
+    { id: "fatest", name: "SylTest", kind: "builtin", part: "fatest", services: [], description: "Internet speed tests with FaTest in the SylTest panel, sharing its history and default server. Needs the fatest command." }
 ]
 
 export function builtinOn(plugins, id) {

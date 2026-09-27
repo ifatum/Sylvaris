@@ -6,6 +6,7 @@ export const PART_PACKAGES = {
     clock: ["pipewire", "python", "libnotify", "curl"],
     deck: [],
     diver: ["pipewire", "python", "libnotify"],
+    fatest: [],
     media: ["pulseaudio", "pipewire", "python"],
     notify: [],
     pad: [],

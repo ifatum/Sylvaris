@@ -15,6 +15,7 @@ import qs.settings
 import qs.power
 import qs.paper
 import qs.plugins.diver
+import qs.plugins.fatest
 import qs.switcher
 import qs.lock
 import qs.polkit
@@ -44,6 +45,7 @@ ShellRoot {
             power: powerLoader,
             paper: paperLoader,
             diver: diverLoader,
+            fatest: fatestLoader,
             switcher: switcherLoader,
             lock: lockLoader,
             polkit: polkitLoader,
@@ -231,6 +233,7 @@ ShellRoot {
             clip: root.part("clip") !== null ? root.part("clip").state() : undefined,
             capture: root.part("capture") !== null ? root.part("capture").state() : undefined,
             access: root.part("access") !== null ? root.part("access").state() : undefined,
+            fatest: root.part("fatest") !== null ? root.part("fatest").state() : undefined,
             keybinds: Keybinds.applied,
             sync: root.on("Sync") ? Sync.state() : undefined,
             plugins: root.on("Plugins") ? Plugins.state() : undefined,
@@ -319,7 +322,7 @@ ShellRoot {
 
         SylPad {
             id: padPart
-            tiles: root.on("settings") ? M.tiles().filter(t => t.id !== "sylvaris.diver" || Diver.plugged) : []
+            tiles: root.on("settings") ? M.tiles().filter(t => (t.id !== "sylvaris.diver" || Diver.plugged) && (t.id !== "sylvaris.fatest" || root.on("fatest"))) : []
             onOpened: root.solo(padPart)
             onSettingsRequested: section => root.need("settings").showSection(section)
         }
@@ -384,6 +387,16 @@ ShellRoot {
         SylDiver {
             id: diverPart
             onOpened: root.solo(diverPart)
+        }
+    }
+
+    LazyLoader {
+        id: fatestLoader
+        active: root.on("fatest")
+
+        SylTest {
+            id: fatestPart
+            onOpened: root.solo(fatestPart)
         }
     }
 
@@ -721,6 +734,20 @@ ShellRoot {
                 filter: name => root.need("access").filter(name || "none"),
                 state: () => root.need("access").state()
             },
+            fatest: I.gated({
+                default: "state",
+                toggle: () => root.need("fatest").toggle(),
+                open: () => root.need("fatest").open(),
+                close: () => root.need("fatest").close(),
+                run: () => {
+                    const p = root.need("fatest");
+                    p.run();
+                    p.open();
+                },
+                stop: () => root.need("fatest").stop(),
+                history: () => root.need("fatest").history,
+                state: () => root.need("fatest").state()
+            }, () => root.part("fatest") !== null, "SylTest is off; turn it on in SylSettings › Plugins or with: sylvaris plugins enable fatest"),
             capture: {
                 toggle: () => root.need("capture").toggle(),
                 open: () => root.need("capture").open(),

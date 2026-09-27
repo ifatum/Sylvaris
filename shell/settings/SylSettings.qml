@@ -115,6 +115,12 @@ Scope {
             group: "apps"
         },
         {
+            key: "fatest",
+            label: "SylTest",
+            glyph: Icons.GLYPHS.speed,
+            group: "apps"
+        },
+        {
             key: "switcher",
             label: "Switcher",
             glyph: Icons.GLYPHS.switcher,
@@ -191,7 +197,7 @@ Scope {
     ]
     property string group: "settings"
     property real flip: 1
-    readonly property var shownSections: root.sections.filter(s => s.group === root.group && (s.key !== "diver" || Settings.values.plugins.enabled.diver === true))
+    readonly property var shownSections: root.sections.filter(s => s.group === root.group && (s.key !== "diver" || Settings.values.plugins.enabled.diver === true) && (s.key !== "fatest" || Settings.values.plugins.enabled.fatest === true))
     readonly property var corners: [
         {
             key: "top-left",
@@ -990,6 +996,7 @@ Scope {
                                 weather: weatherPage,
                                 power: powerPage,
                                 diver: diverPage,
+                                fatest: fatestPage,
                                 switcher: switcherPage,
                                 lock: lockPage,
                                 polkit: polkitPage,
@@ -1168,6 +1175,16 @@ Scope {
 
         Loader {
             Component.onCompleted: setSource("../plugins/diver/DiverPage.qml", {
+                host: root
+            })
+        }
+    }
+
+    Component {
+        id: fatestPage
+
+        Loader {
+            Component.onCompleted: setSource("../plugins/fatest/FaTestPage.qml", {
                 host: root
             })
         }

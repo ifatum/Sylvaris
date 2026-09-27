@@ -19,6 +19,9 @@ for steps in "$here"/*.steps; do
     if [ "$name" = niri-toggles ] || [ "$name" = workspaces-niri ]; then
         extra=(env HL_NIRI_SOCKET=/nonexistent PATH="$here/fake-niri:$PATH")
     fi
+    if [ "$name" = fatest ]; then
+        extra=(env PATH="$here/fake-fatest:$PATH")
+    fi
     if [ "$name" = keybinds-sync ]; then
         extra=(env SYLVARIS_DEMO=0)
     fi

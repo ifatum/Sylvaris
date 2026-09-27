@@ -68,6 +68,7 @@ let
     polkit = [ ];
     clip = [ wl-clipboard ];
     access = [ ];
+    fatest = [ ];
     plugins = [ git ];
     sync = [
       python

@@ -6,6 +6,7 @@ All notable changes to Sylvaris are listed here. The format follows [Keep a Chan
 
 ### Added
 
+- Add SylTest, a built-in plugin that runs FaTest speed tests and shares its history
 - Ship Diver and AirPods as built-in plugins that stay off until turned on
 - Scaffold Sylvaris flake, launcher and headless harness
 - Add config and settings validation logic
@@ -95,6 +96,7 @@ All notable changes to Sylvaris are listed here. The format follows [Keep a Chan
 
 ### Fixed
 
+- Center workspace pills and their window dots, and drop closed Hyprland windows from them
 - Address final review findings
 - Open SylvarisCC on the focused output right after startup
 - Pause the orbit under the pointer and tell apart close refresh rates

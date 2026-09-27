@@ -30,7 +30,7 @@ sylvaris set parts.center false   # exclude SylCenter
 sylvaris set parts.center true    # bring it back, no reinstall or reload
 ```
 
-The parts are `access`, `bar`, `capture`, `center`, `clip`, `clock`, `deck`, `diver`, `lock`, `media`, `notify`, `pad`, `paper`, `plugins`, `polkit`, `power`, `settings`, `switcher`, `sync` and `theme`; SylSettings lists them under General. A tool can be left uninstalled once every part in its row is excluded. This is separate from `bar.left`, `bar.center` and `bar.right`, which only choose what the bar shows. With Nix, `programs.sylvaris.parts = { center = false; };` writes the same key into `config.json` and leaves those tools off the package's `PATH`.
+The parts are `access`, `bar`, `capture`, `center`, `clip`, `clock`, `deck`, `diver`, `fatest`, `lock`, `media`, `notify`, `pad`, `paper`, `plugins`, `polkit`, `power`, `settings`, `switcher`, `sync` and `theme`; SylSettings lists them under General. A tool can be left uninstalled once every part in its row is excluded. This is separate from `bar.left`, `bar.center` and `bar.right`, which only choose what the bar shows. With Nix, `programs.sylvaris.parts = { center = false; };` writes the same key into `config.json` and leaves those tools off the package's `PATH`.
 
 ## Start it with your compositor
 
@@ -229,6 +229,8 @@ SylDiver brings [Diver](https://diver.fatum.cc) to the desktop. It is a built-in
 Then days with plans get dots in SylClock's and SylCenter's calendars, clicking a day shows its plan with a field to add to it ("call Ana 18:00" works), reminders become notifications, and tasks marked as alarms take over the screen with a sound until you snooze (5, 10 or 30 minutes), finish or dismiss them. The `diver` bar module counts down to what's next.
 
 `sylvaris diver` opens the planner: Today (overdue, today, the next 7 days), Calendar (month with busy days and a day agenda) and Lists (categories › sections › lists, each addable, renamable and removable). Clicking a task opens its sheet with everything Diver stores: title, notes, date, start and end, repeats (presets or every N days, weeks, months or years on chosen weekdays, ending never, on a date or after N times), reminders, alarm, list, priority, energy, estimate and steps. Unsaved changes are never dropped: Esc or Cancel asks first. Ctrl+Enter saves, Ctrl+1/2/3 switch views, Ctrl+N starts a new task. The target button on a task starts a focus session with a countdown and a notification at the end.
+
+SylTest runs internet speed tests with [FaTest](https://github.com/ifatum/FaTest) 2.1 or newer, which must be on your `PATH`. It is a built-in plugin, off until you turn it on in SylSettings › Plugins or with `sylvaris plugins enable fatest`. `sylvaris fatest` opens it, `sylvaris fatest run` starts a test and `sylvaris fatest stop` cancels one; `state` and `history` print JSON. It shows the server and ping, then live download and upload speeds. Results go into FaTest's own history (`~/.fatest_history.json`), so runs from the terminal show up in SylTest and the other way round. SylSettings › SylTest sets the default country or server through `fatest config`, which the `fatest` command uses as well.
 
 SylClock and SylCenter hand off to it: in a day's plan, clicking a task opens its sheet, the pencil beside "Add to this day" opens a new one for that day with what you typed, and **Diver ›** opens the calendar on that day. `sylvaris clock day <yyyy-mm-dd|today>` opens SylClock on a day.
 
