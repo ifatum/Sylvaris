@@ -12,7 +12,10 @@ Singleton {
     readonly property var cfg: Settings.values.plugins
     property var list: []
     property string problem: ""
-    property bool busy: installer.running
+    property var pending: null
+    readonly property string staging: root.dir + "/.staging"
+    property bool fetching: false
+    property bool busy: root.fetching || mover.running
 
     function refresh(): void {
         scan.running = false;
@@ -62,15 +65,47 @@ Singleton {
         writer.running = true;
     }
 
-    function install(source: string): void {
-        const m = /^https:\/\/[A-Za-z0-9.-]+\/[A-Za-z0-9._\/-]+?\/([a-z0-9][a-z0-9-]{0,39})(\.git)?\/?$/.exec(source || "");
-        if (m === null)
+    function install(source: string): string {
+        const g = P.parseGitSource(source);
+        if (g === null)
             throw new Error("give an https git address whose last part is the plugin id, like https://github.com/you/uptime");
-        if (root.list.some(p => p.id === m[1]))
-            throw new Error(m[1] + " is already installed");
+        if (root.list.some(p => p.id === g.id))
+            throw new Error(g.id + " is already installed");
+        if (root.busy)
+            throw new Error("another install is still running");
         root.problem = "";
-        installer.command = ["git", "clone", "--depth", "1", "--", source, root.dir + "/" + m[1]];
+        root.pending = null;
+        root.fetching = true;
+        installer.target = g;
+        installer.command = ["sh", "-c", "rm -rf \"$1\" && mkdir -p \"$(dirname \"$1\")\" && git clone -q --depth 1 -- \"$0\" \"$1\" 2>&1 && git -C \"$1\" rev-parse HEAD", g.url, root.staging + "/" + g.id];
         installer.running = true;
+        return "fetching " + g.id + "; nothing is installed until you confirm";
+    }
+
+    function pendingText(): string {
+        if (root.fetching)
+            return "fetching";
+        if (root.problem !== "")
+            throw new Error(root.problem);
+        return P.pendingSummary(root.pending);
+    }
+
+    function confirm(): void {
+        if (root.pending === null)
+            throw new Error("nothing is waiting to be installed; start with: sylvaris plugins install <https git address>");
+        if (root.list.some(p => p.id === root.pending.id))
+            throw new Error(root.pending.id + " is already installed");
+        mover.command = ["sh", "-c", "[ ! -e \"$1\" ] && mv -- \"$0\" \"$1\"", root.staging + "/" + root.pending.id, root.dir + "/" + root.pending.id];
+        root.pending = null;
+        mover.running = true;
+    }
+
+    function discard(): void {
+        if (root.pending === null)
+            return;
+        writer.command = ["rm", "-rf", "--", root.staging + "/" + root.pending.id];
+        root.pending = null;
+        writer.running = true;
     }
 
     function remove(id: string): void {
@@ -87,6 +122,9 @@ Singleton {
         return {
             dir: root.dir,
             problem: root.problem,
+            pending: root.pending === null ? null : Object.assign({
+                warning: P.INSTALL_WARNING
+            }, root.pending),
             plugins: root.list.map(p => ({
                         id: p.id,
                         ok: p.ok,
@@ -114,12 +152,29 @@ Singleton {
 
     Process {
         id: installer
-        property string errors: ""
-        stderr: StdioCollector {
-            onStreamFinished: installer.errors = text.trim()
+        property var target: null
+        stdout: StdioCollector {
+            onStreamFinished: {
+                root.fetching = false;
+                const lines = text.trim().split("\n");
+                const commit = P.readCommit(lines[lines.length - 1]);
+                if (commit !== "") {
+                    root.pending = Object.assign({
+                        commit: commit
+                    }, installer.target);
+                    root.problem = "";
+                } else {
+                    root.problem = lines[lines.length - 1] || "git clone failed";
+                }
+            }
         }
+    }
+
+    Process {
+        id: mover
         onExited: code => {
-            root.problem = code === 0 ? "" : installer.errors.split("\n").pop() || "git clone failed";
+            if (code !== 0)
+                root.problem = "could not move the plugin into place; a folder with that name exists";
             root.refresh();
         }
     }

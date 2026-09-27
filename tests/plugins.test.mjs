@@ -1,6 +1,6 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
-import { checkManifest, parseScan, skeleton, validatePlugins, DEFAULT_PLUGINS, isPluginModule, KINDS } from "../shell/lib/plugins.mjs"
+import { checkManifest, parseScan, skeleton, validatePlugins, DEFAULT_PLUGINS, isPluginModule, KINDS, parseGitSource, readCommit, pendingSummary, INSTALL_WARNING } from "../shell/lib/plugins.mjs"
 import { validateBar } from "../shell/lib/bar.mjs"
 
 const good = { id: "uptime", name: "Uptime", version: "1.0.0", kind: "bar", entry: "Plugin.qml", description: "Shows uptime", author: "ada" }
@@ -39,4 +39,31 @@ test("plugins settings and bar modules", () => {
     assert.equal(isPluginModule("plugin:uptime"), true)
     assert.equal(isPluginModule("plugin:../x"), false)
     assert.deepEqual(validateBar({ left: ["pad", "plugin:uptime", "plugin:Bad!"] }).left, ["pad", "plugin:uptime"])
+})
+
+test("parseGitSource takes https git addresses whose last part is the plugin id", () => {
+    assert.deepEqual(parseGitSource("https://github.com/ada/uptime"), { id: "uptime", url: "https://github.com/ada/uptime" })
+    assert.deepEqual(parseGitSource("https://git.example.org/a/b/uptime.git/"), { id: "uptime", url: "https://git.example.org/a/b/uptime.git/" })
+    assert.equal(parseGitSource("http://github.com/ada/uptime"), null)
+    assert.equal(parseGitSource("https://github.com/ada/Up Time"), null)
+    assert.equal(parseGitSource("https://github.com/ada/uptime; rm -rf ~"), null)
+    assert.equal(parseGitSource("--upload-pack=x"), null)
+    assert.equal(parseGitSource(undefined), null)
+})
+
+test("readCommit only accepts a full commit hash", () => {
+    assert.equal(readCommit("0123456789abcdef0123456789abcdef01234567\n"), "0123456789abcdef0123456789abcdef01234567")
+    assert.equal(readCommit("fatal: not a git repository"), "")
+    assert.equal(readCommit("0123456"), "")
+    assert.equal(readCommit(""), "")
+})
+
+test("pendingSummary names the commit and warns about permissions", () => {
+    const text = pendingSummary({ id: "uptime", url: "https://github.com/ada/uptime", commit: "0123456789abcdef0123456789abcdef01234567" })
+    assert.match(text, /uptime/)
+    assert.match(text, /0123456789abcdef0123456789abcdef01234567/)
+    assert.ok(text.indexOf(INSTALL_WARNING) >= 0)
+    assert.match(INSTALL_WARNING, /full user permissions/)
+    assert.match(text, /sylvaris plugins confirm/)
+    assert.equal(pendingSummary(null), "")
 })

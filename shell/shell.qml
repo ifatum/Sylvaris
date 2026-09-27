@@ -704,6 +704,9 @@ ShellRoot {
                 disable: id => Plugins.setEnabled(id || "", false),
                 new: (id, kind) => Plugins.create(id || "", kind || "bar"),
                 install: url => Plugins.install(url || ""),
+                pending: () => Plugins.pendingText(),
+                confirm: () => Plugins.confirm(),
+                discard: () => Plugins.discard(),
                 remove: id => Plugins.remove(id || ""),
                 refresh: () => Plugins.refresh(),
                 state: () => Plugins.state()

@@ -1,0 +1,24 @@
+bg mkdir -p "$HOME/src" "$HOME/.config/git" && cp -r "$SYLVARIS_DIR/../examples/plugins/uptime" "$HOME/src/" && cd "$HOME/src/uptime" && git init -q && git add . && git -c user.name=t -c user.email=t@t commit -qm init && printf '[url "file://%s/src/"]\n\tinsteadOf = https://plugins.example/ada/\n' "$HOME" > "$HOME/.config/git/config"
+sleep 2
+syl plugins install https://plugins.example/ada/uptime
+sleep 2
+syl plugins pending
+check grep -q 'at commit [0-9a-f]\{40\}' "$OUT/ipc.log"
+check grep -q 'full user permissions' "$OUT/ipc.log"
+check [ ! -e "$HOME/.config/sylvaris/plugins/uptime" ]
+syl plugins discard
+sleep 0.8
+check [ ! -e "$HOME/.config/sylvaris/plugins/.staging/uptime" ]
+syl plugins confirm
+syl plugins install https://plugins.example/ada/uptime
+sleep 2
+syl settings open plugins
+sleep 1.5
+shot plugins-install
+syl plugins confirm
+sleep 1.2
+syl plugins list
+check [ -f "$HOME/.config/sylvaris/plugins/uptime/plugin.json" ]
+check grep -q '"id":"uptime","ok":true' "$OUT/ipc.log"
+syl plugins install https://plugins.example/ada/uptime
+check grep -q 'error: uptime is already installed' "$OUT/ipc.log"

@@ -86,3 +86,21 @@ export function validatePlugins(raw) {
     const config = v.config !== null && typeof v.config === "object" && !Array.isArray(v.config) ? v.config : {}
     return Object.assign({}, v, { enabled: enabled, config: config })
 }
+
+export const INSTALL_WARNING = "Plugins run with your full user permissions: they can read and change your files and run any program. Only install code you trust."
+
+export function parseGitSource(source) {
+    const m = /^https:\/\/[A-Za-z0-9.-]+\/[A-Za-z0-9._\/-]+?\/([a-z0-9][a-z0-9-]{0,39})(\.git)?\/?$/.exec(typeof source === "string" ? source : "")
+    return m === null ? null : { id: m[1], url: source }
+}
+
+export function readCommit(text) {
+    const t = String(text || "").trim()
+    return /^[0-9a-f]{40}$/.test(t) ? t : ""
+}
+
+export function pendingSummary(p) {
+    if (p === null || typeof p !== "object")
+        return ""
+    return p.id + " from " + p.url + " at commit " + p.commit + "\n" + INSTALL_WARNING + "\nRun “sylvaris plugins confirm” to install it or “sylvaris plugins discard” to drop it."
+}

@@ -42,7 +42,7 @@ json() {
     printf '[%s]' "$out"
 }
 
-run() {
+request() {
     local reply="" sep=$'\x1f' req
     req="$(printf "%s$sep" "$@")"
     if [ -S "$sock" ] && command -v socat >/dev/null 2>&1; then
@@ -51,6 +51,33 @@ run() {
     if [ -z "$reply" ]; then
         reply="$(qs -p "$dir" ipc call sylvaris run "$req")"
     fi
+    printf '%s\n' "$reply"
+}
+
+install_plugin() {
+    local p="" answer=""
+    run plugins install "$@"
+    for _ in $(seq 600); do
+        p="$(request plugins pending)"
+        [ "$p" = fetching ] || break
+        sleep 0.3
+    done
+    printf '%s\n' "$p"
+    case "$p" in
+    error:* | fetching | "") exit 1 ;;
+    esac
+    if [ -t 0 ]; then
+        read -r -p "Install it? [y/N] " answer || answer=""
+        case "$answer" in
+        y | Y | yes) run plugins confirm ;;
+        *) run plugins discard ;;
+        esac
+    fi
+}
+
+run() {
+    local reply
+    reply="$(request "$@")"
     printf '%s\n' "$reply"
     case "$reply" in
     error:*) exit 1 ;;
@@ -94,6 +121,9 @@ get)
     ;;
 set)
     run settings set "${@:2}"
+    ;;
+plugins)
+    if [ "${2:-}" = install ]; then install_plugin "${@:3}"; else run "$@"; fi
     ;;
 watch)
     { json watch "${@:2}"; echo; } | socat -,ignoreeof "UNIX-CONNECT:$sock"

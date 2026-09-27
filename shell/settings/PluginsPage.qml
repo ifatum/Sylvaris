@@ -4,6 +4,7 @@ import qs
 import qs.services
 import qs.components
 import "../lib/icons.mjs" as Icons
+import "../lib/plugins.mjs" as P
 
 Column {
     id: root
@@ -130,7 +131,7 @@ Column {
 
     Card {
         title: "Install from Git"
-        note: "Clones a plugin into the plugins folder. It stays off until you turn it on above."
+        note: "Fetches the plugin and shows the exact commit before anything is installed. It stays off until you turn it on above."
 
         Row {
             width: parent.width
@@ -145,12 +146,62 @@ Column {
             Chip {
                 id: installChip
                 anchors.verticalCenter: parent.verticalCenter
-                text: Plugins.busy ? "Installing…" : "Install"
+                text: Plugins.fetching ? "Fetching…" : "Install"
                 glyph: Icons.GLYPHS.web
                 onClicked: root.attempt(() => {
                     Plugins.install(gitUrl.text.trim());
                     gitUrl.text = "";
                 })
+            }
+        }
+
+        Column {
+            width: parent.width
+            visible: Plugins.pending !== null
+            topPadding: 12
+            spacing: 8
+
+            Text {
+                width: parent.width
+                wrapMode: Text.Wrap
+                text: Plugins.pending === null ? "" : "Ready to install " + Plugins.pending.id + " from " + Plugins.pending.url
+                color: Theme.text
+                font.family: Tokens.fontUi
+                font.pixelSize: Tokens.bodySize
+            }
+
+            Text {
+                width: parent.width
+                wrapMode: Text.WrapAnywhere
+                text: Plugins.pending === null ? "" : "Commit " + Plugins.pending.commit
+                color: Theme.textSoft
+                font.family: Tokens.fontMono
+                font.pixelSize: Tokens.smallSize
+            }
+
+            Text {
+                width: parent.width
+                wrapMode: Text.Wrap
+                text: P.INSTALL_WARNING
+                color: Theme.danger
+                font.family: Tokens.fontUi
+                font.pixelSize: Tokens.smallSize
+            }
+
+            Row {
+                spacing: 8
+
+                Chip {
+                    text: "Install this commit"
+                    glyph: Icons.GLYPHS.shield
+                    onClicked: root.attempt(() => Plugins.confirm())
+                }
+
+                Chip {
+                    text: "Discard"
+                    glyph: Icons.GLYPHS.close
+                    onClicked: root.attempt(() => Plugins.discard())
+                }
             }
         }
 
