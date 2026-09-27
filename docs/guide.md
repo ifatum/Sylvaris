@@ -280,7 +280,29 @@ A clipboard history: `sylvaris clip toggle` opens it with a search field. Arrows
 
 ## SylCapture
 
-`sylvaris capture toggle` opens a small panel for screenshots and recordings. Shots can be an area, a window (click it) or the whole screen, with an optional delay; they are copied and saved to `~/Pictures/Screenshots`. Recordings of an area or a screen, optionally with desktop sound, go to `~/Videos/Recordings`, and a red pill with the time lets you stop them. For keys: `capture shot area|window|screen`, `capture record area|screen`, `capture stop`.
+`sylvaris capture toggle` opens a small panel for screenshots and recordings. Shots can be an area, a window (click it) or the whole screen, with an optional delay; they are copied and saved to `~/Pictures/Screenshots`. Recordings of an area or a screen, optionally with sound, go to `~/Videos/Recordings`, and a red pill with the time lets you stop them. For keys: `capture shot area|window|screen`, `capture record area|screen`, `capture stop`, `capture edit [file]`.
+
+`sylvaris capture edit` opens the last screenshot, or any image you name, in the editor. It has a pen, highlighter, line, arrow, rectangle, ellipse, text, pixelate and crop, a colour row that starts with your theme's accent, three widths, and undo and redo for every step. Copy puts the result on the clipboard; Save writes it next to the original as `… edited.png`, at full resolution. Keys: `P` `H` `L` `A` `R` `E` `T` `X` `C` pick a tool, `1` to `3` the width, `Ctrl+Z` and `Ctrl+Shift+Z` undo and redo, `Delete` clears, `Ctrl+C` copies, `Ctrl+S` saves, `Esc` closes. Set `capture.after` to `edit` to open every new screenshot in it.
+
+| Setting | Default | Values |
+|---|---|---|
+| `capture.folder`, `capture.videos` | `~/Pictures/Screenshots`, `~/Videos/Recordings` | any folder |
+| `capture.copy`, `capture.save` | `true`, `true` | copy to the clipboard, save a file |
+| `capture.format`, `capture.quality` | `png`, `90` | `png` or `jpeg`; JPEG quality 1–100 |
+| `capture.cursor` | `false` | include the pointer |
+| `capture.scale` | `0` | `0` (sharpest screen scale), `0.5`, `1`, `2` |
+| `capture.delay` | `0` | `0`, `3`, `5`, `10` seconds |
+| `capture.after` | `notify` | `notify`, `edit`, `none` |
+| `capture.pattern` | `{kind} {date} {time}` | file name; `{kind}`, `{date}` and `{time}` are filled in |
+| `capture.fps` | `0` | `0` (only when the screen changes), `24`, `30`, `60`, `120` |
+| `capture.resolution` | `native` | `native`, `2160`, `1440`, `1080`, `720` |
+| `capture.codec` | `h264` | `h264`, `h265`, `vp9` (saved as WebM), `vaapi` (H.264 on the GPU) |
+| `capture.container` | `mp4` | `mp4`, `mkv` |
+| `capture.videoQuality` | `balanced` | `high`, `balanced`, `small` |
+| `capture.audio`, `capture.audioSource` | `false`, `output` | record sound from the `output` or the `mic` |
+| `capture.constant` | `false` | record every frame for a steady frame rate |
+| `capture.countdown` | `0` | `0`, `3`, `5`, `10` seconds before recording starts |
+| `capture.limit` | `0` | stop after `1`, `5`, `10`, `30` or `60` minutes; `0` never |
 
 ## SylAccessibility
 

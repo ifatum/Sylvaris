@@ -728,6 +728,7 @@ ShellRoot {
                 shot: mode => root.need("capture").shoot(mode || "region"),
                 record: mode => root.need("capture").record(mode || "region"),
                 stop: () => root.need("capture").stop(),
+                edit: (...file) => root.need("capture").edit(file.join(" ")),
                 state: () => root.need("capture").state()
             },
             clip: {

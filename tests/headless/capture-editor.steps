@@ -1,0 +1,48 @@
+sleep 1.5
+write sylvaris/settings.json {"version":1,"capture":{"copy":false,"after":"none"}}
+sleep 1
+syl capture shot screen
+sleep 2
+syl capture edit
+sleep 1.5
+syl state capture
+check grep -q '"loaded":true' "$OUT/ipc.log"
+bg wtype -k Shift_L x
+sleep 0.3
+pointer move 170 116 mousedown 1 move 820 200 mouseup 1
+bg wtype -k Shift_L a
+sleep 0.3
+pointer move 700 500 mousedown 1 move 900 650 move 1100 800 mouseup 1
+bg wtype -k Shift_L r
+sleep 0.3
+pointer move 1300 400 mousedown 1 move 1700 700 mouseup 1
+bg wtype -k Shift_L t
+sleep 0.3
+pointer move 1300 900 click 1
+sleep 0.3
+bg wtype -k Shift_L Hello
+sleep 0.3
+bg wtype -k Shift_L -k Return
+sleep 0.5
+shot capture-editor
+syl state capture
+check tail -n 3 "$OUT/ipc.log" | grep -q '"marks":4'
+bg wtype -k Shift_L -M ctrl z -m ctrl
+sleep 0.4
+syl state capture
+check tail -n 3 "$OUT/ipc.log" | grep -q '"marks":3,"undo":1'
+bg wtype -k Shift_L -M ctrl -M shift z -m shift -m ctrl
+sleep 0.4
+bg wtype -k Shift_L -M ctrl s -m ctrl
+sleep 1.5
+check ls "$HOME/Pictures/Screenshots/" | grep -q ' edited.png$'
+bg wtype -k Shift_L c
+sleep 0.3
+pointer move 250 250 mousedown 1 move 1800 1000 mouseup 1
+sleep 0.5
+syl state capture
+check tail -n 3 "$OUT/ipc.log" | grep -q '"crop":{"x":[0-9]*,"y":[0-9]*,"w":[0-9]*,"h":[0-9]*}'
+bg wtype -k Shift_L -k Escape
+sleep 0.8
+syl state capture
+check tail -n 3 "$OUT/ipc.log" | grep -q '"editor":null'

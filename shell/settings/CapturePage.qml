@@ -3,13 +3,112 @@ import qs
 import qs.services
 import qs.components
 import "../lib/icons.mjs" as Icons
+import "../lib/capture.mjs" as K
 
 Column {
     id: root
 
     readonly property var cfg: Settings.values.capture
+    readonly property var shotChoices: [
+        {
+            key: "format",
+            title: "File format",
+            subtitle: "PNG keeps every pixel; JPEG makes much smaller files",
+            options: [["png", "PNG"], ["jpeg", "JPEG"]]
+        },
+        {
+            key: "scale",
+            title: "Scale",
+            subtitle: "Automatic uses the sharpest scale of your screens",
+            options: [[0, "Auto"], [0.5, "½×"], [1, "1×"], [2, "2×"]]
+        },
+        {
+            key: "after",
+            title: "After taking one",
+            subtitle: "What happens once the screenshot is taken",
+            options: [["notify", "Notify"], ["edit", "Open editor"], ["none", "Nothing"]]
+        },
+        {
+            key: "delay",
+            title: "Delay",
+            subtitle: "Time to open a menu before the shot",
+            options: K.DELAYS.map(d => [d, d === 0 ? "None" : d + " s"])
+        }
+    ]
+    readonly property var videoChoices: [
+        {
+            key: "fps",
+            title: "Frame rate",
+            subtitle: "Auto records only when the screen changes, which keeps files small",
+            options: K.FPS.map(f => [f, f === 0 ? "Auto" : String(f)])
+        },
+        {
+            key: "resolution",
+            title: "Resolution",
+            subtitle: "Scales the video down to this height",
+            options: K.RESOLUTIONS.map(r => [r, r === "native" ? "Native" : r + "p"])
+        },
+        {
+            key: "codec",
+            title: "Codec",
+            subtitle: root.cfg.codec === "vaapi" ? "Encodes on the GPU with VA-API (H.264); lightest on the CPU" : root.cfg.codec === "vp9" ? "VP9 saves as WebM" : "H.265 is smaller than H.264 but plays in fewer places",
+            options: [["h264", "H.264"], ["h265", "H.265"], ["vp9", "VP9"], ["vaapi", "GPU"]]
+        },
+        {
+            key: "container",
+            title: "File type",
+            subtitle: root.cfg.codec === "vp9" ? "VP9 always saves as WebM" : "MKV survives a crash mid-recording",
+            options: [["mp4", "MP4"], ["mkv", "MKV"]]
+        },
+        {
+            key: "videoQuality",
+            title: "Quality",
+            subtitle: "Higher quality means bigger files",
+            options: [["high", "High"], ["balanced", "Balanced"], ["small", "Small"]]
+        },
+        {
+            key: "countdown",
+            title: "Countdown",
+            subtitle: "Waits after you pick the area, with the time shown on screen",
+            options: K.DELAYS.map(d => [d, d === 0 ? "None" : d + " s"])
+        },
+        {
+            key: "limit",
+            title: "Stop automatically",
+            subtitle: "Ends the recording after this long",
+            options: K.LIMITS.map(m => [m, m === 0 ? "Never" : m + " min"])
+        }
+    ]
+
+    function example(): string {
+        return K.fileName("shot", new Date(), root.cfg);
+    }
 
     spacing: 24
+
+    component Choice: SettingRow {
+        id: choice
+
+        required property var modelData
+        required property int index
+
+        title: modelData.title
+        subtitle: modelData.subtitle
+        last: false
+
+        Segmented {
+            width: Math.min(360, 86 * choice.modelData.options.length)
+            options: choice.modelData.options.map(o => ({
+                        key: String(o[0]),
+                        label: o[1]
+                    }))
+            current: String(root.cfg[choice.modelData.key])
+            onPicked: key => {
+                const hit = choice.modelData.options.find(o => String(o[0]) === key);
+                Settings.set("capture." + choice.modelData.key, hit[0]);
+            }
+        }
+    }
 
     Card {
         title: "Screenshots"
@@ -102,18 +201,69 @@ Column {
         }
 
         SettingRow {
-            title: "Delay"
+            title: "Screenshots folder"
+            subtitle: "Where screenshots are saved; ~ is your home"
+
+            TextBox {
+                width: 260
+                text: root.cfg.folder
+                placeholder: "~/Pictures/Screenshots"
+                onAccepted: Settings.set("capture.folder", text.trim() === "" ? "~/Pictures/Screenshots" : text.trim())
+            }
+        }
+
+        SettingRow {
+            title: "JPEG quality"
+            subtitle: "Only used for JPEG files"
+            visible: root.cfg.format === "jpeg"
+
+            Stepper {
+                value: root.cfg.quality
+                from: 10
+                to: 100
+                step: 5
+                suffix: " %"
+                onStepped: v => Settings.set("capture.quality", v)
+            }
+        }
+
+        SettingRow {
+            title: "Include the pointer"
+
+            Toggle {
+                checked: root.cfg.cursor
+                onToggled: v => Settings.set("capture.cursor", v)
+            }
+        }
+
+        Repeater {
+            model: root.shotChoices
+
+            delegate: Choice {}
+        }
+
+        SettingRow {
+            title: "File name"
+            subtitle: "{kind}, {date} and {time} are filled in: " + root.example()
             last: true
 
-            Segmented {
+            TextBox {
                 width: 260
-                options: [0, 3, 5, 10].map(d => ({
-                            key: String(d),
-                            label: d === 0 ? "None" : d + " s"
-                        }))
-                current: String(root.cfg.delay)
-                onPicked: key => Settings.set("capture.delay", Number(key))
+                text: root.cfg.pattern
+                placeholder: "{kind} {date} {time}"
+                onAccepted: Settings.set("capture.pattern", text.trim() === "" ? "{kind} {date} {time}" : text)
             }
+        }
+    }
+
+    Card {
+        title: "Editing"
+        note: "“sylvaris capture edit” opens the last screenshot, or any image you name, in the editor: pen, highlighter, line, arrow, rectangle, ellipse, text, pixelate and crop, with undo. Keys: P H L A R E T X C pick a tool, 1–3 the width, Ctrl+Z undo, Ctrl+Shift+Z redo, Ctrl+C copy, Ctrl+S saves a copy next to the original, Esc closes."
+
+        RowButton {
+            icon: Icons.GLYPHS.imageEdit
+            label: "Edit the last screenshot"
+            onClicked: Ipc.run(["capture", "edit"])
         }
     }
 
@@ -122,13 +272,62 @@ Column {
         note: "Start with “sylvaris capture record area” or “… record screen” and stop with “sylvaris capture stop” or the red button that shows while recording. Videos go to " + root.cfg.videos + "."
 
         SettingRow {
-            title: "Record desktop sound"
-            subtitle: "What you hear through your speakers or headphones"
-            last: true
+            title: "Videos folder"
+            subtitle: "Where recordings are saved; ~ is your home"
+
+            TextBox {
+                width: 260
+                text: root.cfg.videos
+                placeholder: "~/Videos/Recordings"
+                onAccepted: Settings.set("capture.videos", text.trim() === "" ? "~/Videos/Recordings" : text.trim())
+            }
+        }
+
+        Repeater {
+            model: root.videoChoices
+
+            delegate: Choice {}
+        }
+
+        SettingRow {
+            title: "Steady frame rate"
+            subtitle: "Records every frame even when nothing moves; smoother in editors, bigger files"
+
+            Toggle {
+                checked: root.cfg.constant
+                onToggled: v => Settings.set("capture.constant", v)
+            }
+        }
+
+        SettingRow {
+            title: "Record sound"
+            subtitle: "Needs PipeWire or PulseAudio"
 
             Toggle {
                 checked: root.cfg.audio
                 onToggled: v => Settings.set("capture.audio", v)
+            }
+        }
+
+        SettingRow {
+            title: "Sound from"
+            last: true
+            visible: root.cfg.audio
+
+            Segmented {
+                width: 260
+                options: [
+                    {
+                        key: "output",
+                        label: "Speakers"
+                    },
+                    {
+                        key: "mic",
+                        label: "Microphone"
+                    }
+                ]
+                current: root.cfg.audioSource
+                onPicked: key => Settings.set("capture.audioSource", key)
             }
         }
     }

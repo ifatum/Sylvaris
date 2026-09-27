@@ -137,6 +137,18 @@ export const GLYPHS = {
     target: g(0xF04FE),
     trash: g(0xF01B4),
     pencil: g(0xF03EB),
+    highlighter: g(0xF0652),
+    line: g(0xF0374),
+    arrow: g(0xF005C),
+    rectangle: g(0xF0763),
+    ellipse: g(0xF0766),
+    text: g(0xF0284),
+    pixelate: g(0xF00B5),
+    crop: g(0xF019E),
+    undo: g(0xF054C),
+    redo: g(0xF044E),
+    save: g(0xF0193),
+    imageEdit: g(0xF021B),
     shuffleVariant: g(0xF049D)
 }
 

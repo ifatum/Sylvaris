@@ -167,7 +167,22 @@
     "copy": true,
     "save": true,
     "delay": 0,
-    "audio": false
+    "audio": false,
+    "format": "png",
+    "quality": 90,
+    "cursor": false,
+    "scale": 0,
+    "after": "notify",
+    "pattern": "{kind} {date} {time}",
+    "fps": 0,
+    "resolution": "native",
+    "codec": "h264",
+    "container": "mp4",
+    "videoQuality": "balanced",
+    "audioSource": "output",
+    "constant": false,
+    "limit": 0,
+    "countdown": 0
   },
   "access": {
     "zoom": 1,

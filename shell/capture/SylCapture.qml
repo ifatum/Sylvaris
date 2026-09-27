@@ -20,6 +20,9 @@ Popup {
     property string problem: ""
     property real recordStart: 0
     property real tick: 0
+    property bool started: false
+    property real waitUntil: 0
+    property string editing: ""
     readonly property bool recording: recorder.running
 
     namespace: "sylcapture"
@@ -59,12 +62,23 @@ Popup {
             recorder.signal(2);
     }
 
+    function edit(file: string): void {
+        const f = file || root.last;
+        if (f === "")
+            throw new Error("take a screenshot first, or give a file: capture edit <path>");
+        root.close();
+        root.editing = "";
+        root.editing = f;
+    }
+
     function state(): var {
         return {
             open: root.shown,
             recording: root.recording,
+            started: root.started,
             last: root.last,
-            problem: root.problem
+            problem: root.problem,
+            editor: editorLoader.item ? editorLoader.item.state() : null
         };
     }
 
@@ -78,14 +92,16 @@ Popup {
         interval: 320
         onTriggered: {
             const out = Compositor.focusedName();
-            const dir = K.expand(root.kind === "video" ? root.cfg.videos : root.cfg.folder, root.home);
-            const name = K.fileName(root.kind, new Date());
+            const c = root.cfg;
+            const dir = K.expand(root.kind === "video" ? c.videos : c.folder, root.home);
+            const name = K.fileName(root.kind, new Date(), c);
             if (root.kind === "video") {
-                recorder.command = ["sh", "-c", "mkdir -p \"$0\"; f=\"$0/$1\"; if [ \"$2\" = region ]; then g=$(slurp -d </dev/null) || exit 3; set -- -g \"$g\"; else set -- -o \"$3\"; fi; if [ \"$4\" = 1 ]; then set -- \"$@\" \"--audio=$(pactl get-default-sink).monitor\"; fi; echo \"$f\"; exec wf-recorder \"$@\" -f \"$f\"", dir, name, root.mode, out, root.cfg.audio ? "1" : "0"];
+                root.started = false;
+                root.waitUntil = 0;
+                recorder.command = ["sh", Quickshell.shellDir + "/helpers/capture-record.sh", dir, name, root.mode, out, c.audio ? c.audioSource : "none", String(c.countdown)].concat(K.recorderArgs(c, ""));
                 recorder.running = true;
-                root.recordStart = Date.now();
             } else {
-                shooter.command = ["sh", "-c", "mkdir -p \"$0\"; f=\"$0/$1\"; [ \"$5\" = 1 ] || f=\"${XDG_RUNTIME_DIR:-/tmp}/sylvaris-shot.png\"; case \"$2\" in region) g=$(slurp -d </dev/null) || exit 3 ;; window) g=$(printf '%s\\n' \"$6\" | slurp -r) || exit 3 ;; *) g= ;; esac; sleep \"$3\"; if [ -n \"$g\" ]; then grim -g \"$g\" \"$f\"; else grim -o \"$7\" \"$f\"; fi || exit 4; [ \"$4\" = 1 ] && wl-copy -t image/png < \"$f\"; echo \"$f\"", dir, name, root.mode, String(root.cfg.delay), root.cfg.copy ? "1" : "0", root.cfg.save ? "1" : "0", root.rects.join("\n"), out];
+                shooter.command = ["sh", Quickshell.shellDir + "/helpers/capture-shot.sh", dir, name, root.mode, String(c.delay), c.copy ? "1" : "0", c.save ? "1" : "0", root.rects.join("\n"), out, c.format === "jpeg" ? "image/jpeg" : "image/png"].concat(K.grimArgs(c));
                 shooter.running = true;
             }
         }
@@ -115,7 +131,10 @@ Popup {
                 const f = text.trim();
                 if (f !== "") {
                     root.last = f;
-                    root.notify(root.cfg.save ? "Screenshot saved" : "Screenshot copied", f);
+                    if (root.cfg.after === "edit")
+                        root.edit(f);
+                    else if (root.cfg.after === "notify")
+                        root.notify(root.cfg.save ? "Screenshot saved" : "Screenshot copied", f);
                 }
             }
         }
@@ -129,14 +148,29 @@ Popup {
         id: recorder
         stdout: SplitParser {
             onRead: line => {
-                if (line.indexOf("/") === 0)
+                if (line.indexOf("wait ") === 0) {
+                    root.waitUntil = Date.now() + Number(line.slice(5)) * 1000;
+                } else if (line.indexOf("/") === 0) {
                     root.last = line;
+                    root.recordStart = Date.now();
+                    root.started = true;
+                }
             }
         }
         onExited: code => {
-            if (root.last !== "" && code !== 3)
+            if (root.started && code !== 3)
                 root.notify("Recording saved", root.last);
+            else if (code === 4)
+                root.problem = "could not create " + root.cfg.videos;
+            root.started = false;
+            root.waitUntil = 0;
         }
+    }
+
+    Timer {
+        running: root.started && root.cfg.limit > 0
+        interval: root.cfg.limit * 60000
+        onTriggered: root.stop()
     }
 
     Timer {
@@ -148,7 +182,18 @@ Popup {
     }
 
     LazyLoader {
-        active: root.recording
+        id: editorLoader
+        active: root.editing !== ""
+
+        CaptureEditor {
+            file: root.editing
+            screenInfo: Compositor.screenFor(Compositor.focusedName())
+            onDone: root.editing = ""
+        }
+    }
+
+    LazyLoader {
+        active: root.recording && (root.started || root.waitUntil > 0)
 
         PanelWindow {
             anchors.top: true
@@ -200,7 +245,7 @@ Popup {
 
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
-                        text: K.elapsed(root.tick - root.recordStart)
+                        text: root.started ? K.elapsed(root.tick - root.recordStart) : "Starts in " + Math.max(1, Math.ceil((root.waitUntil - root.tick) / 1000))
                         color: Theme.text
                         font.family: Tokens.fontMono
                         font.pixelSize: Tokens.bodySize
@@ -256,6 +301,59 @@ Popup {
                 font.family: Tokens.fontUi
                 font.pixelSize: Tokens.titleSize
                 font.weight: Font.DemiBold
+            }
+        }
+
+        Item {
+            id: editPill
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: -6
+            width: editRow.implicitWidth + 24
+            height: 32
+            visible: /\.(png|jpe?g)$/i.test(root.last)
+            scale: editArea.pressed ? 0.95 : 1
+
+            Behavior on scale {
+                NumberAnimation {
+                    duration: Tokens.stateDuration
+                }
+            }
+
+            Glass {
+                anchors.fill: parent
+                radius: height / 2
+                inner: true
+                hot: editArea.containsMouse
+            }
+
+            Row {
+                id: editRow
+                anchors.centerIn: parent
+                spacing: 6
+
+                Glyph {
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: Icons.GLYPHS.imageEdit
+                    size: 15
+                    color: Theme.accent
+                }
+
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: "Edit last"
+                    color: Theme.text
+                    font.family: Tokens.fontUi
+                    font.pixelSize: Tokens.smallSize
+                }
+            }
+
+            MouseArea {
+                id: editArea
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: root.edit("")
             }
         }
 
@@ -419,7 +517,7 @@ Popup {
             }
 
             Text {
-                width: parent.width
+                width: parent.width - (editPill.visible ? editPill.width + 12 : 0)
                 text: root.problem !== "" ? root.problem : root.kind === "video" ? "Saves to " + root.cfg.videos : (root.cfg.copy ? "Copies to the clipboard" : "") + (root.cfg.copy && root.cfg.save ? " and saves to " : root.cfg.save ? "Saves to " : "") + (root.cfg.save ? root.cfg.folder : "")
                 elide: Text.ElideMiddle
                 color: root.problem !== "" ? Theme.danger : Theme.textDim
