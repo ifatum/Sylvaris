@@ -25,6 +25,7 @@ Scope {
     property string pending: ""
     property var installed: []
     property real now: Date.now()
+    property bool quitting: false
     readonly property string stateFile: (Quickshell.env("XDG_RUNTIME_DIR") || "/tmp") + "/sylvaris/lock.json"
     readonly property string service: root.testDir !== "" ? "sylvaris-test" : L.pamService(root.cfg.pam, root.installed)
 
@@ -36,9 +37,9 @@ Scope {
     }
 
     function relock(): void {
-        quit.stop();
-        if (root.locked)
+        if (root.quitting || root.locked)
             return;
+        quit.stop();
         root.typed = "";
         root.message = "";
         root.error = false;
@@ -164,7 +165,10 @@ Scope {
     Timer {
         id: quit
         interval: 300
-        onTriggered: Qt.quit()
+        onTriggered: {
+            root.quitting = true;
+            Qt.quit();
+        }
     }
 
     Timer {

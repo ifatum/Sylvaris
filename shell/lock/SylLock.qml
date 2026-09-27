@@ -23,7 +23,7 @@ Scope {
         root.opened();
         root.problem = "";
         root.confirmed = false;
-        Quickshell.execDetached(["sh", "-c", "mkdir -p \"$(dirname \"$1\")\" && { qs -p \"$0\" ipc call sylvaris run lock >/dev/null 2>&1 || exec qs -p \"$0\" -n; }", Quickshell.shellDir + "/lock.qml", root.stateFile]);
+        Quickshell.execDetached(["sh", "-c", "mkdir -p \"$(dirname \"$1\")\"; i=0; while [ $i -lt 50 ]; do r=$(qs -p \"$0\" ipc call sylvaris run lock 2>/dev/null) || exec qs -p \"$0\" -n; case $r in *'\"locked\":true'*) exit 0 ;; esac; sleep 0.1; i=$((i + 1)); done; exit 1", Quickshell.shellDir + "/lock.qml", root.stateFile]);
         watchdog.restart();
     }
 
