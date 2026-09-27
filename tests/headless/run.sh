@@ -132,6 +132,18 @@ while read -r cmd rest; do
     killshell)
         kill -9 "$qs_pid"
         ;;
+    pointer)
+        if [ -z "${vnc_port:-}" ]; then
+            vnc_port=$((5900 + $$ % 1000))
+            "${hl_env[@]}" wayvnc 127.0.0.1 "$vnc_port" >"$out/wayvnc.log" 2>&1 &
+            for _ in $(seq 50); do
+                vncdo -s "127.0.0.1::$vnc_port" pause 0 >/dev/null 2>&1 && break
+                sleep 0.1
+            done
+        fi
+        read -r -a args <<<"$rest"
+        vncdo -s "127.0.0.1::$vnc_port" "${args[@]}" >>"$out/ipc.log" 2>&1 || printf 'pointer failed: %s\n' "$rest" >>"$out/ipc.log"
+        ;;
     write)
         target="$home/.config/${rest%% *}"
         mkdir -p "$(dirname "$target")"

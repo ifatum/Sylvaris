@@ -12,7 +12,7 @@ cd Sylvaris
 nix develop
 ```
 
-Without Nix, install `quickshell` (0.3.1 or newer), `nodejs`, `qt6-declarative` (for `qmllint`), `sway`, `grim`, `socat`, `jq`, `wtype`, `wlrctl`, `dbus`, `libnotify`, `wlr-randr` and `wlsunset` from your distribution.
+Without Nix, install `quickshell` (0.3.1 or newer), `nodejs`, `qt6-declarative` (for `qmllint`), `sway`, `grim`, `socat`, `jq`, `wtype`, `wlrctl`, `wayvnc`, `vncdotool`, `dbus`, `libnotify`, `wlr-randr` and `wlsunset` from your distribution.
 
 Run your working copy with `SYLVARIS_DIR=$PWD/shell bin/sylvaris`. Stop your normal Sylvaris first, or test in the headless harness below instead. If `SYLVARIS_DIR` is already set in your environment (the Nix package sets a default), it points the CLI and the harness at the installed copy; unset it or set it to your checkout.
 
@@ -47,6 +47,7 @@ New logic in `shell/lib` comes with a failing node test first. New or changed be
 | `sway <args>` | run `swaymsg` |
 | `check <shell>` | assert: the run fails if the command exits non-zero (`$OUT` is the output folder, `$SHELL_PID` the shell's process) |
 | `killshell` | kill the main shell process with SIGKILL |
+| `pointer <vncdo commands>` | real pointer input through wayvnc, e.g. `pointer move 400 300 click 1` or `pointer move 10 10 mousedown 1 drag 200 120 mouseup 1` |
 | `mark <label>` | write a timestamp to `ipc.log` |
 
 `wtype` drops the first key of each call, so steps type `wtype -k Shift_L <text>`. Useful variables: `SYLVARIS_DEMO=0` (real services), `SYLVARIS_PAM_DIR` (test PAM services in `tests/fixtures/pam`), `HL_ENTRY` (another entry file, e.g. `greet.qml`), `HL_RENDERER=gles2 HL_QT_BACKEND=rhi` (render with OpenGL, which album art and theme photos need; software rendering is the default).
