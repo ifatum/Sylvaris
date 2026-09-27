@@ -6,6 +6,7 @@ import qs
 import qs.services
 import qs.components
 import "../lib/capture.mjs" as K
+import "../lib/annotate.mjs" as A
 import "../lib/icons.mjs" as Icons
 
 Popup {
@@ -23,6 +24,7 @@ Popup {
     property bool started: false
     property real waitUntil: 0
     property string editing: ""
+    property string editTarget: ""
     readonly property bool recording: recorder.running
 
     namespace: "sylcapture"
@@ -59,15 +61,23 @@ Popup {
 
     function stop(): void {
         if (root.recording)
-            recorder.signal(2);
+            recorder.signal(root.started ? 2 : 15);
     }
 
     function edit(file: string): void {
         const f = file || root.last;
         if (f === "")
             throw new Error("take a screenshot first, or give a file: capture edit <path>");
+        const runtime = (Quickshell.env("XDG_RUNTIME_DIR") || "/tmp") + "/";
+        const dir = K.expand(root.cfg.folder, root.home);
+        const temporary = f.indexOf(runtime) === 0;
+        if (temporary)
+            Quickshell.execDetached(["mkdir", "-p", dir]);
         root.close();
         root.editing = "";
+        root.editTarget = temporary ? dir + "/" + A.editedName(K.fileName("shot", new Date(), Object.assign({}, root.cfg, {
+            format: "png"
+        }))) : A.editedName(f);
         root.editing = f;
     }
 
@@ -158,8 +168,10 @@ Popup {
             }
         }
         onExited: code => {
-            if (root.started && code !== 3)
+            if (root.started && code === 0)
                 root.notify("Recording saved", root.last);
+            else if (root.started)
+                root.problem = "the recording failed: wf-recorder stopped with code " + code;
             else if (code === 4)
                 root.problem = "could not create " + root.cfg.videos;
             root.started = false;
@@ -187,6 +199,7 @@ Popup {
 
         CaptureEditor {
             file: root.editing
+            saveTo: root.editTarget
             screenInfo: Compositor.screenFor(Compositor.focusedName())
             onDone: root.editing = ""
         }

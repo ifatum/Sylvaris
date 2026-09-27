@@ -1,0 +1,22 @@
+sleep 1.5
+write sylvaris/settings.json {"version":1,"capture":{"countdown":5,"pattern":"fixed"}}
+sleep 1
+syl capture record screen
+sleep 2
+syl capture stop
+sleep 5
+syl state capture
+check ! ls "$HOME/Videos/Recordings/" 2>/dev/null | grep -q .
+syl set capture.countdown 0
+syl capture record screen
+sleep 2
+syl capture stop
+sleep 2
+syl state capture
+check tail -n 3 "$OUT/ipc.log" | grep -q "\"problem\":\"\""
+syl capture record screen
+sleep 2
+syl capture stop
+sleep 2
+check [ -s "$HOME/Videos/Recordings/fixed (2).mp4" ]
+check [ -s "$HOME/Videos/Recordings/fixed.mp4" ]

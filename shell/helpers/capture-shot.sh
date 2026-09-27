@@ -12,6 +12,11 @@ shift 9
 if [ "$save" = 1 ]; then
     mkdir -p "$dir" || exit 4
     file="$dir/$name"
+    n=2
+    while [ -e "$file" ]; do
+        file="$dir/${name%.*} ($n).${name##*.}"
+        n=$((n + 1))
+    done
 else
     file="${XDG_RUNTIME_DIR:-/tmp}/sylvaris-shot.${name##*.}"
 fi

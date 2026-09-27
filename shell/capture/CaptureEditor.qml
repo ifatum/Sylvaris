@@ -11,6 +11,7 @@ Scope {
     id: root
 
     property string file: ""
+    property string saveTo: A.editedName(root.file)
     property var screenInfo: null
     property string tool: "arrow"
     property color ink: A.INKS[0]
@@ -147,10 +148,16 @@ Scope {
     }
 
     function commitText(): void {
-        if (root.typing === null)
-            return;
-        root.add(Object.assign({}, root.typing));
-        root.typing = null;
+        if (root.typing !== null) {
+            root.add(Object.assign({}, root.typing));
+            root.typing = null;
+        }
+        if (winLoader.item)
+            winLoader.item.refocus();
+    }
+
+    function url(path: string): string {
+        return "file://" + path.split("/").map(encodeURIComponent).join("/");
     }
 
     function exportTo(path: string, then: var): void {
@@ -171,7 +178,7 @@ Scope {
     }
 
     function save(): void {
-        root.exportTo(A.editedName(root.file), path => {
+        root.exportTo(root.saveTo, path => {
             root.saved = path;
             if (!Demo.enabled)
                 Quickshell.execDetached(["notify-send", "-a", "Sylvaris", "-i", path, "Edited screenshot saved", path]);
@@ -183,6 +190,40 @@ Scope {
             root.saved = path;
             Quickshell.execDetached(["sh", "-c", "wl-copy -t image/png < \"$0\" >/dev/null 2>&1", path]);
         });
+    }
+
+    function paintMark(ctx: var, m: var): void {
+        ctx.globalAlpha = m.tool === "highlighter" ? 0.35 : 1;
+        ctx.strokeStyle = m.color;
+        ctx.fillStyle = m.color;
+        ctx.lineWidth = m.tool === "highlighter" ? m.width * 4 : m.width;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.beginPath();
+        if (m.points !== undefined) {
+            ctx.moveTo(m.points[0].x, m.points[0].y);
+            for (let i = 1; i < m.points.length; i++)
+                ctx.lineTo(m.points[i].x, m.points[i].y);
+            ctx.stroke();
+        } else if (m.tool === "line" || m.tool === "arrow") {
+            ctx.moveTo(m.from.x, m.from.y);
+            ctx.lineTo(m.to.x, m.to.y);
+            ctx.stroke();
+            if (m.tool === "arrow") {
+                const w = A.arrowHead(m.from.x, m.from.y, m.to.x, m.to.y, Math.max(14, m.width * 4.5));
+                ctx.beginPath();
+                ctx.moveTo(m.to.x, m.to.y);
+                ctx.lineTo(w[0].x, w[0].y);
+                ctx.lineTo(w[1].x, w[1].y);
+                ctx.closePath();
+                ctx.fill();
+            }
+        } else if (m.tool === "rect") {
+            ctx.strokeRect(m.rect.x, m.rect.y, m.rect.w, m.rect.h);
+        } else if (m.tool === "ellipse") {
+            ctx.ellipse(m.rect.x, m.rect.y, m.rect.w, m.rect.h);
+            ctx.stroke();
+        }
     }
 
     function key(event: var): void {
@@ -333,6 +374,10 @@ Scope {
             WlrLayershell.namespace: "sylcapture-editor"
             WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
 
+            function refocus(): void {
+                keys.forceActiveFocus();
+            }
+
             Component.onCompleted: keys.forceActiveFocus()
 
             Backdrop {
@@ -400,7 +445,7 @@ Scope {
 
                         Image {
                             id: photo
-                            source: root.file === "" ? "" : "file://" + root.file
+                            source: root.file === "" ? "" : root.url(root.file)
                             cache: false
                             smooth: true
                             onStatusChanged: {
@@ -434,55 +479,18 @@ Scope {
                             anchors.fill: parent
                             renderStrategy: Canvas.Cooperative
 
-                            function paintMark(ctx: var, m: var): void {
-                                ctx.globalAlpha = m.tool === "highlighter" ? 0.35 : 1;
-                                ctx.strokeStyle = m.color;
-                                ctx.fillStyle = m.color;
-                                ctx.lineWidth = m.tool === "highlighter" ? m.width * 4 : m.width;
-                                ctx.lineCap = "round";
-                                ctx.lineJoin = "round";
-                                ctx.beginPath();
-                                if (m.points !== undefined) {
-                                    ctx.moveTo(m.points[0].x, m.points[0].y);
-                                    for (let i = 1; i < m.points.length; i++)
-                                        ctx.lineTo(m.points[i].x, m.points[i].y);
-                                    ctx.stroke();
-                                } else if (m.tool === "line" || m.tool === "arrow") {
-                                    ctx.moveTo(m.from.x, m.from.y);
-                                    ctx.lineTo(m.to.x, m.to.y);
-                                    ctx.stroke();
-                                    if (m.tool === "arrow") {
-                                        const w = A.arrowHead(m.from.x, m.from.y, m.to.x, m.to.y, Math.max(14, m.width * 4.5));
-                                        ctx.beginPath();
-                                        ctx.moveTo(m.to.x, m.to.y);
-                                        ctx.lineTo(w[0].x, w[0].y);
-                                        ctx.lineTo(w[1].x, w[1].y);
-                                        ctx.closePath();
-                                        ctx.fill();
-                                    }
-                                } else if (m.tool === "rect") {
-                                    ctx.strokeRect(m.rect.x, m.rect.y, m.rect.w, m.rect.h);
-                                } else if (m.tool === "ellipse") {
-                                    ctx.ellipse(m.rect.x, m.rect.y, m.rect.w, m.rect.h);
-                                    ctx.stroke();
-                                }
-                            }
-
                             onPaint: {
                                 const ctx = canvas.getContext("2d");
                                 ctx.reset();
-                                for (const m of root.marks.concat(root.draft !== null ? [root.draft] : [])) {
-                                    if (m.tool !== "text" && m.tool !== "pixelate" && m.tool !== "crop")
-                                        canvas.paintMark(ctx, m);
+                                for (const m of root.marks) {
+                                    if (m.tool !== "text" && m.tool !== "pixelate")
+                                        root.paintMark(ctx, m);
                                 }
                             }
 
                             Connections {
                                 target: root
                                 function onHistoryChanged() {
-                                    canvas.requestPaint();
-                                }
-                                function onDraftChanged() {
                                     canvas.requestPaint();
                                 }
                             }
@@ -533,6 +541,10 @@ Scope {
                                 root.typing = null;
                                 keys.forceActiveFocus();
                             }
+                            Keys.onPressed: event => {
+                                if ((event.modifiers & Qt.ControlModifier) !== 0)
+                                    root.key(event);
+                            }
                         }
 
                         Item {
@@ -581,6 +593,33 @@ Scope {
                                 border.width: 2 / area.f.scale
                                 border.color: Theme.accentHi
                             }
+                        }
+                    }
+                }
+
+                Canvas {
+                    id: draftCanvas
+                    x: frame.x
+                    y: frame.y
+                    width: root.view.w * area.f.scale
+                    height: root.view.h * area.f.scale
+                    renderStrategy: Canvas.Cooperative
+
+                    onPaint: {
+                        const ctx = draftCanvas.getContext("2d");
+                        ctx.reset();
+                        const d = root.draft;
+                        if (d === null || d.tool === "pixelate" || d.tool === "crop")
+                            return;
+                        const k = area.f.scale;
+                        ctx.setTransform(k, 0, 0, k, -root.view.x * k, -root.view.y * k);
+                        root.paintMark(ctx, d);
+                    }
+
+                    Connections {
+                        target: root
+                        function onDraftChanged() {
+                            draftCanvas.requestPaint();
                         }
                     }
                 }

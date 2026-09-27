@@ -93,6 +93,8 @@ test("recorderArgs turns video settings into wf-recorder flags", async () => {
     assert.deepEqual(recorderArgs(validateCapture({ codec: "h265", videoQuality: "high", fps: 60, resolution: "1080", constant: true }), "sink.monitor"),
         ["-c", "libx265", "-x", "yuv420p", "-p", "crf=22", "-p", "preset=fast", "-r", "60", "-F", "scale=-2:1080", "-D", "--audio=sink.monitor"])
     assert.deepEqual(recorderArgs(validateCapture({ codec: "vp9", videoQuality: "small" }), ""), ["-c", "libvpx-vp9", "-p", "crf=40", "-p", "b=0", "-p", "deadline=realtime", "-p", "cpu-used=8"])
-    assert.deepEqual(recorderArgs(validateCapture({ codec: "vaapi", resolution: "720" }), ""), ["-c", "h264_vaapi", "-d", "/dev/dri/renderD128", "-F", "scale_vaapi=w=-2:h=720:format=nv12"])
-    assert.deepEqual(recorderArgs(validateCapture({ codec: "vaapi" }), ""), ["-c", "h264_vaapi", "-d", "/dev/dri/renderD128", "-F", "scale_vaapi=format=nv12"])
+    assert.deepEqual(recorderArgs(validateCapture({ codec: "vaapi", resolution: "720" }), ""), ["-c", "h264_vaapi", "-d", "/dev/dri/renderD128", "-p", "qp=24", "-F", "scale_vaapi=w=-2:h=720:format=nv12"])
+    assert.deepEqual(recorderArgs(validateCapture({ codec: "vaapi", videoQuality: "high" }), ""), ["-c", "h264_vaapi", "-d", "/dev/dri/renderD128", "-p", "qp=20", "-F", "scale_vaapi=format=nv12"])
+    assert.deepEqual(recorderArgs(validateCapture({ codec: "vp9", audio: true }), "").slice(-2), ["-C", "libopus"])
+    assert.equal(recorderArgs(validateCapture({ codec: "h264", audio: true }), "").indexOf("-C"), -1)
 })

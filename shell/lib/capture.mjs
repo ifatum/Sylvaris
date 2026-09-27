@@ -33,6 +33,8 @@ export const DEFAULT_CAPTURE = {
     countdown: 0
 }
 
+const QP = { high: 20, balanced: 24, small: 28 }
+
 const CRF = {
     h264: { high: 18, balanced: 23, small: 28 },
     h265: { high: 22, balanced: 26, small: 30 },
@@ -108,7 +110,7 @@ export function recorderArgs(c, audioDevice) {
     let out
     if (c.codec === "vaapi") {
         const size = c.resolution === "native" ? "" : "w=-2:h=" + c.resolution + ":"
-        out = ["-c", "h264_vaapi", "-d", "/dev/dri/renderD128", "-F", "scale_vaapi=" + size + "format=nv12"]
+        out = ["-c", "h264_vaapi", "-d", "/dev/dri/renderD128", "-p", "qp=" + QP[c.videoQuality], "-F", "scale_vaapi=" + size + "format=nv12"]
     } else if (c.codec === "vp9") {
         out = ["-c", "libvpx-vp9", "-p", "crf=" + CRF.vp9[c.videoQuality], "-p", "b=0", "-p", "deadline=realtime", "-p", "cpu-used=8"]
     } else {
@@ -122,6 +124,8 @@ export function recorderArgs(c, audioDevice) {
         out.push("-D")
     if (audioDevice)
         out.push("--audio=" + audioDevice)
+    if (c.audio && c.codec === "vp9")
+        out.push("-C", "libopus")
     return out
 }
 

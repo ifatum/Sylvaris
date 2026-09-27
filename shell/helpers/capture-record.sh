@@ -6,8 +6,14 @@ output="$4"
 audio="$5"
 countdown="$6"
 shift 6
+trap 'exit 3' INT TERM
 mkdir -p "$dir" || exit 4
 file="$dir/$name"
+n=2
+while [ -e "$file" ]; do
+    file="$dir/${name%.*} ($n).${name##*.}"
+    n=$((n + 1))
+done
 if [ "$mode" = region ]; then
     geometry="$(slurp -d </dev/null)" || exit 3
     set -- "$@" -g "$geometry"
@@ -20,7 +26,8 @@ mic) set -- "$@" "--audio=$(pactl get-default-source)" ;;
 esac
 if [ "$countdown" -gt 0 ]; then
     printf 'wait %s\n' "$countdown"
-    sleep "$countdown"
+    sleep "$countdown" &
+    wait $!
 fi
 printf '%s\n' "$file"
 exec wf-recorder "$@" -f "$file"

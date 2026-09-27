@@ -133,6 +133,9 @@ doctor)
     fi
     cat "$out"
     ;;
+capture)
+    if [ "${2:-}" = edit ] && [ -n "${3:-}" ]; then run capture edit "$(realpath -m -- "$3")"; else run "$@"; fi
+    ;;
 plugins)
     if [ "${2:-}" = install ]; then install_plugin "${@:3}"; else run "$@"; fi
     ;;
