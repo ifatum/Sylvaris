@@ -34,7 +34,7 @@ Column {
 
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    text: Qt.formatTime(new Date(), "HH:mm")
+                    text: Qt.formatTime(new Date(), root.cfg.seconds ? "HH:mm:ss" : "HH:mm")
                     color: Theme.text
                     font.family: Tokens.fontUi
                     font.pixelSize: 44
@@ -109,6 +109,16 @@ Column {
                 ]
                 current: root.cfg.pam
                 onPicked: key => Settings.set("lock.pam", key)
+            }
+        }
+
+        SettingRow {
+            title: "Show seconds"
+            subtitle: "On the lock screen clock"
+
+            Toggle {
+                checked: root.cfg.seconds
+                onToggled: v => Settings.set("lock.seconds", v)
             }
         }
 

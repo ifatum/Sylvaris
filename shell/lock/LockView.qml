@@ -52,7 +52,7 @@ Item {
 
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: Qt.formatTime(new Date(root.lock.now), "HH:mm")
+            text: Qt.formatTime(new Date(root.lock.now), root.lock.cfg.seconds ? "HH:mm:ss" : "HH:mm")
             color: Theme.text
             font.family: Tokens.fontUi
             font.pixelSize: Math.min(160, root.height * 0.14)

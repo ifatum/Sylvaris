@@ -29,4 +29,7 @@ test("validateLock keeps a safe service name and booleans", () => {
     assert.equal(validateLock({ pam: "../etc/shadow" }).pam, "")
     assert.equal(validateLock({ logind: true }).logind, true)
     assert.equal(validateLock({ logind: "yes" }).logind, false)
+    assert.equal(validateLock({}).seconds, false)
+    assert.equal(validateLock({ seconds: true }).seconds, true)
+    assert.equal(validateLock({ seconds: "yes" }).seconds, false)
 })
