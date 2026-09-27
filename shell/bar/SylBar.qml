@@ -301,6 +301,7 @@ Scope {
                             }
 
                             Text {
+                                id: num
                                 visible: ws.look.mode !== "dots" || pill.on
                                 text: modelData.name.length <= 3 && modelData.name !== "" ? modelData.name : modelData.index
                                 color: pill.on ? Theme.onAccent : modelData.active ? Theme.accentHi : Theme.text
@@ -308,6 +309,15 @@ Scope {
                                 font.family: Tokens.fontUi
                                 font.pixelSize: Tokens.smallSize
                                 font.weight: pill.on ? Font.Bold : Font.DemiBold
+                                transform: Translate {
+                                    x: numInk.advanceWidth / 2 - numInk.tightBoundingRect.x - numInk.tightBoundingRect.width / 2
+                                }
+
+                                TextMetrics {
+                                    id: numInk
+                                    font: num.font
+                                    text: num.text
+                                }
                             }
 
                             Repeater {
@@ -319,10 +329,6 @@ Scope {
                                     implicitSize: 16
                                     source: entry !== null && entry.icon ? Quickshell.iconPath(entry.icon, true) : ""
                                     visible: source !== ""
-                                    layer.enabled: Tokens.iconTint
-                                    layer.effect: IconTint {
-                                        colorizationColor: Theme.onAccent
-                                    }
                                 }
                             }
 
