@@ -32,6 +32,14 @@ Item {
         box.text = "";
     }
 
+    function send(): void {
+        if (root.busy)
+            return;
+        const text = box.text;
+        box.text = "";
+        root.submitted(text);
+    }
+
     function fail(): void {
         box.text = "";
         shakeAnim.restart();
@@ -123,10 +131,7 @@ Item {
                     if (box.text !== root.typed)
                         root.edited(box.text);
                 }
-                onAccepted: {
-                    if (!root.busy)
-                        root.submitted(box.text);
-                }
+                onAccepted: root.send()
             }
 
             Rectangle {
@@ -196,7 +201,7 @@ Item {
                     hoverEnabled: true
                     enabled: !root.busy
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: root.submitted(box.text)
+                    onClicked: root.send()
                 }
             }
         }
