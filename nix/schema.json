@@ -17,7 +17,10 @@
     "corner": "top-right"
   },
   "center": {
-    "corner": "top-right"
+    "corner": "top-right",
+    "hidden": [],
+    "volume": true,
+    "media": true
   },
   "clock": {
     "corner": "top-center"
@@ -154,7 +157,7 @@
   "lock": {
     "pam": "",
     "logind": false,
-    "seconds": true
+    "seconds": false
   },
   "clip": {
     "limit": 50,

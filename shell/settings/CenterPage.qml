@@ -1,0 +1,275 @@
+import QtQuick
+import qs
+import qs.services
+import qs.components
+import "../lib/icons.mjs" as Icons
+
+Column {
+    id: page
+
+    required property var host
+    readonly property var cfg: Settings.values.center
+    readonly property var toggleTiles: Config.values.toggles.map(t => ({
+                key: "toggle:" + t.id,
+                label: t.label,
+                glyph: t.icon
+            }))
+    readonly property var tiles: [
+        {
+            key: "wifi",
+            label: "Wi-Fi",
+            glyph: Icons.GLYPHS.wifi
+        },
+        {
+            key: "bluetooth",
+            label: "Bluetooth",
+            glyph: Icons.GLYPHS.bluetooth
+        },
+        {
+            key: "night",
+            label: "Night light",
+            glyph: Icons.GLYPHS.nightLight
+        },
+        {
+            key: "dnd",
+            label: "DND",
+            glyph: Icons.GLYPHS.dnd
+        }
+    ].concat(page.toggleTiles.slice(0, 1), [
+        {
+            key: "hotspot",
+            label: "Hotspot",
+            glyph: Icons.GLYPHS.hotspot
+        }
+    ], page.toggleTiles.slice(1))
+    readonly property var shownTiles: page.tiles.filter(t => page.cfg.hidden.indexOf(t.key) < 0)
+
+    spacing: 24
+
+    function flip(key: string): void {
+        const hidden = page.cfg.hidden.slice();
+        const i = hidden.indexOf(key);
+        if (i < 0)
+            hidden.push(key);
+        else
+            hidden.splice(i, 1);
+        Settings.set("center.hidden", hidden);
+    }
+
+    Card {
+        title: "Control Center"
+        note: "What SylCenter shows. A tile also needs its device or service, so Wi-Fi only appears on machines that have it."
+
+        Item {
+            width: parent.width
+            height: preview.implicitHeight + 32
+
+            Glass {
+                anchors.fill: parent
+                radius: Tokens.radiusCard
+                inner: true
+            }
+
+            Column {
+                id: preview
+                anchors.centerIn: parent
+                width: 260
+                spacing: 8
+
+                Grid {
+                    width: parent.width
+                    columns: 2
+                    spacing: 8
+
+                    Repeater {
+                        model: page.shownTiles
+
+                        delegate: Item {
+                            required property var modelData
+                            width: (preview.width - 8) / 2
+                            height: 34
+
+                            Glass {
+                                anchors.fill: parent
+                                radius: Tokens.radiusRow
+                                inner: true
+                                offColor: Theme.tintMid
+                            }
+
+                            Row {
+                                x: 10
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 8
+
+                                Glyph {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    text: modelData.glyph
+                                    size: 14
+                                    color: Theme.accent
+                                }
+
+                                Text {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: (preview.width - 8) / 2 - 42
+                                    elide: Text.ElideRight
+                                    text: modelData.label
+                                    color: Theme.text
+                                    font.family: Tokens.fontUi
+                                    font.pixelSize: Tokens.tinySize
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Repeater {
+                    model: [
+                        {
+                            on: page.cfg.volume,
+                            label: "Volume",
+                            glyph: Icons.GLYPHS.volume
+                        },
+                        {
+                            on: page.cfg.media,
+                            label: "Now playing",
+                            glyph: Icons.GLYPHS.music
+                        }
+                    ]
+
+                    delegate: Item {
+                        required property var modelData
+                        visible: modelData.on
+                        width: preview.width
+                        height: 30
+
+                        Glass {
+                            anchors.fill: parent
+                            radius: Tokens.radiusRow
+                            inner: true
+                            offColor: Theme.tintMid
+                        }
+
+                        Row {
+                            x: 10
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 8
+
+                            Glyph {
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: modelData.glyph
+                                size: 14
+                                color: Theme.accent
+                            }
+
+                            Text {
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: modelData.label
+                                color: Theme.textDim
+                                font.family: Tokens.fontUi
+                                font.pixelSize: Tokens.tinySize
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        SettingRow {
+            title: "Tiles"
+            subtitle: "Click to show or hide"
+
+            Flow {
+                width: 360
+                spacing: 8
+
+                Repeater {
+                    model: page.tiles
+
+                    delegate: Chip {
+                        required property var modelData
+                        text: modelData.label
+                        glyph: modelData.glyph
+                        lit: page.cfg.hidden.indexOf(modelData.key) < 0
+                        onClicked: page.flip(modelData.key)
+                    }
+                }
+            }
+        }
+
+        SettingRow {
+            title: "Volume slider"
+            subtitle: "Output volume with a shortcut to the outputs"
+
+            Toggle {
+                checked: page.cfg.volume
+                onToggled: v => Settings.set("center.volume", v)
+            }
+        }
+
+        SettingRow {
+            title: "Now playing"
+            subtitle: "The media card while something plays"
+
+            Toggle {
+                checked: page.cfg.media
+                onToggled: v => Settings.set("center.media", v)
+            }
+        }
+
+        SettingRow {
+            title: "Corner"
+            subtitle: "Where SylCenter and SylMedia open"
+            last: true
+
+            Segmented {
+                width: 300
+                options: page.host.corners
+                current: page.cfg.corner
+                onPicked: key => Settings.set("center.corner", key)
+            }
+        }
+    }
+
+    Card {
+        title: "Hotspot"
+        note: "Used when you start the hotspot from its tile, where you also set the password."
+
+        SettingRow {
+            title: "Network name"
+            subtitle: ssid.text.length < 1 || ssid.text.length > 32 ? "1 to 32 characters" : "Press Enter to save"
+
+            TextBox {
+                id: ssid
+                width: 220
+                text: Settings.values.hotspot.ssid
+                placeholder: "Sylvaris"
+                onAccepted: {
+                    if (ssid.text.length >= 1 && ssid.text.length <= 32)
+                        Settings.set("hotspot.ssid", ssid.text);
+                }
+            }
+        }
+
+        SettingRow {
+            title: "Band"
+            subtitle: "5 GHz is faster, 2.4 GHz reaches further"
+            last: true
+
+            Segmented {
+                width: 220
+                options: [
+                    {
+                        key: "bg",
+                        label: "2.4 GHz"
+                    },
+                    {
+                        key: "a",
+                        label: "5 GHz"
+                    }
+                ]
+                current: Settings.values.hotspot.band
+                onPicked: key => Settings.set("hotspot.band", key)
+            }
+        }
+    }
+}

@@ -4,7 +4,7 @@ import assert from "node:assert/strict"
 import {
     CORNERS, DEFAULT_CONFIG, DEFAULT_SETTINGS, parseJson, expandHome, deepMerge, migrate,
     validateConfig, validateSettings, merge, getPath, setPath, serialize, DEFAULT_GLASS, resolveGlass, settingsLayer, effectiveSettings,
-    PARTS, SERVICE_DEPS, liveParts, liveServices
+    PARTS, SERVICE_DEPS, liveParts, liveServices, CENTER_TILES
 } from "../shell/lib/settings.mjs"
 
 test("parseJson treats empty text as an empty object", () => {
@@ -84,7 +84,7 @@ test("validateSettings fixes invalid values field by field", () => {
         hotspot: { ssid: "x".repeat(33), band: "z" },
         unknown: 7
     })
-    assert.deepEqual(v.center, { corner: "top-right", other: 1 })
+    assert.deepEqual(v.center, { corner: "top-right", other: 1, hidden: [], volume: true, media: true })
     assert.deepEqual(v.nightLight, { enabled: false, temperature: 4000 })
     assert.deepEqual(v.displays, { layouts: {} })
     assert.deepEqual(v.toggleState, { a: true })
@@ -285,4 +285,13 @@ test("the diver part and its service only run while the Diver plugin is on", () 
     assert.equal(liveServices(DEFAULT_SETTINGS.parts, off).includes("Diver"), false)
     assert.equal(liveServices(DEFAULT_SETTINGS.parts, on).includes("Diver"), true)
     assert.equal(liveParts(DEFAULT_SETTINGS.parts, off).includes("clock"), true)
+})
+
+test("center settings keep known tiles and section switches", () => {
+    const v = validateSettings({ center: { hidden: ["wifi", "toggle:performance", "wifi", "Toggle:Bad", "nope", 3], volume: false, media: "no" } })
+    assert.deepEqual(v.center.hidden, ["wifi", "toggle:performance"])
+    assert.equal(v.center.volume, false)
+    assert.equal(v.center.media, true)
+    assert.deepEqual(validateSettings({ center: { hidden: "wifi" } }).center.hidden, [])
+    assert.deepEqual(CENTER_TILES, ["wifi", "bluetooth", "night", "dnd", "hotspot"])
 })

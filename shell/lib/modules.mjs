@@ -1,7 +1,7 @@
 import { GLYPHS } from "./icons.mjs"
 
 export const MODULES = {
-    center: { label: "Control Center", section: "general", glyph: "tune" },
+    center: { label: "Control Center", section: "center", glyph: "toggle" },
     theme: { label: "Theme", section: "appearance", glyph: "theme" },
     clock: { label: "Clock", section: "clock", glyph: "night" },
     notify: { label: "Notifications", section: "notifications", glyph: "bell" },

@@ -6,6 +6,8 @@ All notable changes to Sylvaris are listed here. The format follows [Keep a Chan
 
 ### Added
 
+- Add a Control Center page to SylSettings: tiles, volume slider, now playing card, corner and hotspot
+- Add a Show seconds option to the lock screen clock
 - Add SylTest, a built-in plugin that runs FaTest speed tests and shares its history
 - Ship Diver and AirPods as built-in plugins that stay off until turned on
 - Scaffold Sylvaris flake, launcher and headless harness
@@ -96,6 +98,8 @@ All notable changes to Sylvaris are listed here. The format follows [Keep a Chan
 
 ### Fixed
 
+- Draw glass grain over the whole shape of round surfaces instead of a square inside them
+- Show workspace app icons in their own colours and centre each number over its window dots
 - Center workspace pills and their window dots, and drop closed Hyprland windows from them
 - Address final review findings
 - Open SylvarisCC on the focused output right after startup

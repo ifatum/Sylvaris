@@ -13,7 +13,8 @@ Item {
 
     property date now: new Date()
     readonly property var toggles: Toggles.items
-    readonly property var tiles: root.buildTiles()
+    readonly property var cfg: Settings.values.center
+    readonly property var tiles: root.buildTiles().filter(t => root.cfg.hidden.indexOf(t.key) < 0)
 
     implicitWidth: Tokens.centerCompactWidth
     implicitHeight: column.implicitHeight + Tokens.panelPaddingY * 2
@@ -221,7 +222,7 @@ Item {
 
         Slider {
             width: parent.width
-            visible: Audio.available
+            visible: Audio.available && root.cfg.volume
             value: Audio.muted ? 0 : Audio.volume
             icon: Audio.muted ? Icons.GLYPHS.volumeMute : Icons.GLYPHS.volume
             label: Math.round(Audio.volume * 100) + "%"
@@ -233,7 +234,7 @@ Item {
 
         MediaCard {
             width: parent.width
-            visible: Media.available
+            visible: Media.available && root.cfg.media
             onOpened: root.openView("media")
         }
 

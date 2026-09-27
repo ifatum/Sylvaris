@@ -13,6 +13,7 @@ import { DEFAULT_WEATHER, validateWeather } from "./weather.mjs"
 
 export const CORNERS = ["top-left", "top-center", "top-right"]
 export const REVEALS = ["edges", "center", "fade"]
+export const CENTER_TILES = ["wifi", "bluetooth", "night", "dnd", "hotspot"]
 
 export const PARTS = {
     bar: ["Audio", "BluetoothService", "NetworkService", "Diver", "Dnd", "Media", "Notifications", "Plugins"],
@@ -72,7 +73,7 @@ export const DEFAULT_CONFIG = {
 
 export const DEFAULT_SETTINGS = {
     version: SETTINGS_VERSION,
-    center: { corner: "top-right" },
+    center: { corner: "top-right", hidden: [], volume: true, media: true },
     clock: { corner: "top-center" },
     nightLight: { enabled: false, temperature: 4000 },
     displays: { layouts: {} },
@@ -243,7 +244,13 @@ export function validateSettings(raw) {
 
     const center = isObject(v.center) ? v.center : isObject(v.cc) ? v.cc : {}
     delete v.cc
-    v.center = Object.assign({}, center, { corner: CORNERS.includes(center.corner) ? center.corner : d.center.corner })
+    const hidden = Array.isArray(center.hidden) ? center.hidden.filter(t => typeof t === "string" && (CENTER_TILES.includes(t) || t.startsWith("toggle:") && TOGGLE_ID.test(t.slice(7)))) : []
+    v.center = Object.assign({}, center, {
+        corner: CORNERS.includes(center.corner) ? center.corner : d.center.corner,
+        hidden: hidden.filter((t, i) => hidden.indexOf(t) === i),
+        volume: typeof center.volume === "boolean" ? center.volume : d.center.volume,
+        media: typeof center.media === "boolean" ? center.media : d.center.media
+    })
 
     const clock = isObject(v.clock) ? v.clock : {}
     v.clock = Object.assign({}, clock, { corner: CORNERS.includes(clock.corner) ? clock.corner : d.clock.corner })

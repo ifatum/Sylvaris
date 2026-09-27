@@ -96,6 +96,8 @@ SylTheme opens on the focused monitor with the current theme in front. Arrow key
 
 Views: `compact`, `orbit-bluetooth`, `orbit-wifi`, `calendar`, `outputs`, `displays`, `hotspot`. Add `:<key>` to focus a device or network, for example `sylvaris view orbit-bluetooth:AA:BB:CC:DD:EE:FF`.
 
+SylSettings › Control Center picks what SylCenter shows: `center.hidden` lists tiles to leave out (`wifi`, `bluetooth`, `night`, `dnd`, `hotspot` or `toggle:<id>` for one of your toggles), and `center.volume` and `center.media` turn the volume slider and the now playing card off. The same page sets the corner and the hotspot's network name and band.
+
 ## SylClock
 
 `sylvaris clock` opens SylClock. The sky card plots today from midnight to midnight: the sun and the moon sit at their real altitude for your location right now, their paths so far are solid and the rest of the day is dashed, and anything below the line is under the horizon. The sky colour follows the sun through night, twilight, golden hour and day, and stars come out as it gets dark. The moon is drawn in its current phase, mirrored in the southern hemisphere.
@@ -246,7 +248,7 @@ Alt+Tab for every compositor. Bind `sylvaris switcher next` to Alt+Tab and `sylv
 
 > **Experimental.** Test it on your machine before you depend on it, and keep another way to unlock, log in or authorize at hand.
 
-`sylvaris lock` locks every screen with the session-lock protocol, mirroring what you type on all of them, so nothing can draw over it and the compositor keeps it locked even if Sylvaris stops. The lock runs as its own Quickshell process (`lock.qml`), separate from the bar and every other part and plugin, so a crash in the main shell leaves the lock screen up and working. It looks like the rest of Sylvaris: your wallpaper, a large clock and a password field that shakes on a wrong password. Passwords are checked by PAM with the first of the `sylvaris`, `hyprlock`, `swaylock` or `login` services that exists (`lock.pam` picks one). The NixOS module adds the `sylvaris` service. Point `lockCommand` at `sylvaris lock` to use it from SylPower, and turn on `lock.logind` to lock whenever something runs `loginctl lock-session`, such as hypridle.
+`sylvaris lock` locks every screen with the session-lock protocol, mirroring what you type on all of them, so nothing can draw over it and the compositor keeps it locked even if Sylvaris stops. The lock runs as its own Quickshell process (`lock.qml`), separate from the bar and every other part and plugin, so a crash in the main shell leaves the lock screen up and working. It looks like the rest of Sylvaris: your wallpaper, a large clock and a password field that shakes on a wrong password. Passwords are checked by PAM with the first of the `sylvaris`, `hyprlock`, `swaylock` or `login` services that exists (`lock.pam` picks one). The NixOS module adds the `sylvaris` service. Point `lockCommand` at `sylvaris lock` to use it from SylPower, and turn on `lock.logind` to lock whenever something runs `loginctl lock-session`, such as hypridle. `lock.seconds` adds seconds to the lock screen clock.
 
 ## SylGreet
 

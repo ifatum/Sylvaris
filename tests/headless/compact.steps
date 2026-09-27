@@ -3,3 +3,8 @@ syl center open
 sleep 1
 shot compact
 syl state
+syl set center.hidden ["dnd","night"]
+syl set center.volume false
+sleep 1
+shot compact-trimmed
+check sylvaris get center.hidden | grep -q dnd

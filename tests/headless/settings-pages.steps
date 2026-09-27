@@ -75,3 +75,9 @@ shot keybinds
 syl settings open commands
 sleep 1.2
 shot commands
+syl settings open center
+sleep 1.2
+shot center
+syl settings open lock
+sleep 1.2
+shot lock-settings

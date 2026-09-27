@@ -61,6 +61,12 @@ Scope {
             group: "apps"
         },
         {
+            key: "center",
+            label: "Control Center",
+            glyph: Icons.GLYPHS.toggle,
+            group: "apps"
+        },
+        {
             key: "deck",
             label: "Deck",
             glyph: Icons.GLYPHS.pin,
@@ -987,6 +993,7 @@ Scope {
                                 motion: motionPage,
                                 wallpaper: wallpaperPage,
                                 bar: barPage,
+                                center: centerPage,
                                 deck: deckPage,
                                 launcher: launcherPage,
                                 notifications: notificationsPage,
@@ -1078,6 +1085,14 @@ Scope {
         id: appearancePage
 
         AppearancePage {
+            host: root
+        }
+    }
+
+    Component {
+        id: centerPage
+
+        CenterPage {
             host: root
         }
     }
