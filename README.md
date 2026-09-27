@@ -96,7 +96,7 @@
 }
 ```
 
-Every setting is a typed Home Manager option. For the lock screen's PAM service and the SylGreet login screen, also import `sylvaris.nixosModules.sylvaris`. Not on Nix? The [guide](docs/guide.md#install-without-nix) lists what to install.
+Every setting is a typed Home Manager option. For the lock screen's PAM service and the SylGreet login screen, also import `sylvaris.nixosModules.sylvaris`. Not on Nix? [docs/install.md](docs/install.md) has steps for Arch, Fedora, Debian, Ubuntu, openSUSE, Void, Gentoo and others, plus `make install`.
 
 ## 🚀 Start
 

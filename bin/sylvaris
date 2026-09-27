@@ -2,6 +2,12 @@
 set -euo pipefail
 
 dir="${SYLVARIS_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/sylvaris}"
+if [ -z "${SYLVARIS_DIR:-}" ] && [ ! -d "$dir" ]; then
+    here="$(dirname "$(readlink -f "$0")")"
+    for d in "$here/../share/sylvaris" "$here/../shell"; do
+        [ -f "$d/shell.qml" ] && dir="$(cd "$d" && pwd)" && break
+    done
+fi
 sock="${XDG_RUNTIME_DIR:-/tmp}/sylvaris/ipc.sock"
 
 usage() {

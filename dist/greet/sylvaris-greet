@@ -1,0 +1,9 @@
+#!/bin/sh
+export XDG_CONFIG_HOME=/etc/sylvaris-greet
+export SYLVARIS_GREET_STATE=/var/lib/sylvaris-greet
+if [ -f /etc/sylvaris-greet/environment ]; then
+    set -a
+    . /etc/sylvaris-greet/environment
+    set +a
+fi
+exec sway --unsupported-gpu --config /etc/sylvaris-greet/sway.conf

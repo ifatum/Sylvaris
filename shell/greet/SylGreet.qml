@@ -16,7 +16,7 @@ Scope {
     readonly property string wallpaper: Quickshell.env("SYLVARIS_GREET_WALLPAPER") || Theme.wallpaper
     readonly property string defaultUser: Quickshell.env("SYLVARIS_GREET_USER") || ""
     readonly property string defaultSession: Quickshell.env("SYLVARIS_GREET_SESSION") || ""
-    readonly property string sessionDirs: Quickshell.env("SYLVARIS_GREET_SESSIONS") || "/run/current-system/sw/share/wayland-sessions:/usr/share/wayland-sessions"
+    readonly property string sessionDirs: Quickshell.env("SYLVARIS_GREET_SESSIONS") || "/run/current-system/sw/share/wayland-sessions:/usr/local/share/wayland-sessions:/usr/share/wayland-sessions"
     readonly property bool dry: Quickshell.env("SYLVARIS_GREET_DRY") === "1"
     property var users: []
     property var sessions: []

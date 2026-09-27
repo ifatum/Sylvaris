@@ -4,9 +4,7 @@ Everything the [README](../README.md) leaves out: installing by hand, every part
 
 ## Install without Nix
 
-1. Install `quickshell` (0.3.1 or newer), `socat`, the fonts **Inter** and **JetBrainsMono Nerd Font**, and the tools below for the parts you keep.
-2. Copy `shell/` to `~/.config/quickshell/sylvaris`.
-3. Put `bin/sylvaris` on your `PATH`.
+[install.md](install.md) walks through Arch, Fedora, Debian, Ubuntu, openSUSE, Void, Gentoo and the rest: install `quickshell` (0.3.1 or newer), `socat`, the fonts **Inter** and **JetBrainsMono Nerd Font** and the tools below for the parts you keep, then `sudo make install install-pam` from the clone, and `sudo make install-greeter` for SylGreet.
 
 | Tool | Needed by |
 |---|---|
