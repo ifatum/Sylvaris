@@ -1,0 +1,43 @@
+pkgname=sylvaris-git
+pkgver=r0.0000000
+pkgrel=1
+pkgdesc="Modular Quickshell desktop shell for Hyprland, niri and sway"
+arch=('any')
+url="https://github.com/naxce/Sylvaris"
+license=('MIT')
+depends=('quickshell' 'qt6-svg' 'socat' 'inter-font' 'ttf-jetbrains-mono-nerd' 'bash' 'coreutils' 'procps-ng')
+makedepends=('git' 'make')
+optdepends=(
+  'pipewire: audio, media, equalizer and Diver alarm sounds'
+  'pipewire-pulse: volume and output switching'
+  'libpulse: pactl for audio and screen recording with sound'
+  'python-cryptography: AirPods and Diver helpers'
+  'libnotify: notifications from capture, Diver and settings'
+  'networkmanager: Wi-Fi and hotspot in SylCenter'
+  'wlr-randr: display layouts'
+  'wlsunset: night light'
+  'curl: weather'
+  'wl-clipboard: clipboard history and copying screenshots'
+  'grim: screenshots'
+  'slurp: choosing an area or window to capture'
+  'wf-recorder: screen recording'
+  'glib2: locking when logind asks (gdbus)'
+  'git: installing plugins from git'
+)
+provides=('sylvaris')
+conflicts=('sylvaris')
+backup=('etc/pam.d/sylvaris')
+source=("sylvaris::git+https://github.com/naxce/Sylvaris.git")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd sylvaris
+  printf 'r%s.%s' "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+package() {
+  cd sylvaris
+  make DESTDIR="$pkgdir" PREFIX=/usr install
+  install -Dm644 dist/pam/sylvaris "$pkgdir/etc/pam.d/sylvaris"
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

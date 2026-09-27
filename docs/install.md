@@ -18,6 +18,8 @@ sudo pacman -S --needed quickshell qt6-svg socat inter-font ttf-jetbrains-mono-n
 
 For the login screen, also install `greetd` and `sway`. Manjaro, EndeavourOS and CachyOS use the same packages.
 
+[`dist/aur/PKGBUILD`](../dist/aur/PKGBUILD) builds a `sylvaris-git` package from the latest commit instead of `make install`: copy it into an empty folder and run `makepkg -si`. It installs the shell, the `sylvaris` command and the PAM service; the login screen still needs `sudo make install-greeter` from a clone.
+
 ## Fedora
 
 Quickshell comes from a COPR:
