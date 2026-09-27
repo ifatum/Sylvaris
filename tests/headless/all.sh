@@ -16,7 +16,7 @@ for steps in "$here"/*.steps; do
     *) seed="$seeds/warm" ;;
     esac
     extra=()
-    if [ "$name" = niri-toggles ]; then
+    if [ "$name" = niri-toggles ] || [ "$name" = workspaces-niri ]; then
         extra=(env HL_NIRI_SOCKET=/nonexistent PATH="$here/fake-niri:$PATH")
     fi
     if [ "$name" = keybinds-sync ]; then

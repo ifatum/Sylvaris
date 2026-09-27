@@ -1,0 +1,8 @@
+sleep 2.5
+check sylvaris wm state | grep -q '"windows":2'
+syl set bar.workspaceIcons numbers
+sleep 0.8
+shot ws-niri-numbers
+syl set bar.workspaceIcons paw
+sleep 0.8
+shot ws-niri-paw

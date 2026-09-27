@@ -38,17 +38,20 @@ Singleton {
     }
 
     function hyprWorkspaces(): var {
-        return Hyprland.workspaces.values.filter(w => w.id > 0).map(w => ({
-                    id: String(w.id),
-                    index: w.id,
-                    name: w.name,
-                    output: w.monitor ? w.monitor.name : "",
-                    active: w.active,
-                    focused: w.focused,
-                    urgent: w.urgent,
-                    windows: w.toplevels.values.length,
-                    apps: w.toplevels.values.map(t => t.wayland ? t.wayland.appId : t.lastIpcObject && t.lastIpcObject.class ? t.lastIpcObject.class : "")
-                })).sort(W.order);
+        return Hyprland.workspaces.values.filter(w => w.id > 0).map(w => {
+            const live = w.toplevels.values.filter(t => t.wayland);
+            return {
+                id: String(w.id),
+                index: w.id,
+                name: w.name,
+                output: w.monitor ? w.monitor.name : "",
+                active: w.active,
+                focused: w.focused,
+                urgent: w.urgent,
+                windows: live.length,
+                apps: live.map(t => t.wayland.appId)
+            };
+        }).sort(W.order);
     }
 
     function swayWorkspaces(): var {

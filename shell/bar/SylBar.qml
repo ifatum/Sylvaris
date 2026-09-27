@@ -212,7 +212,8 @@ Scope {
             Grid {
                 id: pills
                 anchors.centerIn: parent
-                columns: root.vertical ? 1 : 64
+                rows: root.vertical ? -1 : 1
+                columns: root.vertical ? 1 : -1
                 spacing: 5
                 horizontalItemAlignment: Grid.AlignHCenter
                 verticalItemAlignment: Grid.AlignVCenter
@@ -277,7 +278,8 @@ Scope {
                             id: inner
                             anchors.centerIn: parent
                             anchors.verticalCenterOffset: pill.ticks > 0 && !root.vertical ? -2 : 0
-                            columns: root.vertical ? 1 : 8
+                            rows: root.vertical ? -1 : 1
+                            columns: root.vertical ? 1 : -1
                             spacing: 6
                             horizontalItemAlignment: Grid.AlignHCenter
                             verticalItemAlignment: Grid.AlignVCenter
@@ -318,7 +320,9 @@ Scope {
                                     source: entry !== null && entry.icon ? Quickshell.iconPath(entry.icon, true) : ""
                                     visible: source !== ""
                                     layer.enabled: Tokens.iconTint
-                                    layer.effect: IconTint {}
+                                    layer.effect: IconTint {
+                                        colorizationColor: Theme.onAccent
+                                    }
                                 }
                             }
 

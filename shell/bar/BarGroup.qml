@@ -56,7 +56,8 @@ Item {
     Grid {
         id: grid
         anchors.centerIn: parent
-        columns: root.vertical ? 1 : 64
+        rows: root.vertical ? -1 : 1
+        columns: root.vertical ? 1 : -1
         spacing: Tokens.barGap
         horizontalItemAlignment: Grid.AlignHCenter
         verticalItemAlignment: Grid.AlignVCenter

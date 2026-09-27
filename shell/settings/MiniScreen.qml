@@ -99,7 +99,8 @@ Item {
 
                 Grid {
                     anchors.centerIn: parent
-                    columns: root.vertical ? 1 : 64
+                    rows: root.vertical ? -1 : 1
+                    columns: root.vertical ? 1 : -1
                     spacing: 4
 
                     Repeater {

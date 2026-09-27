@@ -1,3 +1,12 @@
 #!/bin/sh
-sleep 0.25
-echo '{"name":"HEADLESS-1"}'
+case "$*" in
+*event-stream*)
+    echo '{"WorkspacesChanged":{"workspaces":[{"id":1,"idx":6,"name":null,"output":"HEADLESS-1","is_active":true,"is_focused":true,"is_urgent":false},{"id":2,"idx":7,"name":null,"output":"HEADLESS-1","is_active":false,"is_focused":false,"is_urgent":false}]}}'
+    echo '{"WindowsChanged":{"windows":[{"id":1,"workspace_id":1,"app_id":"nemo","title":"Home","is_focused":true},{"id":2,"workspace_id":1,"app_id":"codium","title":"Code","is_focused":false},{"id":3,"workspace_id":2,"app_id":"firefox","title":"Web","is_focused":false},{"id":4,"workspace_id":2,"app_id":"filezilla","title":"Files","is_focused":false}]}}'
+    exec sleep 600
+    ;;
+*)
+    sleep 0.25
+    echo '{"name":"HEADLESS-1"}'
+    ;;
+esac
