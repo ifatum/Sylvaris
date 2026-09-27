@@ -176,7 +176,10 @@
             pkgs.wtype
             pkgs.wlrctl
             pkgs.wayvnc
-            pkgs.python3Packages.vncdotool
+            (pkgs.python3.withPackages (ps: [
+              ps.cryptography
+              ps.vncdotool
+            ]))
             pkgs.dbus
           ];
         };
