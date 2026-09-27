@@ -11,6 +11,8 @@ Scope {
     readonly property var cfg: Settings.values.lock
     readonly property string stateFile: (Quickshell.env("XDG_RUNTIME_DIR") || "/tmp") + "/sylvaris/lock.json"
     property var surface: ({})
+    property bool confirmed: false
+    property string problem: ""
     readonly property bool locked: root.surface.locked === true
     property var screenInfo: null
     readonly property bool wanted: root.locked
@@ -19,7 +21,10 @@ Scope {
 
     function lock(): void {
         root.opened();
-        Quickshell.execDetached(["sh", "-c", "mkdir -p \"$(dirname \"$1\")\" && exec qs -p \"$0\" -n", Quickshell.shellDir + "/lock.qml", root.stateFile]);
+        root.problem = "";
+        root.confirmed = false;
+        Quickshell.execDetached(["sh", "-c", "mkdir -p \"$(dirname \"$1\")\" && { qs -p \"$0\" ipc call sylvaris run lock >/dev/null 2>&1 || exec qs -p \"$0\" -n; }", Quickshell.shellDir + "/lock.qml", root.stateFile]);
+        watchdog.restart();
     }
 
     function open(): void {
@@ -42,10 +47,27 @@ Scope {
             locked: root.locked,
             secure: root.surface.secure === true,
             busy: root.surface.busy === true,
-            message: root.surface.message || "",
-            error: root.surface.error === true,
+            message: root.problem !== "" ? root.problem : root.surface.message || "",
+            error: root.problem !== "" || root.surface.error === true,
             service: root.surface.service || ""
         };
+    }
+
+    onSurfaceChanged: {
+        if (root.surface.locked === true && root.surface.secure === true)
+            root.confirmed = true;
+    }
+
+    Timer {
+        id: watchdog
+        interval: 6500
+        onTriggered: {
+            if (root.confirmed || root.surface.locked === true && root.surface.secure === true)
+                return;
+            root.problem = root.surface.error === true && root.surface.message ? root.surface.message : "The lock screen did not start";
+            if (!Demo.enabled)
+                Quickshell.execDetached(["notify-send", "-a", "Sylvaris", "-u", "critical", "Sylvaris could not lock the screen", root.problem]);
+        }
     }
 
     FileView {

@@ -12,6 +12,8 @@ ShellRoot {
         target: "sylvaris"
 
         function run(request: string): string {
+            if (request === "lock")
+                session.relock();
             return JSON.stringify(session.state());
         }
     }

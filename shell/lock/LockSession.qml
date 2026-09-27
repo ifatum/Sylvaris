@@ -30,7 +30,23 @@ Scope {
 
     signal failed
 
-    Component.onCompleted: root.locked = true
+    Component.onCompleted: {
+        root.locked = true;
+        refused.start();
+    }
+
+    function relock(): void {
+        quit.stop();
+        if (root.locked)
+            return;
+        root.typed = "";
+        root.message = "";
+        root.error = false;
+        root.busy = false;
+        root.awaiting = false;
+        root.locked = true;
+        refused.restart();
+    }
 
     function submit(text: string): void {
         if (!root.locked || root.busy)
@@ -149,6 +165,19 @@ Scope {
         id: quit
         interval: 300
         onTriggered: Qt.quit()
+    }
+
+    Timer {
+        id: refused
+        interval: 5000
+        onTriggered: {
+            if (!root.locked || session.secure)
+                return;
+            root.error = true;
+            root.message = "The compositor did not grant the session lock";
+            root.locked = false;
+            quit.start();
+        }
     }
 
     WlSessionLock {
