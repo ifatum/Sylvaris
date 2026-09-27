@@ -80,6 +80,7 @@ Scope {
             root.message = "greetd is not running";
             return;
         }
+        root.typed = "";
         root.error = false;
         root.message = "";
         root.busy = true;

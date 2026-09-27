@@ -35,6 +35,7 @@ Scope {
     function lock(): void {
         if (root.locked)
             return;
+        root.typed = "";
         root.message = "";
         root.error = false;
         root.busy = false;
@@ -46,6 +47,7 @@ Scope {
     function submit(text: string): void {
         if (!root.locked || root.busy)
             return;
+        root.typed = "";
         if (root.awaiting) {
             root.awaiting = false;
             root.busy = true;

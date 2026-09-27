@@ -10,3 +10,6 @@ shot lock-wrong
 bg wtype -k Shift_L right -k Return
 sleep 1.5
 syl state lock
+syl lock now
+sleep 1.5
+shot lock-relock
