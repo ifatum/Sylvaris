@@ -23,13 +23,13 @@ Scope {
     function entry(id: string): var {
         if (Demo.enabled)
             return Apps.byId(id);
-        return DesktopEntries.byId(id) || DesktopEntries.heuristicLookup(id);
+        return Apps.entry(id);
     }
 
     function entryId(appId: string): string {
         if (Demo.enabled)
             return appId;
-        const e = DesktopEntries.heuristicLookup(appId);
+        const e = Apps.entry(appId);
         return e ? e.id : appId;
     }
 

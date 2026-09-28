@@ -29,7 +29,7 @@ Item {
     function desktopIcon(): string {
         if (!root.n.desktopEntry)
             return "";
-        const e = DesktopEntries.byId(root.n.desktopEntry);
+        const e = Apps.entry(root.n.desktopEntry);
         return e ? e.icon : "";
     }
 

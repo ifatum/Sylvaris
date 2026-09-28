@@ -18,6 +18,12 @@ Singleton {
         return null;
     }
 
+    function entry(id: string): var {
+        if (!id || DesktopEntries.applications.values.length === 0)
+            return null;
+        return DesktopEntries.byId(id) || DesktopEntries.heuristicLookup(id);
+    }
+
     function icon(app: var): string {
         return app && app.icon ? Quickshell.iconPath(app.icon, true) : "";
     }

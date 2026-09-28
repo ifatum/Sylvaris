@@ -26,7 +26,7 @@ Scope {
     function entry(appId: string): var {
         if (Demo.enabled)
             return Apps.byId(appId);
-        return DesktopEntries.byId(appId) || DesktopEntries.heuristicLookup(appId);
+        return Apps.entry(appId);
     }
 
     function nameOf(w: var): string {

@@ -326,7 +326,7 @@ Scope {
                                 delegate: Item {
                                     id: appIcon
                                     required property string modelData
-                                    readonly property var entry: DesktopEntries.heuristicLookup(modelData)
+                                    readonly property var entry: Apps.entry(modelData)
                                     readonly property string icon: entry !== null && entry.icon ? Quickshell.iconPath(entry.icon, true) : ""
                                     visible: icon !== ""
                                     width: 20
@@ -407,7 +407,7 @@ Scope {
             property string title: ""
             readonly property bool parkedAlive: wm.parked !== null && Compositor.windows.some(w => w.handle === wm.parked.handle)
             readonly property bool resting: wm.active !== null && wm.parked !== null && wm.active.handle === wm.parked.handle && Compositor.activeWindow === null
-            readonly property var entry: wm.active === null ? null : DesktopEntries.heuristicLookup(wm.active.appId)
+            readonly property var entry: wm.active === null ? null : Apps.entry(wm.active.appId)
             implicitWidth: wm.active === null ? 0 : Math.ceil((Math.min(titleRow.implicitWidth, Tokens.barTitleMax) + 12) / 24) * 24
             implicitHeight: Tokens.barItemHeight
             property bool wanted: !root.vertical && wm.active !== null && wm.title !== ""
