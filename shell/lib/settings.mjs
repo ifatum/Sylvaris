@@ -17,14 +17,14 @@ export const REVEALS = ["edges", "center", "fade"]
 export const CENTER_TILES = ["wifi", "bluetooth", "night", "dnd", "hotspot"]
 
 export const PARTS = {
-    bar: ["Audio", "BluetoothService", "NetworkService", "Diver", "Dnd", "Media", "Notifications", "Plugins"],
+    bar: ["Apps", "Audio", "BluetoothService", "NetworkService", "Diver", "Dnd", "Media", "Notifications", "Plugins"],
     center: ["Audio", "BluetoothService", "NetworkService", "Hotspot", "Displays", "NightLight", "Diver", "Dnd", "Toggles", "Media", "Headphones"],
     clock: ["Diver", "Weather", "Sky"],
     deck: ["Apps"],
     diver: ["Diver"],
     fatest: [],
     media: ["Headphones", "Equalizer", "Media"],
-    notify: ["Dnd", "Notifications"],
+    notify: ["Apps", "Dnd", "Notifications"],
     pad: ["Apps"],
     paper: [],
     power: [],
