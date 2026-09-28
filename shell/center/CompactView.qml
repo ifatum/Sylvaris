@@ -174,7 +174,9 @@ Item {
         else if (key === "hotspot") {
             if (Hotspot.active)
                 Hotspot.stop();
-            else if (!Hotspot.resume())
+            else if (Hotspot.profileExists)
+                Hotspot.start(Settings.values.hotspot.ssid, "", Settings.values.hotspot.band);
+            else
                 root.openView("hotspot");
         } else if (C.EXTRAS.some(e => e.key === key)) {
             root.extraIcon(key);

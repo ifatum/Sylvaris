@@ -14,10 +14,9 @@ Item {
     function submit(): void {
         if (Hotspot.active)
             Hotspot.stop();
-        else if (pass.text === "" && Hotspot.profileExists)
-            Hotspot.resume();
         else
             Hotspot.start(ssid.text, pass.text, root.band);
+        pass.text = "";
     }
 
     ViewHeader {
@@ -108,7 +107,8 @@ Item {
         x: (parent.width - width) / 2
         y: parent.height - height - 28
         icon: Icons.GLYPHS.hotspot
-        label: Hotspot.active ? "Stop hotspot" : "Start hotspot"
+        label: Hotspot.busy ? (Hotspot.active ? "Stopping…" : "Starting…") : Hotspot.active ? "Stop hotspot" : "Start hotspot"
+        enabled: !Hotspot.busy
         onClicked: root.submit()
     }
 }
