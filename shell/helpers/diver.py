@@ -6,6 +6,7 @@ import os
 import struct
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 
 from cryptography.exceptions import InvalidTag
@@ -41,7 +42,8 @@ def decode_code(code):
     for k in ("url", "token", "salt", "key"):
         if not isinstance(s.get(k), str) or not s[k]:
             raise ValueError("the pairing code is missing " + k)
-    if not s["url"].startswith("https://") and not s["url"].startswith("http://127.0.0.1") and not s["url"].startswith("http://localhost"):
+    u = urllib.parse.urlsplit(s["url"])
+    if not u.hostname or not (u.scheme == "https" or (u.scheme == "http" and u.hostname in ("127.0.0.1", "localhost"))):
         raise ValueError("the server must use https")
     if len(bytes.fromhex(s["key"])) != 32:
         raise ValueError("the key in the pairing code is not 256 bits")
@@ -57,6 +59,14 @@ def save_state(s):
     os.replace(tmp, STATE)
 
 
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *args):
+        return None
+
+
+OPENER = urllib.request.build_opener(NoRedirect)
+
+
 def request(s, method, path, body=None):
     data = None if body is None else json.dumps(body).encode()
     req = urllib.request.Request(s["url"] + path, data=data, method=method)
@@ -65,7 +75,7 @@ def request(s, method, path, body=None):
     if data is not None:
         req.add_header("Content-Type", "application/json")
     try:
-        with urllib.request.urlopen(req, timeout=15) as r:
+        with OPENER.open(req, timeout=15) as r:
             return r.status, json.loads(r.read().decode() or "null")
     except urllib.error.HTTPError as e:
         try:

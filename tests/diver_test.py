@@ -21,6 +21,10 @@ class DiverTest(unittest.TestCase):
         self.assertEqual(s["salt"], "ab" * 32)
         with self.assertRaises(ValueError):
             diver.decode_code(code(url="http://diver.example"))
+        for bad in ("http://127.0.0.1.evil.example", "http://localhost.evil.example", "http://localhost@evil.example", "ftp://diver.example"):
+            with self.assertRaises(ValueError):
+                diver.decode_code(code(url=bad))
+        self.assertEqual(diver.decode_code(code(url="http://127.0.0.1:8080"))["url"], "http://127.0.0.1:8080")
         with self.assertRaises(ValueError):
             diver.decode_code(code(key="11" * 16))
         with self.assertRaises(ValueError):
