@@ -29,7 +29,7 @@ Singleton {
     }
 
     function trySet(key: string, value: var): bool {
-        if (root.frozen)
+        if (root.frozen || !Object.prototype.hasOwnProperty.call(S.DEFAULT_SETTINGS, key.split(".")[0]) || key.split(".")[0] === "version")
             return false;
         const next = S.effectiveSettings(Config.values, S.setPath(root.raw, key, value));
         if (JSON.stringify(S.getPath(next, key)) !== JSON.stringify(value))

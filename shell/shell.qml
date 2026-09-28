@@ -516,7 +516,7 @@ ShellRoot {
         if (Settings.frozen)
             throw new Error(Settings.notice);
         if (!Settings.trySet(key, I.parseValue(value)))
-            throw new Error("invalid value for " + key + ", it stays " + JSON.stringify(Settings.get(key)));
+            throw new Error(Settings.get(key) === undefined ? "unknown setting: " + key : "invalid value for " + key + ", it stays " + JSON.stringify(Settings.get(key)));
         return JSON.stringify(Settings.get(key));
     }
 
