@@ -1,6 +1,6 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
-import { DEFAULT_ISLAND, validateIsland, activities, label, joined, custom, SHORTCUTS, shortcutsFor, placeOf, cardHeight, CHAT_APPS, chatOf, isCall, pickActions, takes } from "../shell/lib/island.mjs"
+import { DEFAULT_ISLAND, validateIsland, activities, label, joined, custom, SHORTCUTS, shortcutsFor, placeOf, cardHeight, CHAT_APPS, chatOf, isCall, pickActions, takes, hiddenSite } from "../shell/lib/island.mjs"
 
 const idle = { flash: null, recording: { on: false }, alarm: null, focus: null, next: null, media: { title: "", playing: false } }
 
@@ -188,4 +188,31 @@ test("takes decides which toasts the island shows instead", () => {
     assert.equal(takes(other, Object.assign({}, DEFAULT_ISLAND, { notifications: true }), false), true)
     assert.equal(takes(msg, Object.assign({}, DEFAULT_ISLAND, { messages: false }), false), false)
     assert.equal(takes(call, Object.assign({}, DEFAULT_ISLAND, { calls: false }), true), false)
+})
+
+test("hiddenSite matches a media url against the hidden sites", () => {
+    const sites = DEFAULT_ISLAND.hideSites
+    assert.equal(hiddenSite("https://www.youtube.com/watch?v=IquV1WL2sbo", sites), true)
+    assert.equal(hiddenSite("https://youtu.be/abc", sites), true)
+    assert.equal(hiddenSite("https://m.youtube.com/watch?v=1", sites), true)
+    assert.equal(hiddenSite("https://music.youtube.com/watch?v=1", sites), false)
+    assert.equal(hiddenSite("https://notyoutube.com/x", sites), false)
+    assert.equal(hiddenSite("", sites), false)
+    assert.equal(hiddenSite("file:///song.mp3", sites), false)
+    assert.equal(hiddenSite("https://www.twitch.tv/x", ["twitch.tv"]), true)
+})
+
+test("validateIsland checks screens mode and hidden sites", () => {
+    assert.equal(validateIsland({}).screens, "focused")
+    assert.equal(validateIsland({ screens: "all" }).screens, "all")
+    assert.equal(validateIsland({ screens: "x" }).screens, "focused")
+    assert.deepEqual(validateIsland({ hideSites: [" Twitch.TV ", "bad site", "twitch.tv", 3, "https://x.com/a"] }).hideSites, ["twitch.tv", "x.com"])
+    assert.deepEqual(validateIsland({ hideSites: "x" }).hideSites, DEFAULT_ISLAND.hideSites)
+    assert.deepEqual(validateIsland({ hideSites: [] }).hideSites, [])
+})
+
+test("media from a hidden site stays out of the island", () => {
+    const s = { media: { title: "Video", playing: true, url: "https://www.youtube.com/watch?v=1" } }
+    assert.deepEqual(activities(s, DEFAULT_ISLAND), [])
+    assert.deepEqual(activities(s, Object.assign({}, DEFAULT_ISLAND, { hideSites: [] })).map(a => a.kind), ["media"])
 })

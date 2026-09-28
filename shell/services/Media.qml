@@ -18,6 +18,7 @@ Singleton {
     readonly property string artist: root.demo ? Demo.player.artist : (root.player !== null ? root.player.trackArtist : "")
     readonly property string album: root.demo ? "Example Album" : (root.player !== null ? root.player.trackAlbum : "")
     readonly property string art: root.demo ? Demo.player.art : (root.player !== null ? root.player.trackArtUrl : "")
+    readonly property string url: root.player !== null && root.player.metadata ? String(root.player.metadata["xesam:url"] || "") : ""
     readonly property string identity: root.demo ? Demo.player.identity : (root.player !== null ? root.player.identity : "")
     readonly property bool playing: root.demo ? root.demoPlaying : (root.player !== null && root.player.isPlaying)
     readonly property real length: root.demo ? 212 : (root.player !== null && root.player.lengthSupported ? root.player.length : 0)

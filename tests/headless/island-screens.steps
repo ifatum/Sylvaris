@@ -1,0 +1,18 @@
+sleep 1.5
+sway create_output
+sleep 1.5
+syl set parts.island true
+syl set island.screens all
+syl set island.hideSites ["twitch.tv","youtube.com"]
+syl set screens.HEADLESS-2.island.position bottom-center
+sleep 2
+check sylvaris island | grep -q '"screens":"all"'
+check sylvaris island | grep -q '"kind":"media"'
+check sylvaris settings get island.hideSites | grep -q twitch.tv
+shot island-every-screen
+syl island open
+sleep 0.8
+shot island-every-screen-open
+syl set island.screens focused
+sleep 0.5
+check sylvaris island | grep -q '"screens":"focused"'

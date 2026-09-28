@@ -90,6 +90,27 @@ Column {
         }
 
         SettingRow {
+            title: "Show on"
+            subtitle: "Every screen gets its own island that expands on its own"
+
+            Segmented {
+                width: 300
+                options: [
+                    {
+                        key: "focused",
+                        label: "Focused screen"
+                    },
+                    {
+                        key: "all",
+                        label: "Every screen"
+                    }
+                ]
+                current: root.cfg.screens
+                onPicked: key => Settings.put("island.screens", key)
+            }
+        }
+
+        SettingRow {
             title: "Edge"
             subtitle: "Top or bottom of the focused screen"
 
@@ -209,6 +230,25 @@ Column {
                         onClicked: root.flip(modelData)
                     }
                 }
+            }
+        }
+    }
+
+    Card {
+        title: "Hidden sites"
+        note: "Media playing from these sites stays out of the island, so a YouTube video does not take it over. The bar and SylMedia still show it. Separate sites with commas, press Enter to save."
+
+        SettingRow {
+            title: "Sites"
+            subtitle: "music.youtube.com is not youtube.com, so YouTube Music still shows"
+            last: true
+
+            TextBox {
+                id: sitesBox
+                width: 320
+                text: root.cfg.hideSites.join(", ")
+                placeholder: "youtube.com, twitch.tv"
+                onAccepted: Settings.put("island.hideSites", sitesBox.text.split(",").map(s => s.trim()).filter(s => s !== ""))
             }
         }
     }

@@ -11,13 +11,16 @@ import "../lib/notify.mjs" as N
 Scope {
     id: root
 
-    readonly property var cfg: Settings.at(Compositor.focusedName()).island
+    readonly property var cfg: Settings.at(root.focusedName).island
     property var peers: ({})
     property var live: []
     property var avoid: null
-    property bool wanted: false
-    property bool hovered: false
-    property bool hot: false
+    property string pinned: ""
+    property string hoverScreen: ""
+    property string pendingScreen: ""
+    property string hotScreen: ""
+    readonly property bool hovered: root.hoverScreen !== ""
+    readonly property string focusedName: Compositor.focusedName()
     property var flash: null
     property bool armed: false
     property real now: Date.now()
@@ -25,7 +28,6 @@ Scope {
     property int lastNote: -1
     property var devicesBefore: []
     property int replyTo: -1
-    readonly property var place: I.placeOf(root.cfg.position)
     readonly property var screenInfo: Compositor.screenFor(Compositor.focusedName())
     readonly property var capture: root.peers.capture === undefined ? null : root.peers.capture
     readonly property bool recording: root.capture !== null && root.capture.recording
@@ -66,14 +68,11 @@ Scope {
             artist: Media.artist,
             art: Media.art,
             player: Media.identity,
+            url: Media.url,
             playing: Media.playing
         }
     }, root.cfg)
-    readonly property var shortcuts: I.shortcutsFor(root.cfg.shortcuts, root.live).map(s => Object.assign({}, s, {
-                lit: root.litOf(s.id),
-                badge: s.id === "notify" ? Notifications.count : 0
-            }))
-    readonly property bool expanded: root.wanted || root.cfg.hover && root.hot
+    readonly property bool expanded: root.pinned !== "" || root.hotScreen !== ""
 
     signal requested(string part)
 
@@ -102,6 +101,13 @@ Scope {
         };
     }
 
+    function shortcutsOf(ids: var): var {
+        return I.shortcutsFor(ids, root.live).map(s => Object.assign({}, s, {
+                    lit: root.litOf(s.id),
+                    badge: s.id === "notify" ? Notifications.count : 0
+                }));
+    }
+
     function litOf(id: string): bool {
         switch (id) {
         case "dnd":
@@ -120,15 +126,32 @@ Scope {
     }
 
     function close(): void {
-        root.wanted = false;
+        root.pinned = "";
     }
 
     function open(): void {
-        root.wanted = true;
+        root.pinned = root.focusedName;
     }
 
     function toggle(): void {
-        root.wanted = !root.wanted;
+        root.pin(root.focusedName);
+    }
+
+    function pin(name: string): void {
+        root.pinned = root.pinned === name ? "" : name;
+    }
+
+    function hover(name: string, on: bool): void {
+        if (on) {
+            root.hoverScreen = name;
+            root.pendingScreen = name;
+            leaveTimer.stop();
+            enterTimer.restart();
+        } else if (root.hoverScreen === name) {
+            root.hoverScreen = "";
+            enterTimer.stop();
+            leaveTimer.restart();
+        }
     }
 
     function toggleOn(screen: var): void {
@@ -153,7 +176,7 @@ Scope {
             throw new Error("unknown shortcut: " + id + "; one of " + Object.keys(I.SHORTCUTS).join(", "));
         if (s.needs.toLowerCase() === s.needs) {
             root.close();
-            root.hot = false;
+            root.hotScreen = "";
         }
         const words = id === "record" && root.recording ? ["capture", "stop"] : s.run;
         const out = Ipc.run(words);
@@ -181,7 +204,7 @@ Scope {
         if (what === "open") {
             const part = root.partFor(kind);
             root.close();
-            root.hot = false;
+            root.hotScreen = "";
             if (part !== "")
                 root.requested(part);
             return;
@@ -219,7 +242,7 @@ Scope {
             return;
         if (what === "reply") {
             root.replyTo = a.id;
-            root.wanted = true;
+            root.pinned = root.hotScreen !== "" ? root.hotScreen : root.focusedName;
             return;
         }
         if (what === "cancel") {
@@ -232,7 +255,7 @@ Scope {
                 Notifications.entry(a.id).n.sendInlineReply(text);
             root.replyTo = -1;
             root.flash = null;
-            root.wanted = false;
+            root.pinned = "";
             return;
         }
         const action = ({
@@ -255,7 +278,8 @@ Scope {
             covered: root.covered,
             position: root.cfg.position,
             screen: root.screenInfo ? root.screenInfo.name : "",
-            shortcuts: root.shortcuts.map(s => s.id),
+            screens: root.cfg.screens,
+            shortcuts: root.shortcutsOf(root.cfg.shortcuts).map(s => s.id),
             items: root.items.map(a => ({
                         kind: a.kind,
                         label: I.label(a)
@@ -268,26 +292,16 @@ Scope {
             root.replyTo = -1;
     }
 
-    onHoveredChanged: {
-        if (root.hovered) {
-            leaveTimer.stop();
-            enterTimer.restart();
-        } else {
-            enterTimer.stop();
-            leaveTimer.restart();
-        }
-    }
-
     Timer {
         id: enterTimer
         interval: 90
-        onTriggered: root.hot = true
+        onTriggered: root.hotScreen = root.pendingScreen
     }
 
     Timer {
         id: leaveTimer
         interval: 320
-        onTriggered: root.hot = false
+        onTriggered: root.hotScreen = ""
     }
 
     Timer {
@@ -401,63 +415,75 @@ Scope {
         }
     }
 
-    PanelWindow {
-        visible: body.shown && !root.covered
-        screen: root.screenInfo
-        anchors.top: root.place.top
-        anchors.bottom: !root.place.top
-        anchors.left: root.place.side === "left"
-        anchors.right: root.place.side === "right"
-        margins.top: Tokens.edgeMargin
-        margins.bottom: Tokens.edgeMargin
-        margins.left: Tokens.edgeMargin
-        margins.right: Tokens.edgeMargin
-        implicitWidth: body.cardWidth + body.pillHeight + 16
-        implicitHeight: 540
-        color: "transparent"
-        exclusionMode: ExclusionMode.Normal
-        exclusiveZone: 0
-        WlrLayershell.layer: WlrLayer.Top
-        WlrLayershell.namespace: "sylisland"
-        WlrLayershell.keyboardFocus: root.replyTo >= 0 ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
-        mask: Region {
-            item: body
-        }
-        BackgroundEffect.blurRegion: Resin.enabled ? blur : null
+    Variants {
+        model: root.cfg.screens === "all" ? Quickshell.screens : root.screenInfo !== null ? [root.screenInfo] : []
 
-        Region {
-            id: blur
+        PanelWindow {
+            id: win
+
+            required property var modelData
+            readonly property string name: win.modelData.name
+            readonly property var wcfg: Settings.at(win.name).island
+            readonly property var place: I.placeOf(win.wcfg.position)
+            readonly property bool covered: root.avoid !== null && root.avoid.corner === win.wcfg.position && root.avoid.screen === win.name
+
+            visible: body.shown && !win.covered
+            screen: win.modelData
+            anchors.top: win.place.top
+            anchors.bottom: !win.place.top
+            anchors.left: win.place.side === "left"
+            anchors.right: win.place.side === "right"
+            margins.top: Tokens.edgeMargin
+            margins.bottom: Tokens.edgeMargin
+            margins.left: Tokens.edgeMargin
+            margins.right: Tokens.edgeMargin
+            implicitWidth: body.cardWidth + body.pillHeight + 16
+            implicitHeight: 540
+            color: "transparent"
+            exclusionMode: ExclusionMode.Normal
+            exclusiveZone: 0
+            WlrLayershell.layer: WlrLayer.Top
+            WlrLayershell.namespace: "sylisland"
+            WlrLayershell.keyboardFocus: root.replyTo >= 0 && root.pinned === win.name ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+            mask: Region {
+                item: body
+            }
+            BackgroundEffect.blurRegion: Resin.enabled ? blur : null
 
             Region {
-                item: body.pill
-                radius: Math.min(body.pill.height / 2, Tokens.radiusPanel)
+                id: blur
+
+                Region {
+                    item: body.pill
+                    radius: Math.min(body.pill.height / 2, Tokens.radiusPanel)
+                }
+
+                Region {
+                    item: body.bubble ? body.side : null
+                    radius: body.pillHeight / 2
+                }
             }
 
-            Region {
-                item: body.bubble ? body.side : null
-                radius: body.pillHeight / 2
-            }
-        }
+            IslandBody {
+                id: body
+                x: win.place.side === "left" ? 0 : win.place.side === "right" ? parent.width - width : (parent.width - body.pill.width) / 2
+                y: win.place.top ? 0 : parent.height - height
+                items: root.items
+                shortcuts: root.shortcutsOf(win.wcfg.shortcuts)
+                expanded: root.pinned === win.name || root.cfg.hover && root.hotScreen === win.name
+                atTop: win.place.top
+                idle: win.wcfg.idle
+                time: root.time
+                replying: root.pinned === win.name ? root.replyTo : -1
+                progress: Media.length > 0 ? Media.position / Media.length : 0
+                onAct: (kind, what) => root.act(kind, what)
+                onRun: id => root.runShortcut(id)
+                onPin: root.pin(win.name)
+                onWheel: steps => Audio.setVolume(Audio.volume + steps * 0.05)
 
-        IslandBody {
-            id: body
-            x: root.place.side === "left" ? 0 : root.place.side === "right" ? parent.width - width : (parent.width - body.pill.width) / 2
-            y: root.place.top ? 0 : parent.height - height
-            items: root.items
-            shortcuts: root.shortcuts
-            expanded: root.expanded
-            atTop: root.place.top
-            idle: root.cfg.idle
-            time: root.time
-            replying: root.replyTo
-            progress: Media.length > 0 ? Media.position / Media.length : 0
-            onAct: (kind, what) => root.act(kind, what)
-            onRun: id => root.runShortcut(id)
-            onPin: root.toggle()
-            onWheel: steps => Audio.setVolume(Audio.volume + steps * 0.05)
-
-            HoverHandler {
-                onHoveredChanged: root.hovered = hovered
+                HoverHandler {
+                    onHoveredChanged: root.hover(win.name, hovered)
+                }
             }
         }
     }

@@ -185,6 +185,11 @@
       "screenshot",
       "record",
       "dnd"
+    ],
+    "screens": "focused",
+    "hideSites": [
+      "youtube.com",
+      "youtu.be"
     ]
   },
   "placement": {
