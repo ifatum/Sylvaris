@@ -8,11 +8,12 @@ export function dispatch(commands, words) {
     if (!Array.isArray(words) || words.length === 0 || words[0] === "")
         return { ok: false, error: "no command given" }
     const part = words[0]
-    const table = commands[part]
+    const own = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key)
+    const table = own(commands, part) ? commands[part] : null
     if (!isObject(table))
         return { ok: false, error: "unknown part: " + part }
     const action = words.length > 1 && words[1] !== "" ? words[1] : table.default || "toggle"
-    if (action === "default" || typeof table[action] !== "function")
+    if (action === "default" || !own(table, action) || typeof table[action] !== "function")
         return { ok: false, error: "unknown " + part + " action: " + action }
     try {
         const result = table[action].apply(null, words.slice(2))

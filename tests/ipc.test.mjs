@@ -27,6 +27,12 @@ test("dispatch reports unknown parts, unknown actions and thrown errors", () => 
     assert.equal(dispatch(commands, []).ok, false)
 })
 
+test("dispatch only runs a part's own actions", () => {
+    assert.equal(dispatch(commands, ["__proto__", "toString"]).error, "unknown part: __proto__")
+    assert.equal(dispatch(commands, ["center", "toString"]).error, "unknown center action: toString")
+    assert.equal(dispatch(commands, ["center", "constructor"]).error, "unknown center action: constructor")
+})
+
 test("format prints ok, strings as is, objects as JSON and errors with a prefix", () => {
     assert.equal(format({ ok: true, result: null }), "ok")
     assert.equal(format({ ok: true, result: "x" }), "x")
