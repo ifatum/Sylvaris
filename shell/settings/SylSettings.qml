@@ -145,6 +145,12 @@ Scope {
             group: "features"
         },
         {
+            key: "island",
+            label: "Island",
+            glyph: Icons.GLYPHS.music,
+            group: "features"
+        },
+        {
             key: "clip",
             label: "Clipboard",
             glyph: Icons.GLYPHS.clipboard,
@@ -1008,6 +1014,7 @@ Scope {
                                 lock: lockPage,
                                 polkit: polkitPage,
                                 clip: clipPage,
+                                island: islandPage,
                                 capture: capturePage,
                                 access: accessPage,
                                 plugins: pluginsPage,
@@ -1043,6 +1050,12 @@ Scope {
         id: capturePage
 
         CapturePage {}
+    }
+
+    Component {
+        id: islandPage
+
+        IslandPage {}
     }
 
     Component {

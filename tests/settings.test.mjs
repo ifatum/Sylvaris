@@ -4,7 +4,7 @@ import assert from "node:assert/strict"
 import {
     CORNERS, DEFAULT_CONFIG, DEFAULT_SETTINGS, parseJson, expandHome, deepMerge, migrate,
     validateConfig, validateSettings, merge, getPath, setPath, serialize, DEFAULT_GLASS, resolveGlass, settingsLayer, effectiveSettings,
-    PARTS, SERVICE_DEPS, liveParts, liveServices, CENTER_TILES
+    PARTS, OPT_IN, SERVICE_DEPS, liveParts, liveServices, CENTER_TILES
 } from "../shell/lib/settings.mjs"
 
 test("parseJson treats empty text as an empty object", () => {
@@ -206,9 +206,12 @@ test("config.json can hold settings defaults that settings.json overrides", () =
     assert.deepEqual(effectiveSettings({}, {}), validateSettings({}))
 })
 
-test("parts default to every part and keep only boolean false", () => {
+test("parts default to every part but the opt-in ones and keep only boolean false", () => {
     assert.deepEqual(Object.keys(DEFAULT_SETTINGS.parts), Object.keys(PARTS))
-    assert.ok(Object.values(DEFAULT_SETTINGS.parts).every(v => v === true))
+    assert.ok(Object.entries(DEFAULT_SETTINGS.parts).every(([k, v]) => v === !OPT_IN.includes(k)))
+    assert.equal(liveParts(undefined).includes("island"), false)
+    assert.equal(validateSettings({ parts: { island: "yes" } }).parts.island, false)
+    assert.equal(liveParts(validateSettings({ parts: { island: true } }).parts).includes("island"), true)
     const v = validateSettings({ parts: { pad: false, center: "no", nope: false } })
     assert.equal(v.parts.pad, false)
     assert.equal(v.parts.center, true)

@@ -20,6 +20,7 @@ import qs.switcher
 import qs.lock
 import qs.polkit
 import qs.clip
+import qs.island
 import qs.capture
 import qs.access
 import qs.plugins
@@ -50,6 +51,7 @@ ShellRoot {
             lock: lockLoader,
             polkit: polkitLoader,
             clip: clipLoader,
+            island: islandLoader,
             capture: captureLoader,
             access: accessLoader,
             plugins: pluginsLoader,
@@ -231,6 +233,7 @@ ShellRoot {
             lock: root.part("lock") !== null ? root.part("lock").state() : undefined,
             polkit: root.part("polkit") !== null ? root.part("polkit").state() : undefined,
             clip: root.part("clip") !== null ? root.part("clip").state() : undefined,
+            island: root.part("island") !== null ? root.part("island").state() : undefined,
             capture: root.part("capture") !== null ? root.part("capture").state() : undefined,
             access: root.part("access") !== null ? root.part("access").state() : undefined,
             fatest: root.part("fatest") !== null ? root.part("fatest").state() : undefined,
@@ -435,6 +438,18 @@ ShellRoot {
         SylCapture {
             id: capturePart
             onOpened: root.solo(capturePart)
+        }
+    }
+
+    LazyLoader {
+        id: islandLoader
+        active: root.on("island")
+
+        SylIsland {
+            id: islandPart
+            peers: root.parts
+            avoid: root.openPanel
+            onRequested: part => root.openOn(part, "", islandPart.screenInfo)
         }
     }
 
@@ -758,6 +773,14 @@ ShellRoot {
                 stop: () => root.need("capture").stop(),
                 edit: (...file) => root.need("capture").edit(file.join(" ")),
                 state: () => root.need("capture").state()
+            },
+            island: {
+                default: "state",
+                toggle: () => root.need("island").toggle(),
+                open: () => root.need("island").open(),
+                close: () => root.need("island").close(),
+                show: (...words) => root.need("island").say(words.join(" ")),
+                state: () => root.need("island").state()
             },
             clip: {
                 toggle: () => root.need("clip").toggle(),

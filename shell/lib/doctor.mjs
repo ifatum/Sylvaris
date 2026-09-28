@@ -15,6 +15,7 @@ export const PART_PACKAGES = {
     lock: ["glib"],
     polkit: [],
     clip: ["wl-clipboard"],
+    island: [],
     access: [],
     plugins: ["git"],
     sync: ["python", "procps"],

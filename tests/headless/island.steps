@@ -1,0 +1,26 @@
+sleep 1.5
+syl island
+check sylvaris island 2>&1 | grep -q "parts.island true"
+syl set parts.island true
+sleep 2
+syl island
+check sylvaris island | grep -q '"kind":"media"'
+shot island-media
+syl island open
+sleep 0.8
+shot island-expanded
+syl island close
+syl audio set 40
+sleep 0.6
+check sylvaris island | grep -q '"label":"40%"'
+shot island-volume
+syl island show Build   finished
+sleep 0.4
+check sylvaris island | grep -q '"label":"Build finished"'
+syl island show
+syl center open
+sleep 0.6
+syl island
+syl set parts.island false
+sleep 0.5
+syl island

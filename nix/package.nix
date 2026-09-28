@@ -67,6 +67,7 @@ let
     lock = [ glib ];
     polkit = [ ];
     clip = [ wl-clipboard ];
+    island = [ ];
     access = [ ];
     fatest = [ ];
     plugins = [ git ];

@@ -1,5 +1,6 @@
 import { DEFAULT_LOCK, validateLock } from "./lock.mjs"
 import { DEFAULT_CLIP, validateClip } from "./clip.mjs"
+import { DEFAULT_ISLAND, validateIsland } from "./island.mjs"
 import { DEFAULT_CAPTURE, validateCapture } from "./capture.mjs"
 import { DEFAULT_ACCESS, validateAccess } from "./access.mjs"
 import { EXTRAS } from "./center.mjs"
@@ -31,12 +32,13 @@ export const PARTS = {
     lock: [],
     polkit: [],
     clip: [],
+    island: ["Media", "Audio", "Notifications", "BluetoothService", "Diver"],
     capture: [],
     access: [],
     plugins: ["Plugins"],
     sync: ["Sync"],
     switcher: ["Apps"],
-    settings: ["Audio", "Equalizer", "NightLight", "Diver", "Weather", "Sky", "Dnd", "Apps", "Notifications", "Plugins", "Sync"],
+    settings: ["Audio", "Equalizer", "NightLight", "Diver", "Weather", "Sky", "Dnd", "Apps", "Notifications", "Plugins", "Sync", "Media"],
     theme: ["ThemePreview"]
 }
 
@@ -48,10 +50,16 @@ export const SERVICE_DEPS = {
     Weather: ["Sky"]
 }
 
+export const OPT_IN = ["island"]
+
+function partOn(parts, name) {
+    return OPT_IN.includes(name) ? parts[name] === true : parts[name] !== false
+}
+
 function partFlags(parts) {
     const out = {}
     for (const name of Object.keys(PARTS))
-        out[name] = parts[name] !== false
+        out[name] = partOn(parts, name)
     return out
 }
 
@@ -94,6 +102,7 @@ export const DEFAULT_SETTINGS = {
     switcher: { previews: true, titles: true },
     lock: DEFAULT_LOCK,
     clip: DEFAULT_CLIP,
+    island: DEFAULT_ISLAND,
     capture: DEFAULT_CAPTURE,
     access: DEFAULT_ACCESS,
     keybinds: {},
@@ -330,6 +339,7 @@ export function validateSettings(raw) {
 
     v.lock = validateLock(v.lock)
     v.clip = validateClip(v.clip)
+    v.island = validateIsland(v.island)
     v.capture = validateCapture(v.capture)
     v.access = validateAccess(v.access)
     v.keybinds = validateKeybinds(v.keybinds)
@@ -358,7 +368,7 @@ function pluggedOff(plugins, key, name) {
 }
 
 export function liveParts(parts, plugins) {
-    return Object.keys(PARTS).filter(name => (!isObject(parts) || parts[name] !== false) && !pluggedOff(plugins, "part", name))
+    return Object.keys(PARTS).filter(name => partOn(isObject(parts) ? parts : {}, name) && !pluggedOff(plugins, "part", name))
 }
 
 export function liveServices(parts, plugins) {

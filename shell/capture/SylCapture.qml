@@ -220,7 +220,7 @@ Popup {
     }
 
     LazyLoader {
-        active: root.recording && (root.started || root.waitUntil > 0)
+        active: root.recording && (root.started || root.waitUntil > 0) && !(Settings.values.parts.island && Settings.values.island.recording)
 
         PanelWindow {
             anchors.top: true
