@@ -2,24 +2,20 @@ sleep 1.5
 write sylvaris/settings.json {"version":1,"capture":{"format":"jpeg","quality":60,"after":"none","copy":false,"codec":"h265","container":"mkv","resolution":"720","fps":30,"countdown":3,"pattern":"cap-{kind}"}}
 sleep 1
 syl capture shot screen
-sleep 2
-check [ -s "$HOME/Pictures/Screenshots/cap-Screenshot.jpg" ]
+wait [ -s "$HOME/Pictures/Screenshots/cap-Screenshot.jpg" ]
 check [ "$(head -c 2 "$HOME/Pictures/Screenshots/cap-Screenshot.jpg" | od -An -tx1 | tr -d ' \n')" = "ffd8" ]
 syl capture record screen
 sleep 1.2
 syl state capture
 check tail -n 3 "$OUT/ipc.log" | grep -q '"recording":true,"started":false'
 shot capture-countdown
-sleep 3.5
-syl state capture
-check tail -n 3 "$OUT/ipc.log" | grep -q '"recording":true,"started":true'
+wait sylvaris state capture | grep -q '"recording":true,"started":true'
 sleep 1.5
 syl capture stop
-sleep 2
-check [ -s "$HOME/Videos/Recordings/cap-Recording.mkv" ]
+wait [ -s "$HOME/Videos/Recordings/cap-Recording.mkv" ]
 syl set capture.codec vp9
 syl capture record screen
-sleep 5.5
+wait sylvaris state capture | grep -q '"recording":true,"started":true'
+sleep 1.5
 syl capture stop
-sleep 2
-check [ -s "$HOME/Videos/Recordings/cap-Recording.webm" ]
+wait [ -s "$HOME/Videos/Recordings/cap-Recording.webm" ]

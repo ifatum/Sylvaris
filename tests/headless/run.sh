@@ -129,6 +129,18 @@ while read -r cmd rest; do
             checks_failed=1
         fi
         ;;
+    wait)
+        waited=0
+        until "${hl_env[@]}" SYLVARIS_DIR="$shell_dir" PATH="$repo/bin:$PATH" OUT="$out" SHELL_PID="$qs_pid" sh -c "$rest" >/dev/null 2>&1; do
+            waited=$((waited + 1))
+            if [ "$waited" -ge 100 ]; then
+                printf 'CHECK FAILED: wait %s\n' "$rest" | tee -a "$out/ipc.log" >&2
+                checks_failed=1
+                break
+            fi
+            sleep 0.2
+        done
+        ;;
     killshell)
         kill -9 "$qs_pid"
         ;;
