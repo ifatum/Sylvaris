@@ -643,6 +643,12 @@ Scope {
                     }
                 }
 
+                TrayMenu {
+                    id: trayMenu
+                    anchor.window: drawer
+                    onDone: drawer.visible = false
+                }
+
                 NumberAnimation {
                     id: drawerIn
                     target: drawer
@@ -726,10 +732,7 @@ Scope {
                                         if (mouse.button === Qt.MiddleButton) {
                                             item.secondaryActivate();
                                         } else if (mouse.button === Qt.RightButton || item.onlyMenu) {
-                                            if (item.hasMenu) {
-                                                const p = trayItem.mapToItem(null, 0, trayItem.height + 4);
-                                                item.display(drawer, p.x, p.y);
-                                            }
+                                            trayMenu.show(item, trayItem);
                                         } else {
                                             item.activate();
                                             drawer.visible = false;
