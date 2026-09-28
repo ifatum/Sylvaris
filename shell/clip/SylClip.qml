@@ -162,7 +162,7 @@ Popup {
     Process {
         id: grab
         property bool again: false
-        command: ["sh", "-c", "t=$(wl-paste --list-types 2>/dev/null) || exit 0; printf '%s\\n\\036\\n' \"$t\"; case \"$t\" in *x-kde-passwordManagerHint*) exit 0 ;; esac; if printf '%s' \"$t\" | grep -q '^text/plain'; then wl-paste -n -t text 2>/dev/null; elif [ \"$1\" = 1 ] && printf '%s' \"$t\" | grep -q '^image/png'; then mkdir -p \"$0\"; f=\"$0/$(date +%s%N).png\"; wl-paste -t image/png > \"$f\" && printf 'IMG %s %s' \"$f\" \"$(md5sum < \"$f\" | cut -c1-32)\"; fi", root.cacheDir, root.cfg.images ? "1" : "0"]
+        command: ["sh", "-c", "umask 077; t=$(wl-paste --list-types 2>/dev/null) || exit 0; printf '%s\\n\\036\\n' \"$t\"; case \"$t\" in *x-kde-passwordManagerHint*) exit 0 ;; esac; if printf '%s' \"$t\" | grep -q '^text/plain'; then wl-paste -n -t text 2>/dev/null; elif [ \"$1\" = 1 ] && printf '%s' \"$t\" | grep -q '^image/png'; then mkdir -p \"$0\"; f=\"$0/$(date +%s%N).png\"; wl-paste -t image/png > \"$f\" && printf 'IMG %s %s' \"$f\" \"$(md5sum < \"$f\" | cut -c1-32)\"; fi", root.cacheDir, root.cfg.images ? "1" : "0"]
         stdout: StdioCollector {
             onStreamFinished: {
                 const cut = text.indexOf("\n\u001e\n");
