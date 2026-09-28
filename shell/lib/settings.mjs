@@ -394,10 +394,12 @@ export function merge(config, settings) {
     return deepMerge(validateConfig(config), validateSettings(settings))
 }
 
+const own = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key)
+
 export function getPath(obj, path) {
     let cur = obj
     for (const part of path.split(".")) {
-        if (!isObject(cur) || !(part in cur))
+        if (!isObject(cur) || !own(cur, part))
             return undefined
         cur = cur[part]
     }
@@ -406,10 +408,12 @@ export function getPath(obj, path) {
 
 export function setPath(obj, path, value) {
     const parts = path.split(".")
+    if (parts.some(p => p === "__proto__" || p === "constructor" || p === "prototype"))
+        throw new Error("not a setting: " + path)
     const out = isObject(obj) ? clone(obj) : {}
     let cur = out
     for (let i = 0; i < parts.length - 1; i++) {
-        if (!isObject(cur[parts[i]]))
+        if (!isObject(cur[parts[i]]) || !own(cur, parts[i]))
             cur[parts[i]] = {}
         cur = cur[parts[i]]
     }

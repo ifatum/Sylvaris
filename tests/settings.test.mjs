@@ -126,6 +126,14 @@ test("getPath and setPath work on nested keys without mutating", () => {
     assert.deepEqual(layouts, { displays: { layouts: { "DP-1+HDMI-A-1": { x: 1 } } } })
 })
 
+test("getPath and setPath refuse keys that reach the prototype", () => {
+    for (const key of ["__proto__.polluted", "a.constructor.prototype.polluted", "a.__proto__"])
+        assert.throws(() => setPath({ a: {} }, key, true))
+    assert.equal({}.polluted, undefined)
+    assert.equal(getPath({ a: {} }, "a.toString"), undefined)
+    assert.equal(getPath({ a: {} }, "__proto__"), undefined)
+})
+
 test("serialize produces parseable JSON with a trailing newline", () => {
     const text = serialize({ a: 1 })
     assert.ok(text.endsWith("\n"))
