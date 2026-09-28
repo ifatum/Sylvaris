@@ -188,7 +188,7 @@ Popup {
             if (root.queued !== "") {
                 const next = root.queued;
                 root.queued = "";
-                root.record(next);
+                Qt.callLater(() => root.record(next));
             }
         }
     }

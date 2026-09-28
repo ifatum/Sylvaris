@@ -1,0 +1,11 @@
+sleep 1.5
+write sylvaris/settings.json {"version":1,"capture":{"after":"none","copy":false,"codec":"h265","container":"mkv","resolution":"720","countdown":0,"pattern":"restart-{kind}"}}
+sleep 1
+syl capture record screen
+wait sylvaris state capture | grep -q '"started":true'
+sleep 1
+syl capture stop
+syl capture record screen
+syl state capture
+wait sylvaris state capture | grep -q '"recording":true,"started":true'
+syl state capture
