@@ -302,7 +302,6 @@ Scope {
                                 layer.effect: IconTint {}
                                 sourceSize.height: height * 2
                                 fillMode: Image.PreserveAspectFit
-                                asynchronous: true
                                 smooth: true
                             }
                         }
@@ -318,7 +317,6 @@ Scope {
                             layer.enabled: Tokens.iconTint
                             layer.effect: IconTint {}
                             sourceSize.height: 60
-                            asynchronous: true
                         }
 
                         Text {

@@ -127,7 +127,7 @@ Item {
             sourceSize.width: Tokens.notifyIcon * 2
             sourceSize.height: Tokens.notifyIcon * 2
             fillMode: Image.PreserveAspectFit
-            asynchronous: true
+            asynchronous: root.icon.indexOf("image://") !== 0
             smooth: true
             mipmap: true
             visible: status === Image.Ready

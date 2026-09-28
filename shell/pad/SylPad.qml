@@ -484,7 +484,6 @@ Scope {
                                                 sourceSize.width: Tokens.padIcon * 2
                                                 sourceSize.height: Tokens.padIcon * 2
                                                 fillMode: Image.PreserveAspectFit
-                                                asynchronous: true
                                                 smooth: true
                                                 mipmap: true
                                             }
@@ -796,7 +795,6 @@ Scope {
                             layer.effect: IconTint {}
                             sourceSize.width: 60
                             sourceSize.height: 60
-                            asynchronous: true
                             smooth: true
                             mipmap: true
                         }

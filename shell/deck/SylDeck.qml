@@ -439,7 +439,6 @@ Scope {
                                     sourceSize.width: root.size * 3
                                     sourceSize.height: root.size * 3
                                     fillMode: Image.PreserveAspectFit
-                                    asynchronous: true
                                     smooth: true
                                     mipmap: true
                                 }
