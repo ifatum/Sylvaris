@@ -27,19 +27,26 @@ Item {
     readonly property real rimAlpha: Resin.rim * (root.inner ? 0.22 : 0.3)
     readonly property point rest: Qt.point(root.width * (0.5 + 0.32 * Math.sin(root.drift * 0.35)), root.height * (0.14 + 0.05 * Math.sin(root.drift * 0.23 + 1.3)))
 
+    property bool chasing: false
+    readonly property bool drifting: root.flowing && Resin.flow > 0
+
     HoverHandler {
         id: pointer
         enabled: root.shiny
+        onPointChanged: root.chasing = true
+        onHoveredChanged: root.chasing = true
     }
 
     FrameAnimation {
-        running: root.visible && root.shiny && (pointer.hovered || (root.flowing && Resin.flow > 0))
+        running: root.visible && root.shiny && (root.chasing || root.drifting)
         onTriggered: {
-            if (root.flowing)
+            if (root.drifting)
                 root.drift += frameTime * Resin.flow;
             const target = pointer.hovered ? pointer.point.position : root.rest;
             const k = Math.min(1, frameTime * 4);
             root.light = Qt.point(root.light.x + (target.x - root.light.x) * k, root.light.y + (target.y - root.light.y) * k);
+            if (!root.drifting && Math.abs(target.x - root.light.x) < 0.5 && Math.abs(target.y - root.light.y) < 0.5)
+                root.chasing = false;
         }
     }
 
