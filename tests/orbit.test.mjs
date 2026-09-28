@@ -1,6 +1,6 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
-import { GEOMETRY, baseAngle, nodePosition, linkGeometry, sonarRing, haloRotation, orderAndCap } from "../shell/lib/orbit.mjs"
+import { GEOMETRY, baseAngle, nodePosition, linkGeometry, sonarRing, haloRotation, orderAndCap, actionLabel, phaseOf } from "../shell/lib/orbit.mjs"
 
 const close = (a, b, eps = 1e-9) => assert.ok(Math.abs(a - b) < eps, a + " != " + b)
 
@@ -102,4 +102,20 @@ test("orderAndCap shows up to five items, or four and a +N more slot", () => {
     assert.equal(five.visible.length, 5)
     assert.equal(five.overflow, 0)
     assert.equal(orderAndCap(items, 20).overflow, 0)
+})
+
+test("device actions say what is happening while a connection changes", () => {
+    assert.equal(actionLabel({ connected: false, known: true, phase: "" }, true), "Connect")
+    assert.equal(actionLabel({ connected: false, known: false, phase: "" }, true), "Pair")
+    assert.equal(actionLabel({ connected: true, known: true, phase: "" }, false), "Disconnect")
+    assert.equal(actionLabel({ connected: false, known: true, phase: "connecting" }, true), "Connecting…")
+    assert.equal(actionLabel({ connected: false, known: false, phase: "pairing" }, true), "Pairing…")
+    assert.equal(actionLabel({ connected: true, known: true, phase: "disconnecting" }, false), "Disconnecting…")
+    assert.equal(phaseOf("", { action: "connect" }, true, false), "connecting")
+    assert.equal(phaseOf("", { action: "connect" }, false, false), "pairing")
+    assert.equal(phaseOf("", { action: "connect" }, true, true), "")
+    assert.equal(phaseOf("", { action: "disconnect" }, true, true), "disconnecting")
+    assert.equal(phaseOf("", { action: "disconnect" }, true, false), "")
+    assert.equal(phaseOf("connecting", undefined, true), "connecting")
+    assert.equal(phaseOf("", undefined, true), "")
 })

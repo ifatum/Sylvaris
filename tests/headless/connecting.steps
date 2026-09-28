@@ -1,0 +1,19 @@
+sleep 1.5
+syl center view orbit-bluetooth:00:11:22:33:44:03
+sleep 1.2
+syl bluetooth connect 00:11:22:33:44:03
+sleep 0.5
+shot bt-connecting
+syl state bluetooth
+check tail -n 3 "$OUT/ipc.log" | grep -q 'Connecting…'
+wait sylvaris state bluetooth | grep -q '"summary":"2 connected"\|"summary":"3 connected"'
+shot bt-connected
+syl bluetooth connect 00:11:22:33:44:99
+check tail -n 3 "$OUT/ipc.log" | grep -q 'usage: bluetooth connect'
+syl center view orbit-wifi:Cafe
+sleep 1.2
+syl wifi connect Cafe
+sleep 0.5
+shot wifi-connecting
+syl state network
+check tail -n 3 "$OUT/ipc.log" | grep -q 'Connecting…'

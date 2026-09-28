@@ -6,6 +6,7 @@ import QtQml.Models
 import Quickshell
 import Quickshell.Networking
 import "../lib/icons.mjs" as Icons
+import "../lib/orbit.mjs" as O
 
 Singleton {
     id: root
@@ -30,13 +31,16 @@ Singleton {
                 signal: Icons.normalizeSignal(n.signal),
                 security: n.security,
                 open: n.open,
-                busy: n.busy === true
+                phase: O.phaseOf(n.state || "", undefined, true)
             }))
     readonly property string summary: {
         if (!root.available)
             return root.wiredConnected ? "Wired" : "Unavailable";
         if (!root.enabled || !root.hasWifi)
             return root.wiredConnected ? "Wired" : "Off";
+        const moving = root.items.find(i => i.phase !== "");
+        if (moving)
+            return O.busyLabel(moving.phase);
         for (const i of root.items) {
             if (i.connected)
                 return i.name;
@@ -74,7 +78,7 @@ Singleton {
                 open: n.security === WifiSecurityType.Open,
                 connected: n.connected,
                 known: n.known,
-                busy: n.stateChanging
+                state: n.stateChanging ? (n.connected ? "disconnecting" : "connecting") : ""
             });
         }
         return out;
@@ -123,10 +127,11 @@ Singleton {
 
     function connect(key: string): void {
         if (root.demo) {
-            root.demoNetworks = root.demoNetworks.map(n => Object.assign({}, n, {
-                        connected: n.name === key,
-                        known: n.known || n.name === key
-                    }));
+            root.demoNetworks = root.demoNetworks.map(n => n.name === key ? Object.assign({}, n, {
+                        state: "connecting"
+                    }) : n);
+            demoSettle.key = key;
+            demoSettle.restart();
             return;
         }
         const n = root.network(key);
@@ -209,5 +214,16 @@ Singleton {
                 root.fail(modelData.name, root.reasonText(reason));
             }
         }
+    }
+
+    Timer {
+        id: demoSettle
+        property string key: ""
+        interval: 1500
+        onTriggered: root.demoNetworks = root.demoNetworks.map(n => Object.assign({}, n, {
+                    connected: n.name === demoSettle.key,
+                    known: n.known || n.name === demoSettle.key,
+                    state: ""
+                }))
     }
 }

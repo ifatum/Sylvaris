@@ -75,3 +75,21 @@ export function orderAndCap(items, slots) {
         return { visible: sorted, overflow: 0 }
     return { visible: sorted.slice(0, limit - 1), overflow: sorted.length - (limit - 1) }
 }
+
+const BUSY = { connecting: "Connecting…", pairing: "Pairing…", disconnecting: "Disconnecting…" }
+
+export function phaseOf(state, pending, paired, connected) {
+    if (pending && (pending.action === "disconnect") === (connected === true))
+        return pending.action === "disconnect" ? "disconnecting" : paired ? "connecting" : "pairing"
+    return BUSY[state] ? state : ""
+}
+
+export function busyLabel(phase) {
+    return BUSY[phase] || ""
+}
+
+export function actionLabel(item, bluetooth) {
+    if (BUSY[item.phase])
+        return BUSY[item.phase]
+    return item.connected ? "Disconnect" : bluetooth && !item.known ? "Pair" : "Connect"
+}

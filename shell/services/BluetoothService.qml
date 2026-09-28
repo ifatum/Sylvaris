@@ -6,6 +6,7 @@ import Quickshell.Io
 import Quickshell.Bluetooth
 import "../lib/icons.mjs" as Icons
 import "../lib/audio.mjs" as AudioLib
+import "../lib/orbit.mjs" as O
 
 Singleton {
     id: root
@@ -29,13 +30,16 @@ Singleton {
                 trusted: d.trusted === true,
                 battery: d.batteryAvailable ? Math.round(d.battery * 100) : -1,
                 audio: Icons.isAudioDevice(d.icon),
-                busy: d.busy === true
+                phase: O.phaseOf(d.state || "", root.pending[d.address], d.paired, d.connected)
             }))
     readonly property string summary: {
         if (!root.available)
             return "Unavailable";
         if (!root.enabled)
             return "Off";
+        const moving = root.items.find(i => i.phase !== "");
+        if (moving)
+            return O.busyLabel(moving.phase);
         const live = root.items.filter(i => i.connected);
         if (live.length === 1)
             return live[0].name;
@@ -61,7 +65,7 @@ Singleton {
                 trusted: d.trusted,
                 batteryAvailable: d.batteryAvailable,
                 battery: d.battery,
-                busy: d.pairing || d.state === BluetoothDeviceState.Connecting || d.state === BluetoothDeviceState.Disconnecting
+                state: d.pairing ? "pairing" : d.state === BluetoothDeviceState.Connecting ? "connecting" : d.state === BluetoothDeviceState.Disconnecting ? "disconnecting" : ""
             });
         }
         return out;
@@ -117,10 +121,12 @@ Singleton {
 
     function connect(key: string): void {
         if (root.demo) {
+            const known = root.demoDevices.some(d => d.address === key && d.paired);
             root.patchDemo(key, {
-                connected: true,
-                paired: true
+                state: known ? "connecting" : "pairing"
             });
+            demoSettle.key = key;
+            demoSettle.restart();
             return;
         }
         const d = root.device(key);
@@ -242,6 +248,17 @@ Singleton {
         repeat: true
         running: Object.keys(root.pending).length > 0
         onTriggered: root.checkPending()
+    }
+
+    Timer {
+        id: demoSettle
+        property string key: ""
+        interval: 1500
+        onTriggered: root.patchDemo(demoSettle.key, {
+            connected: true,
+            paired: true,
+            state: ""
+        })
     }
 
     Timer {

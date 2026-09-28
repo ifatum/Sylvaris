@@ -40,6 +40,8 @@ Item {
             return root.service.error;
         const f = root.focused;
         if (f !== null) {
+            if (O.busyLabel(f.phase) !== "")
+                return O.busyLabel(f.phase);
             if (root.isBt)
                 return f.connected ? "Connected" + (f.battery >= 0 ? " · " + f.battery + "%" : "") : (f.known ? "Paired" : "Not paired");
             return f.connected ? "Connected" : (f.known ? "Saved" : "Not connected");
@@ -81,6 +83,8 @@ Item {
     }
 
     function subFor(i: var): string {
+        if (O.busyLabel(i.phase) !== "")
+            return O.busyLabel(i.phase);
         if (root.isBt)
             return i.connected ? (i.battery >= 0 ? i.battery + "%" : "Connected") : (i.known ? "Paired" : "");
         return i.connected ? "Connected" : (i.known ? "Saved" : (i.open ? "Open" : ""));
@@ -125,7 +129,7 @@ Item {
         out.push({
             key: "connect",
             icon: i.connected ? (root.isBt ? Icons.GLYPHS.disconnect : Icons.GLYPHS.wifiOff) : Icons.GLYPHS.link,
-            label: i.connected ? "Disconnect" : (root.isBt && !i.known ? "Pair" : "Connect"),
+            label: O.actionLabel(i, root.isBt),
             bold: true,
             linked: true
         });
@@ -214,6 +218,8 @@ Item {
         if (i === null)
             return;
         if (key === "connect") {
+            if (i.phase !== "")
+                return;
             if (i.connected)
                 root.service.disconnect(i.key);
             else if (!root.isBt && NetworkService.needsPassword(i.key))
