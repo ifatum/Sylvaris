@@ -30,6 +30,7 @@ Usage: sylvaris [command]
   list                         print every part and its actions
   watch [topic...]             stream state changes as JSON lines
   doctor                       print versions, missing tools and config problems for bug reports
+  version                      print the Sylvaris version
 EOF
 }
 
@@ -91,6 +92,11 @@ case "${1:-}" in
     ;;
 -h | --help | help)
     usage
+    ;;
+version | -V | --version)
+    v="$(sed -n 's/^export const VERSION = "\(.*\)"$/\1/p' "$dir/lib/version.mjs" 2>/dev/null)"
+    [ -n "$v" ] || exit 1
+    printf 'Sylvaris %s\n' "$v"
     ;;
 greet)
     exec qs -p "$dir/greet.qml" -n
