@@ -4,8 +4,13 @@ All notable changes to Sylvaris are listed here. The format follows [Keep a Chan
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-28
+
 ### Added
 
+- Add a glass menu with the app's own actions when right-clicking a tray icon
+- Show Connecting, Pairing and Disconnecting for Bluetooth and Wi-Fi, and Pairing, Syncing and Saving in Diver and FaTest
+- Add sylvaris version, and bluetooth and wifi connect and disconnect actions
 - Add optional SylCenter tiles: speed test, AirPods, screenshot, record, clipboard and lock
 - Add a Control Center page to SylSettings: tiles, volume slider, now playing card, corner and hotspot
 - Add a Show seconds option to the lock screen clock
@@ -99,6 +104,13 @@ All notable changes to Sylvaris are listed here. The format follows [Keep a Chan
 
 ### Fixed
 
+- Stop an endless Hyprland config reload loop that kept the shell and Hyprland busy on Lua configs
+- Stop redrawing glass while the pointer rests on it
+- Stop a startup crash when app icons loaded in the background
+- Show Deck, bar and notification app icons as soon as desktop entries load
+- Start the hotspot with Wi-Fi off, apply its name and band, and fall back to 2.4 GHz when 5 GHz is not allowed
+- Start a recording asked for while the previous one is still saving
+- Let the shell start again after the FaTest rename
 - Draw glass grain over the whole shape of round surfaces instead of a square inside them
 - Tint workspace app icons like the rest on a contrasting badge, and centre each number over its window dots
 - Center workspace pills and their window dots, and drop closed Hyprland windows from them
@@ -130,9 +142,16 @@ All notable changes to Sylvaris are listed here. The format follows [Keep a Chan
 
 ### Security
 
+- Keep the Diver pairing code off the command line, refuse lookalike localhost addresses and never follow redirects
+- Escape stray markup in notification bodies and open only web links from them
+- Refuse IPC and settings keys that reach the JavaScript prototype, and unknown setting keys
+- Keep the IPC socket folder and clipboard images private to the user
 - Clear the typed password on submit and when locking
 - Run SylLock in its own process so a shell crash cannot drop the lock
 - Empty the password field as soon as it is submitted
 - Show the commit and a permissions warning before installing a plugin
 - Relock a lock screen that is still closing and report locks that fail
 - Never prompt or hang on plugin clones and unfreeze settings once the file is gone
+
+[Unreleased]: https://github.com/ifatum/Sylvaris/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/ifatum/Sylvaris/releases/tag/v0.2.0
