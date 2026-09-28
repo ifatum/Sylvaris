@@ -33,4 +33,13 @@ if [ -n "$hits" ]; then
     fail=1
 fi
 
+if git diff --cached --name-only | grep -q '\.qml$'; then
+    if ! command -v node >/dev/null 2>&1; then
+        echo "pre-commit: node is missing, QML types were not checked" >&2
+    elif ! node --test "$(git rev-parse --show-toplevel)/tests/qmltypes.test.mjs" >/dev/null 2>&1; then
+        echo "pre-commit: a QML type does not exist; see node --test tests/qmltypes.test.mjs" >&2
+        fail=1
+    fi
+fi
+
 exit "$fail"
