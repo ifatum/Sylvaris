@@ -48,9 +48,12 @@ test("switches in the settings drop their activities", () => {
     assert.deepEqual(activities({ flash: { kind: "device", name: "Buds" } }, Object.assign({}, DEFAULT_ISLAND, { devices: false })), [])
 })
 
-test("paused media, far tasks and an unknown flash stay out", () => {
+test("far tasks, an unknown flash and, when asked, paused media stay out", () => {
     const s = { flash: { kind: "nope" }, next: { text: "Later", mins: 40 }, media: { title: "Song", playing: false } }
-    assert.deepEqual(activities(s, DEFAULT_ISLAND), [])
+    assert.deepEqual(activities(s, Object.assign({}, DEFAULT_ISLAND, { keepPaused: false })), [])
+    assert.deepEqual(activities(s, DEFAULT_ISLAND).map(a => a.kind), ["media"])
+    assert.deepEqual(activities({ media: { title: "", artist: "", playing: false } }, DEFAULT_ISLAND), [])
+    assert.equal(validateIsland({}).keepPaused, true)
     assert.deepEqual(activities({ next: { text: "Soon", mins: 15 } }, DEFAULT_ISLAND).map(a => a.kind), ["next"])
 })
 

@@ -262,7 +262,12 @@ Column {
                 {
                     key: "media",
                     title: "Music and video",
-                    subtitle: "Any player that speaks MPRIS: browsers, Spotify, mpv, VLC"
+                    subtitle: "Any player that speaks MPRIS: Cider, Spotify, browsers, mpv, VLC"
+                },
+                {
+                    key: "keepPaused",
+                    title: "Keep paused music",
+                    subtitle: "A paused song stays in the island with a play button until its player closes"
                 },
                 {
                     key: "recording",
@@ -306,7 +311,7 @@ Column {
                 required property int index
                 title: modelData.title
                 subtitle: modelData.subtitle
-                last: index === 7
+                last: index === 8
 
                 Toggle {
                     checked: root.cfg[modelData.key]

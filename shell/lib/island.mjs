@@ -1,7 +1,7 @@
 import { elapsed } from "./capture.mjs"
 
 export const DEFAULT_ISLAND = {
-    media: true, recording: true, diver: true, volume: true, devices: true, notifications: false, messages: true, calls: true, hover: true, seconds: 3,
+    media: true, recording: true, diver: true, volume: true, devices: true, notifications: false, messages: true, calls: true, keepPaused: true, hover: true, seconds: 3,
     position: "top-center", idle: "pill", shortcuts: ["notify", "center", "media", "screenshot", "record", "dnd"],
     screens: "focused", hideSites: ["youtube.com", "youtu.be"]
 }
@@ -114,7 +114,7 @@ export function activities(s, cfg) {
         out.push(Object.assign({ kind: "focus" }, s.focus))
     if (cfg.diver && s.next && s.next.mins <= 15)
         out.push(Object.assign({ kind: "next" }, s.next))
-    if (cfg.media && s.media && s.media.playing && (s.media.title || s.media.artist) && !hiddenSite(s.media.url || "", cfg.hideSites || []))
+    if (cfg.media && s.media && (s.media.playing || cfg.keepPaused) && (s.media.title || s.media.artist) && !hiddenSite(s.media.url || "", cfg.hideSites || []))
         out.push(Object.assign({ kind: "media" }, s.media))
     return out
 }

@@ -587,7 +587,7 @@ Item {
                 Bars {
                     anchors.verticalCenter: parent.verticalCenter
                     visible: root.main !== null && root.main.kind === "media"
-                    live: visible && root.shown && !root.open
+                    live: visible && root.shown && !root.open && root.main.playing === true
                 }
             }
 
