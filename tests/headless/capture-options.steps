@@ -13,6 +13,7 @@ wait sylvaris state capture | grep -q '"recording":true,"started":true'
 sleep 1.5
 syl capture stop
 wait [ -s "$HOME/Videos/Recordings/cap-Recording.mkv" ]
+wait sylvaris state capture | grep -q '"recording":false'
 syl set capture.codec vp9
 syl capture record screen
 wait sylvaris state capture | grep -q '"recording":true,"started":true'
