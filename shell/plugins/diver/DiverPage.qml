@@ -52,7 +52,9 @@ Column {
 
                 Chip {
                     anchors.verticalCenter: parent.verticalCenter
-                    text: "Pair"
+                    enabled: !Diver.pairing
+                    opacity: enabled ? 1 : 0.4
+                    text: Diver.pairing ? "Pairing…" : "Pair"
                     glyph: Icons.GLYPHS.link
                     onClicked: {
                         if (codeBox.text.trim() !== "")
@@ -71,7 +73,9 @@ Column {
                 spacing: 8
 
                 Chip {
-                    text: "Sync now"
+                    enabled: !Diver.syncing
+                    opacity: enabled ? 1 : 0.4
+                    text: Diver.syncing ? "Syncing…" : "Sync now"
                     glyph: Icons.GLYPHS.restart
                     onClicked: Diver.sync()
                 }

@@ -133,7 +133,7 @@ Column {
                     anchors.verticalCenter: parent.verticalCenter
                     enabled: page.available && !saver.running
                     opacity: enabled ? 1 : 0.4
-                    text: "Save"
+                    text: saver.running ? "Saving…" : "Save"
                     glyph: Icons.GLYPHS.checkCircle
                     onClicked: page.save()
                 }

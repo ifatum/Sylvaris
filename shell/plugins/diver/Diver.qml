@@ -19,6 +19,8 @@ Singleton {
     property string synced: "[]"
     property bool dirty: false
     property bool pushAgain: false
+    readonly property bool pairing: pairProc.running
+    readonly property bool syncing: pullProc.running || pushProc.running
     property int retries: 0
     property string error: ""
     property real lastSync: 0
