@@ -876,12 +876,24 @@ ShellRoot {
             wifi: {
                 toggle: () => NetworkService.setEnabled(!NetworkService.enabled),
                 on: () => NetworkService.setEnabled(true),
-                off: () => NetworkService.setEnabled(false)
+                off: () => NetworkService.setEnabled(false),
+                connect: (...name) => {
+                    if (NetworkService.item(name.join(" ")) === null)
+                        throw new Error("usage: wifi connect <network name from sylvaris state>");
+                    NetworkService.connect(name.join(" "));
+                },
+                disconnect: (...name) => NetworkService.disconnect(name.join(" "))
             },
             bluetooth: {
                 toggle: () => BluetoothService.setEnabled(!BluetoothService.enabled),
                 on: () => BluetoothService.setEnabled(true),
-                off: () => BluetoothService.setEnabled(false)
+                off: () => BluetoothService.setEnabled(false),
+                connect: address => {
+                    if (!BluetoothService.items.some(i => i.key === address))
+                        throw new Error("usage: bluetooth connect <device address from sylvaris state>");
+                    BluetoothService.connect(address);
+                },
+                disconnect: address => BluetoothService.disconnect(address || "")
             },
             state: {
                 default: "all",
