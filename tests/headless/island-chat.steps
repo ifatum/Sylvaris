@@ -1,0 +1,39 @@
+sleep 1.5
+syl set parts.island true
+syl set island.media false
+sleep 2.5
+bg notify-send -a Vesktop "Ana Kowal" "are you coming tonight?"
+sleep 1
+check sylvaris island | grep -q '"kind":"message","label":"Ana Kowal"'
+check sylvaris state notifications | grep -q '"toasts":\[\]'
+syl island open
+sleep 0.8
+shot island-message
+syl island close
+bg notify-send -a Telegram -h string:category:call.incoming -A answer=Answer -A decline=Decline "Mia" "Incoming call" > "$OUT/call-action.txt"
+sleep 1
+check sylvaris island | grep -q '"items":\[{"kind":"call","label":"Mia calling"}'
+syl island open
+sleep 0.8
+shot island-call
+syl set island.calls false
+sleep 0.3
+check ! sylvaris island | grep -q '"kind":"call"'
+syl set island.messages false
+bg notify-send -a Signal "Ola" "hi"
+sleep 1
+check sylvaris state notifications | grep -q '"toasts":\[[0-9]'
+syl set island.calls true
+sleep 0.3
+syl island answer
+sleep 1
+check grep -qx answer "$OUT/call-action.txt"
+check ! sylvaris island | grep -q '"kind":"call"'
+syl set island.messages true
+bg gdbus monitor --session --dest org.freedesktop.Notifications > "$OUT/replies.txt"
+bg gdbus call --session --dest org.freedesktop.Notifications --object-path /org/freedesktop/Notifications --method org.freedesktop.Notifications.Notify Telegram 0 "" Ana "see you at 8?" '["inline-reply","Reply"]' '{}' 0 >/dev/null
+sleep 1
+check sylvaris island | grep -q '"kind":"message","label":"Ana"'
+syl island reply on my way
+sleep 1
+check grep -q "NotificationReplied.*on my way" "$OUT/replies.txt"

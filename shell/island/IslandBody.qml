@@ -14,6 +14,7 @@ Item {
     property bool atTop: true
     property string idle: "pill"
     property string time: ""
+    property int replying: -1
     property real progress: 0
     readonly property string kindKey: root.items.map(a => a.kind).join(",")
     readonly property var kinds: root.kindKey === "" ? [] : root.kindKey.split(",")
@@ -67,6 +68,10 @@ Item {
             return a.muted || a.value <= 0 ? Icons.GLYPHS.volumeMute : Icons.GLYPHS.volume;
         case "notification":
             return Icons.GLYPHS.bell;
+        case "message":
+            return Icons.GLYPHS.speech;
+        case "call":
+            return Icons.GLYPHS.voice;
         case "device":
             return a.audio ? Icons.GLYPHS.headphones : Icons.GLYPHS.bluetooth;
         case "recording":
@@ -96,6 +101,9 @@ Item {
             return "Volume";
         case "notification":
             return a.summary || a.app;
+        case "message":
+        case "call":
+            return a.sender || a.app;
         case "device":
             return a.name;
         case "recording":
@@ -120,6 +128,10 @@ Item {
             return I.label(a);
         case "notification":
             return a.body || a.app;
+        case "message":
+            return a.app + (a.more > 0 ? " · +" + a.more : "") + (a.text ? " · " + a.text : "");
+        case "call":
+            return a.app + " · incoming call";
         case "device":
             return a.battery >= 0 ? "Connected · " + a.battery + "% battery" : "Connected";
         case "alarm":
@@ -135,7 +147,11 @@ Item {
         }
     }
 
-    function actionsOf(kind: string): var {
+    function actionsOf(kind: string, a: var): var {
+        if (kind === "message")
+            return (a !== null && a.reply ? ["reply"] : []).concat(a !== null && a.read !== "" ? ["read"] : [], ["openapp", "dismiss"]);
+        if (kind === "call")
+            return ["decline", "accept"];
         return ({
                 media: ["previous", "toggle", "next"],
                 recording: ["stop"],
@@ -162,6 +178,14 @@ Item {
             return Icons.GLYPHS.check;
         case "mute":
             return a !== null && a.muted ? Icons.GLYPHS.volumeMute : Icons.GLYPHS.volume;
+        case "reply":
+            return Icons.GLYPHS.pencil;
+        case "read":
+            return Icons.GLYPHS.eye;
+        case "openapp":
+            return Icons.GLYPHS.open;
+        case "accept":
+            return Icons.GLYPHS.voice;
         default:
             return Icons.GLYPHS.close;
         }
@@ -179,7 +203,7 @@ Item {
         RoundImage {
             id: artImage
             anchors.fill: parent
-            visible: lead.a !== null && lead.a.kind === "media" && lead.a.art !== undefined && lead.a.art !== ""
+            visible: lead.a !== null && lead.a.art !== undefined && lead.a.art !== ""
             source: visible ? lead.a.art : ""
             radius: lead.size >= 40 ? 12 : lead.size / 2
             fallbackColor: Theme.accentDeep
@@ -263,6 +287,7 @@ Item {
         property string glyph: ""
         property bool strong: false
         property bool lit: false
+        property bool danger: false
         property int badge: 0
         property string tip: ""
 
@@ -286,7 +311,7 @@ Item {
         Rectangle {
             anchors.fill: parent
             radius: width / 2
-            color: press.strong ? Theme.accent : press.lit ? Qt.alpha(Theme.accent, area.pressed ? 0.45 : area.containsMouse ? 0.35 : 0.26) : area.pressed ? Qt.alpha(Theme.text, 0.18) : area.containsMouse || press.activeFocus ? Qt.alpha(Theme.text, 0.1) : "transparent"
+            color: press.danger ? (area.pressed ? Qt.darker(Theme.danger, 1.2) : Theme.danger) : press.strong ? Theme.accent : press.lit ? Qt.alpha(Theme.accent, area.pressed ? 0.45 : area.containsMouse ? 0.35 : 0.26) : area.pressed ? Qt.alpha(Theme.text, 0.18) : area.containsMouse || press.activeFocus ? Qt.alpha(Theme.text, 0.1) : "transparent"
             border.width: press.activeFocus ? 1 : 0
             border.color: Theme.accent
 
@@ -301,7 +326,7 @@ Item {
             anchors.centerIn: parent
             text: press.glyph
             size: 18
-            color: press.strong ? Theme.onAccent : press.lit ? Theme.accent : Theme.text
+            color: press.strong || press.danger ? Theme.onAccent : press.lit ? Theme.accent : Theme.text
         }
 
         Rectangle {
@@ -342,6 +367,8 @@ Item {
         required property string modelData
         readonly property var a: root.find(row.modelData)
         readonly property bool bar: row.modelData === "media" || row.modelData === "volume"
+        readonly property string actionKey: root.actionsOf(row.modelData, row.a).join(",")
+        readonly property bool typing: row.a !== null && row.a.id === root.replying && row.modelData === "message"
 
         width: root.cardWidth - 24
         height: I.rowHeight(row.modelData)
@@ -374,7 +401,27 @@ Item {
             size: 44
         }
 
+        TextBox {
+            id: replyBox
+            visible: row.typing
+            anchors.left: rowLead.right
+            anchors.leftMargin: 12
+            anchors.right: parent.right
+            anchors.rightMargin: 8
+            anchors.verticalCenter: rowLead.verticalCenter
+            placeholder: row.a !== null ? row.a.placeholder : ""
+            onAccepted: root.act("message", "send:" + replyBox.text)
+            onVisibleChanged: {
+                if (visible) {
+                    replyBox.text = "";
+                    replyBox.focusInput();
+                }
+            }
+            Keys.onEscapePressed: root.act("message", "cancel")
+        }
+
         Column {
+            visible: !row.typing
             anchors.left: rowLead.right
             anchors.leftMargin: 12
             anchors.right: rowActions.left
@@ -404,19 +451,21 @@ Item {
 
         Row {
             id: rowActions
+            visible: !row.typing
             anchors.right: parent.right
             anchors.rightMargin: 6
             y: rowLead.y + (rowLead.height - height) / 2
             spacing: 2
 
             Repeater {
-                model: root.actionsOf(row.modelData)
+                model: row.actionKey === "" ? [] : row.actionKey.split(",")
 
                 Press {
                     required property string modelData
                     glyph: root.actionGlyph(modelData, row.a)
                     tip: modelData
-                    strong: modelData === "toggle" || modelData === "done" || modelData === "stop"
+                    danger: modelData === "decline"
+                    strong: modelData === "toggle" || modelData === "done" || modelData === "stop" || modelData === "accept"
                     onClicked: root.act(row.modelData, modelData)
                 }
             }

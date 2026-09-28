@@ -172,6 +172,8 @@
     "volume": true,
     "devices": true,
     "notifications": false,
+    "messages": true,
+    "calls": true,
     "hover": true,
     "seconds": 3,
     "position": "top-center",

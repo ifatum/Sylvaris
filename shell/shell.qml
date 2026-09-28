@@ -782,6 +782,9 @@ ShellRoot {
                 close: () => root.need("island").close(),
                 show: (...words) => root.need("island").say(words.join(" ")),
                 run: id => root.need("island").runShortcut(String(id || "")),
+                answer: () => root.need("island").act("call", "accept"),
+                decline: () => root.need("island").act("call", "decline"),
+                reply: (...words) => root.need("island").act("message", "send:" + words.join(" ")),
                 state: () => root.need("island").state()
             },
             clip: {

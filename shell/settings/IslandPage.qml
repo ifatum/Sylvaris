@@ -215,7 +215,7 @@ Column {
 
     Card {
         title: "What it shows"
-        note: "Recordings replace the separate recording pill. Notifications taken by the island skip the usual toasts, except critical ones."
+        note: "Recordings replace the separate recording pill. Messages, calls and notifications taken by the island skip the usual toasts; other critical ones still pop up. Apps are recognised from their notifications, including web apps in a browser. FaceTime has no Linux app, so only facetime.apple.com calls in a browser can show up."
 
         Repeater {
             model: [
@@ -245,6 +245,16 @@ Column {
                     subtitle: "When one connects, with its battery"
                 },
                 {
+                    key: "messages",
+                    title: "Messages",
+                    subtitle: "Discord and Vesktop, Signal, Telegram, WhatsApp, Messenger, Ferdium, Slack, Element, Teams and more, with reply where the app allows it"
+                },
+                {
+                    key: "calls",
+                    title: "Calls",
+                    subtitle: "Stay on top with answer and decline until the app ends them"
+                },
+                {
                     key: "notifications",
                     title: "Notifications",
                     subtitle: "Instead of toasts"
@@ -256,7 +266,7 @@ Column {
                 required property int index
                 title: modelData.title
                 subtitle: modelData.subtitle
-                last: index === 5
+                last: index === 7
 
                 Toggle {
                     checked: root.cfg[modelData.key]

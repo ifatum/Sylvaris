@@ -1,6 +1,6 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
-import { DEFAULT_ISLAND, validateIsland, activities, label, joined, custom, SHORTCUTS, shortcutsFor, placeOf, cardHeight } from "../shell/lib/island.mjs"
+import { DEFAULT_ISLAND, validateIsland, activities, label, joined, custom, SHORTCUTS, shortcutsFor, placeOf, cardHeight, CHAT_APPS, chatOf, isCall, pickActions, takes } from "../shell/lib/island.mjs"
 
 const idle = { flash: null, recording: { on: false }, alarm: null, focus: null, next: null, media: { title: "", playing: false } }
 
@@ -130,4 +130,62 @@ test("cardHeight stacks one row per activity and the shortcut row", () => {
     assert.equal(cardHeight([], true), 12 + 44 + 12)
     assert.equal(cardHeight(["recording"], false), 12 + 60 + 12)
     assert.equal(cardHeight(["recording", "media"], true), 12 + 60 + 6 + 84 + 6 + 44 + 12)
+})
+
+test("chatOf recognises messaging apps by name, desktop entry or website", () => {
+    const n = (appName, extra) => Object.assign({ appName: appName, desktopEntry: "", summary: "Ana", body: "hi" }, extra)
+    assert.equal(chatOf(n("Vesktop")).id, "discord")
+    assert.equal(chatOf(n("", { desktopEntry: "dev.vencord.Vesktop" })).id, "discord")
+    assert.equal(chatOf(n("Ferdium")).id, "ferdium")
+    assert.equal(chatOf(n("Signal")).id, "signal")
+    assert.equal(chatOf(n("", { desktopEntry: "org.telegram.desktop" })).id, "telegram")
+    assert.equal(chatOf(n("AyuGram Desktop")).id, "telegram")
+    assert.equal(chatOf(n("ZapZap")).id, "whatsapp")
+    assert.equal(chatOf(n("KDE Connect")).id, "phone")
+    assert.equal(chatOf(n("Thunderbird")).id, "mail")
+    assert.equal(chatOf(n("Firefox", { body: "web.whatsapp.com\nhello" })).id, "whatsapp")
+    assert.equal(chatOf(n("Chromium", { summary: "Mia", body: "messenger.com" })).id, "messenger")
+    assert.equal(chatOf(n("Firefox", { body: "news.example.com" })), null)
+    assert.equal(chatOf(n("Spotify")), null)
+    for (const a of CHAT_APPS) {
+        assert.equal(typeof a.label, "string", a.id)
+        assert.equal(typeof a.glyph, "string", a.id)
+    }
+})
+
+test("isCall spots calls by category or wording", () => {
+    assert.equal(isCall({ summary: "Ana", body: "", category: "call.incoming" }), true)
+    assert.equal(isCall({ summary: "Incoming video call", body: "Ana" }), true)
+    assert.equal(isCall({ summary: "Ana", body: "is calling you" }), true)
+    assert.equal(isCall({ summary: "Ana", body: "call me later" }), false)
+    assert.equal(isCall({ summary: "Missed call", body: "Ana", category: "call.unanswered" }), false)
+})
+
+test("pickActions finds accept, decline and mark as read", () => {
+    const acts = [{ identifier: "default", text: "" }, { identifier: "answer", text: "Answer" }, { identifier: "x", text: "Decline" }, { identifier: "mark", text: "Mark as read" }]
+    assert.deepEqual(pickActions(acts), { accept: "answer", decline: "x", read: "mark" })
+    assert.deepEqual(pickActions([]), { accept: "", decline: "", read: "" })
+})
+
+test("calls come first and messages obey their switches", () => {
+    const s = { call: { app: "Signal", sender: "Ana" }, flash: { kind: "message", sender: "Mia", text: "yo" }, media: { title: "Song", playing: true } }
+    assert.deepEqual(activities(s, DEFAULT_ISLAND).map(a => a.kind), ["call", "message", "media"])
+    assert.deepEqual(activities(s, Object.assign({}, DEFAULT_ISLAND, { calls: false, messages: false })).map(a => a.kind), ["media"])
+    assert.equal(label({ kind: "message", sender: "Mia", text: "yo" }), "Mia")
+    assert.equal(label({ kind: "call", sender: "Ana" }), "Ana calling")
+    assert.equal(validateIsland({ messages: false }).messages, false)
+    assert.equal(validateIsland({}).calls, true)
+})
+
+test("takes decides which toasts the island shows instead", () => {
+    const msg = { appName: "Signal", summary: "Ana", body: "hi" }
+    const call = { appName: "Telegram", summary: "Incoming call", body: "Ana" }
+    const other = { appName: "Updater", summary: "Done", body: "" }
+    assert.equal(takes(msg, DEFAULT_ISLAND, false), true)
+    assert.equal(takes(msg, DEFAULT_ISLAND, true), false)
+    assert.equal(takes(call, DEFAULT_ISLAND, true), true)
+    assert.equal(takes(other, DEFAULT_ISLAND, false), false)
+    assert.equal(takes(other, Object.assign({}, DEFAULT_ISLAND, { notifications: true }), false), true)
+    assert.equal(takes(msg, Object.assign({}, DEFAULT_ISLAND, { messages: false }), false), false)
+    assert.equal(takes(call, Object.assign({}, DEFAULT_ISLAND, { calls: false }), true), false)
 })

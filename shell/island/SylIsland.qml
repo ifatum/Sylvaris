@@ -24,12 +24,24 @@ Scope {
     property string time: Qt.formatTime(new Date(), "HH:mm")
     property int lastNote: -1
     property var devicesBefore: []
+    property int replyTo: -1
     readonly property var place: I.placeOf(root.cfg.position)
     readonly property var screenInfo: Compositor.screenFor(Compositor.focusedName())
     readonly property var capture: root.peers.capture === undefined ? null : root.peers.capture
     readonly property bool recording: root.capture !== null && root.capture.recording
     readonly property bool covered: root.avoid !== null && root.avoid.corner === root.cfg.position && root.screenInfo !== null && root.avoid.screen === root.screenInfo.name
+    readonly property var call: {
+        if (!root.cfg.calls)
+            return null;
+        for (const e of Notifications.list) {
+            const f = Notifications.facts(e.n);
+            if (I.isCall(f))
+                return root.chatItem(e, f, "call");
+        }
+        return null;
+    }
     readonly property var items: I.activities({
+        call: root.call,
         flash: root.flash,
         recording: root.capture === null ? null : {
             on: root.capture.recording,
@@ -64,6 +76,31 @@ Scope {
     readonly property bool expanded: root.wanted || root.cfg.hover && root.hot
 
     signal requested(string part)
+
+    function chatItem(e: var, f: var, kind: string): var {
+        const app = I.chatOf(f);
+        const desktop = e.n.desktopEntry ? Apps.entry(e.n.desktopEntry) : null;
+        const picture = N.isPicture(e.n.image) ? N.iconSource(e.n.image, name => "") : "";
+        const icon = N.iconSource(e.n.appIcon !== "" ? e.n.appIcon : desktop ? desktop.icon : "", name => Quickshell.iconPath(name, true));
+        const acts = I.pickActions(e.n.actions.map(a => ({
+                        identifier: a.identifier,
+                        text: a.text
+                    })));
+        return {
+            kind: kind,
+            id: e.id,
+            app: app !== null ? app.label : e.n.appName,
+            sender: e.n.summary,
+            text: f.body,
+            art: picture !== "" ? picture : icon,
+            reply: e.n.hasInlineReply === true,
+            placeholder: e.n.inlineReplyPlaceholder || "Reply",
+            accept: acts.accept,
+            decline: acts.decline,
+            read: acts.read,
+            more: Notifications.list.filter(x => x.id !== e.id && I.chatOf(Notifications.facts(x.n)) !== null).length
+        };
+    }
 
     function litOf(id: string): bool {
         switch (id) {
@@ -130,6 +167,8 @@ Scope {
                 volume: "center",
                 device: "center",
                 notification: "notify",
+                message: "notify",
+                call: "notify",
                 alarm: "clock",
                 focus: "clock",
                 next: "clock",
@@ -145,6 +184,10 @@ Scope {
             root.hot = false;
             if (part !== "")
                 root.requested(part);
+            return;
+        }
+        if (kind === "message" || kind === "call") {
+            root.chat(a, what);
             return;
         }
         if (what.indexOf("seek:") === 0) {
@@ -171,6 +214,41 @@ Scope {
         }
     }
 
+    function chat(a: var, what: string): void {
+        if (a === null || Notifications.entry(a.id) === null)
+            return;
+        if (what === "reply") {
+            root.replyTo = a.id;
+            root.wanted = true;
+            return;
+        }
+        if (what === "cancel") {
+            root.replyTo = -1;
+            return;
+        }
+        if (what.indexOf("send:") === 0) {
+            const text = what.slice(5).trim();
+            if (text !== "")
+                Notifications.entry(a.id).n.sendInlineReply(text);
+            root.replyTo = -1;
+            root.flash = null;
+            root.wanted = false;
+            return;
+        }
+        const action = ({
+                accept: a.accept,
+                decline: a.decline,
+                read: a.read,
+                openapp: "default"
+            })[what];
+        if (action !== undefined && action !== "")
+            Notifications.invoke(a.id, action);
+        else
+            Notifications.dismiss(a.id);
+        if (a.kind === "message")
+            root.flash = null;
+    }
+
     function state(): var {
         return {
             expanded: root.expanded,
@@ -183,6 +261,11 @@ Scope {
                         label: I.label(a)
                     }))
         };
+    }
+
+    onFlashChanged: {
+        if (root.replyTo >= 0 && (root.flash === null || root.flash.id !== root.replyTo))
+            root.replyTo = -1;
     }
 
     onHoveredChanged: {
@@ -219,9 +302,9 @@ Scope {
 
     Timer {
         id: flashTimer
-        interval: root.cfg.seconds * 1000
+        interval: (root.cfg.seconds + (root.flash !== null && root.flash.kind === "message" ? 3 : 0)) * 1000
         onTriggered: {
-            if (root.hovered)
+            if (root.hovered || root.replyTo >= 0)
                 flashTimer.restart();
             else
                 root.flash = null;
@@ -280,7 +363,16 @@ Scope {
             if (e === null || e.id === root.lastNote)
                 return;
             root.lastNote = e.id;
-            if (!root.cfg.notifications || Notifications.centerOpen || Notifications.dnd && e.n.urgency !== NotificationUrgency.Critical)
+            if (Notifications.centerOpen || Notifications.dnd && e.n.urgency !== NotificationUrgency.Critical)
+                return;
+            const f = Notifications.facts(e.n);
+            if (I.isCall(f))
+                return;
+            if (root.cfg.messages && I.chatOf(f) !== null) {
+                root.show(root.chatItem(e, f, "message"));
+                return;
+            }
+            if (!root.cfg.notifications)
                 return;
             root.show({
                 kind: "notification",
@@ -327,7 +419,7 @@ Scope {
         exclusiveZone: 0
         WlrLayershell.layer: WlrLayer.Top
         WlrLayershell.namespace: "sylisland"
-        WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+        WlrLayershell.keyboardFocus: root.replyTo >= 0 ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
         mask: Region {
             item: body
         }
@@ -357,6 +449,7 @@ Scope {
             atTop: root.place.top
             idle: root.cfg.idle
             time: root.time
+            replying: root.replyTo
             progress: Media.length > 0 ? Media.position / Media.length : 0
             onAct: (kind, what) => root.act(kind, what)
             onRun: id => root.runShortcut(id)

@@ -4,6 +4,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Services.Notifications
 import "../lib/notify.mjs" as N
+import "../lib/island.mjs" as I
 
 Singleton {
     id: root
@@ -12,7 +13,7 @@ Singleton {
     readonly property bool dnd: Settings.values.notifications.dnd
     readonly property int timeout: Settings.values.notifications.timeout
     readonly property int cap: Config.values.notifications.history
-    readonly property bool island: Settings.values.parts.island && Settings.values.island.notifications
+    readonly property bool island: Settings.values.parts.island
     property var list: []
     property var toasts: []
     property bool centerOpen: false
@@ -28,9 +29,19 @@ Singleton {
         };
         root.list = N.insert(root.list, entry, root.cap);
         n.closed.connect(() => root.forget(entry.id));
-        if (root.centerOpen || (root.dnd && n.urgency !== NotificationUrgency.Critical) || (root.island && n.urgency !== NotificationUrgency.Critical))
+        if (root.centerOpen || (root.dnd && n.urgency !== NotificationUrgency.Critical) || (root.island && I.takes(root.facts(n), Settings.values.island, n.urgency === NotificationUrgency.Critical)))
             return;
         root.toasts = N.pushToast(root.toasts, entry.id, 4);
+    }
+
+    function facts(n: var): var {
+        return {
+            appName: n.appName,
+            desktopEntry: n.desktopEntry,
+            summary: n.summary,
+            body: N.plainText(n.body),
+            category: n.hints && n.hints.category !== undefined ? String(n.hints.category) : ""
+        };
     }
 
     function entry(id: int): var {
@@ -133,6 +144,7 @@ Singleton {
             bodyImagesSupported: false
             actionsSupported: true
             imageSupported: true
+            inlineReplySupported: true
             onNotification: n => root.add(n)
         }
     }

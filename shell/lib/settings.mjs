@@ -34,7 +34,7 @@ export const PARTS = {
     lock: [],
     polkit: [],
     clip: [],
-    island: ["Media", "Audio", "Notifications", "BluetoothService", "Diver", "NetworkService", "NightLight", "Dnd"],
+    island: ["Media", "Audio", "Notifications", "BluetoothService", "Diver", "NetworkService", "NightLight", "Dnd", "Apps"],
     capture: [],
     access: [],
     plugins: ["Plugins"],
