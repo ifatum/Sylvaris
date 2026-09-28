@@ -39,7 +39,7 @@ Column {
         {
             key: "fps",
             title: "Frame rate",
-            subtitle: "Auto records only when the screen changes, which keeps files small",
+            subtitle: "Auto records only when the screen changes, at most 60 per second, which keeps files small and uploadable",
             options: K.FPS.map(f => [f, f === 0 ? "Auto" : String(f)])
         },
         {
@@ -183,6 +183,7 @@ Column {
 
         SettingRow {
             title: "Copy to the clipboard"
+            subtitle: "Screenshots as images, recordings as a file you can paste into chats and uploads"
 
             Toggle {
                 checked: root.cfg.copy

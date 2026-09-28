@@ -163,6 +163,11 @@ Popup {
     }
 
     Process {
+        id: finisher
+        onExited: root.notify("Recording saved", root.last)
+    }
+
+    Process {
         id: recorder
         stdout: SplitParser {
             onRead: line => {
@@ -176,8 +181,10 @@ Popup {
             }
         }
         onExited: code => {
-            if (root.started && code === 0)
-                root.notify("Recording saved", root.last);
+            if (root.started && code === 0) {
+                finisher.command = ["sh", Quickshell.shellDir + "/helpers/capture-finish.sh", root.last, root.cfg.copy ? K.fileUri(root.last) : ""];
+                finisher.running = true;
+            }
             else if (root.started)
                 root.problem = "the recording failed: wf-recorder stopped with code " + code;
             else if (code === 4)

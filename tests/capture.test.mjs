@@ -89,12 +89,18 @@ test("grimArgs turns shot settings into grim flags", async () => {
 
 test("recorderArgs turns video settings into wf-recorder flags", async () => {
     const { recorderArgs } = await import("../shell/lib/capture.mjs")
-    assert.deepEqual(recorderArgs(validateCapture({}), ""), ["-c", "libx264", "-x", "yuv420p", "-p", "crf=23", "-p", "preset=veryfast"])
-    assert.deepEqual(recorderArgs(validateCapture({ codec: "h265", videoQuality: "high", fps: 60, resolution: "1080", constant: true }), "sink.monitor"),
-        ["-c", "libx265", "-x", "yuv420p", "-p", "crf=22", "-p", "preset=fast", "-r", "60", "-F", "scale=-2:1080", "-D", "--audio=sink.monitor"])
-    assert.deepEqual(recorderArgs(validateCapture({ codec: "vp9", videoQuality: "small" }), ""), ["-c", "libvpx-vp9", "-p", "crf=40", "-p", "b=0", "-p", "deadline=realtime", "-p", "cpu-used=8"])
-    assert.deepEqual(recorderArgs(validateCapture({ codec: "vaapi", resolution: "720" }), ""), ["-c", "h264_vaapi", "-d", "/dev/dri/renderD128", "-p", "qp=24", "-F", "scale_vaapi=w=-2:h=720:format=nv12"])
-    assert.deepEqual(recorderArgs(validateCapture({ codec: "vaapi", videoQuality: "high" }), ""), ["-c", "h264_vaapi", "-d", "/dev/dri/renderD128", "-p", "qp=20", "-F", "scale_vaapi=format=nv12"])
+    assert.deepEqual(recorderArgs(validateCapture({}), ""), ["-c", "libx264", "-x", "yuv420p", "-p", "color_range=tv", "-p", "crf=23", "-p", "preset=veryfast", "-r", "60"])
+    assert.deepEqual(recorderArgs(validateCapture({ codec: "h265", videoQuality: "high", fps: 120, resolution: "1080", constant: true }), "sink.monitor"),
+        ["-c", "libx265", "-x", "yuv420p", "-p", "color_range=tv", "-p", "crf=22", "-p", "preset=fast", "-r", "120", "-F", "scale=-2:1080", "-D", "--audio=sink.monitor"])
+    assert.deepEqual(recorderArgs(validateCapture({ codec: "vp9", videoQuality: "small", fps: 30 }), ""), ["-c", "libvpx-vp9", "-p", "color_range=tv", "-p", "crf=40", "-p", "b=0", "-p", "deadline=realtime", "-p", "cpu-used=8", "-r", "30"])
+    assert.deepEqual(recorderArgs(validateCapture({ codec: "vaapi", resolution: "720" }), ""), ["-c", "h264_vaapi", "-d", "/dev/dri/renderD128", "-p", "qp=24", "-F", "scale_vaapi=w=-2:h=720:format=nv12", "-r", "60"])
+    assert.deepEqual(recorderArgs(validateCapture({ codec: "vaapi", videoQuality: "high" }), ""), ["-c", "h264_vaapi", "-d", "/dev/dri/renderD128", "-p", "qp=20", "-F", "scale_vaapi=format=nv12", "-r", "60"])
     assert.deepEqual(recorderArgs(validateCapture({ codec: "vp9", audio: true }), "").slice(-2), ["-C", "libopus"])
     assert.equal(recorderArgs(validateCapture({ codec: "h264", audio: true }), "").indexOf("-C"), -1)
+})
+
+test("fileUri makes a file:// link that pastes as a file", async () => {
+    const { fileUri } = await import("../shell/lib/capture.mjs")
+    assert.equal(fileUri("/home/a/Videos/Recording 2026-09-28 21-20-14.mp4"), "file:///home/a/Videos/Recording%202026-09-28%2021-20-14.mp4")
+    assert.equal(fileUri("/tmp/a#b%c (2).mp4"), "file:///tmp/a%23b%25c%20(2).mp4")
 })

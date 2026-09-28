@@ -19,6 +19,7 @@
   grim,
   slurp,
   wf-recorder,
+  ffmpeg,
   git,
   sylvarisParts ? { },
   commit ? "unknown",
@@ -79,6 +80,7 @@ let
       grim
       slurp
       wf-recorder
+      ffmpeg
       wl-clipboard
       libnotify
       pulseaudio

@@ -112,12 +112,11 @@ export function recorderArgs(c, audioDevice) {
         const size = c.resolution === "native" ? "" : "w=-2:h=" + c.resolution + ":"
         out = ["-c", "h264_vaapi", "-d", "/dev/dri/renderD128", "-p", "qp=" + QP[c.videoQuality], "-F", "scale_vaapi=" + size + "format=nv12"]
     } else if (c.codec === "vp9") {
-        out = ["-c", "libvpx-vp9", "-p", "crf=" + CRF.vp9[c.videoQuality], "-p", "b=0", "-p", "deadline=realtime", "-p", "cpu-used=8"]
+        out = ["-c", "libvpx-vp9", "-p", "color_range=tv", "-p", "crf=" + CRF.vp9[c.videoQuality], "-p", "b=0", "-p", "deadline=realtime", "-p", "cpu-used=8"]
     } else {
-        out = ["-c", c.codec === "h265" ? "libx265" : "libx264", "-x", "yuv420p", "-p", "crf=" + CRF[c.codec][c.videoQuality], "-p", "preset=" + (c.codec === "h265" ? "fast" : "veryfast")]
+        out = ["-c", c.codec === "h265" ? "libx265" : "libx264", "-x", "yuv420p", "-p", "color_range=tv", "-p", "crf=" + CRF[c.codec][c.videoQuality], "-p", "preset=" + (c.codec === "h265" ? "fast" : "veryfast")]
     }
-    if (c.fps > 0)
-        out.push("-r", String(c.fps))
+    out.push("-r", String(c.fps > 0 ? c.fps : 60))
     if (c.resolution !== "native" && c.codec !== "vaapi")
         out.push("-F", "scale=-2:" + c.resolution)
     if (c.constant)
@@ -134,6 +133,10 @@ export function elapsed(ms) {
     const h = Math.floor(s / 3600)
     const m = Math.floor(s % 3600 / 60)
     return (h > 0 ? h + ":" + pad(m) : String(m)) + ":" + pad(s % 60)
+}
+
+export function fileUri(path) {
+    return "file://" + path.split("/").map(encodeURIComponent).join("/")
 }
 
 export function expand(path, home) {

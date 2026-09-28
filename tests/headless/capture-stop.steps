@@ -20,3 +20,7 @@ syl capture stop
 sleep 2
 check [ -s "$HOME/Videos/Recordings/fixed (2).mp4" ]
 check [ -s "$HOME/Videos/Recordings/fixed.mp4" ]
+check ffprobe -v error -show_entries stream=pix_fmt -of csv=p=0 "$HOME/Videos/Recordings/fixed.mp4" | grep -qx yuv420p
+check ffprobe -v trace "$HOME/Videos/Recordings/fixed.mp4" 2>&1 | grep -oE "type:'(moov|mdat)'" | head -1 | grep -q moov
+check wl-paste -l | grep -qx text/uri-list
+check wl-paste -t text/uri-list | grep -q '^file://.*fixed%20(2).mp4'

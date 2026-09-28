@@ -19,7 +19,7 @@ export const PART_PACKAGES = {
     access: [],
     plugins: ["git"],
     sync: ["python", "procps"],
-    capture: ["grim", "slurp", "wf-recorder", "wl-clipboard", "libnotify", "pulseaudio"],
+    capture: ["grim", "slurp", "wf-recorder", "ffmpeg", "wl-clipboard", "libnotify", "pulseaudio"],
     switcher: [],
     settings: ["wlsunset", "pipewire", "python", "libnotify", "curl"],
     theme: []
@@ -40,7 +40,8 @@ export const PACKAGE_BINS = {
     procps: ["pgrep"],
     grim: ["grim"],
     slurp: ["slurp"],
-    "wf-recorder": ["wf-recorder"]
+    "wf-recorder": ["wf-recorder"],
+    ffmpeg: ["ffmpeg"]
 }
 
 export const CORE_BINS = ["qs", "socat"]
