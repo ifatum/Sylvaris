@@ -67,7 +67,7 @@ Column {
 
     Card {
         title: "FaTest"
-        note: page.available ? "Internet speed tests run by FaTest. Results land in the same history as the fatest command." : "FaTest is not installed. Install it from github.com/ifatum/FaTest and FaTest picks it up."
+        note: page.available ? "Internet speed tests run by FaTest. Results land in the same history as the fatest command." : "FaTest is not installed. Install it from github.com/ifatum/FaTest and it is picked up here."
 
         SettingRow {
             title: "Last result"

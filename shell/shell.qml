@@ -395,7 +395,7 @@ ShellRoot {
         id: fatestLoader
         active: root.on("fatest")
 
-        FaTest {
+        SylTest {
             id: fatestPart
             onOpened: root.solo(fatestPart)
         }
