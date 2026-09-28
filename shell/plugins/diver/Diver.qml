@@ -80,7 +80,7 @@ Singleton {
             throw new Error(root.offText);
         if (code.trim() === "")
             throw new Error("usage: diver pair <code from diver settings>");
-        pairProc.command = ["python3", root.helper, "pair", code.trim()];
+        pairProc.code = code.trim();
         pairProc.running = true;
     }
 
@@ -584,6 +584,15 @@ Singleton {
 
     Process {
         id: pairProc
+        property string code: ""
+        command: ["python3", root.helper, "pair"]
+        stdinEnabled: true
+        onStarted: {
+            write(pairProc.code);
+            pairProc.code = "";
+            stdinEnabled = false;
+        }
+        onExited: stdinEnabled = true
         stdout: StdioCollector {
             onStreamFinished: {
                 let j = null;
