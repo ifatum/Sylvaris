@@ -15,6 +15,7 @@ Singleton {
     property var applied: ({})
     property var external: ({})
     property bool included: false
+    property real quietUntil: 0
     readonly property string configHome: Quickshell.env("XDG_CONFIG_HOME") || Quickshell.env("HOME") + "/.config"
     readonly property string file: K.bindsPath(Compositor.name, Compositor.usingLua, root.configHome)
     readonly property string include: K.includeLine(Compositor.name, Compositor.usingLua)
@@ -26,6 +27,7 @@ Singleton {
             root.applied = root.wanted;
             return;
         }
+        root.quietUntil = Date.now() + 2000;
         const d = K.diff(force ? {} : root.applied, root.wanted);
         if (!force)
             for (const combo of d.unbind)
@@ -56,6 +58,7 @@ Singleton {
         const args = P.perfArgs(Compositor.name, Compositor.usingLua, on);
         if (Demo.enabled || args === null)
             return;
+        root.quietUntil = Date.now() + 2000;
         Quickshell.execDetached(args);
         if (!on && Compositor.name === "sway")
             rebind.restart();
@@ -105,7 +108,7 @@ Singleton {
         target: Compositor.name === "hyprland" ? Hyprland : null
         ignoreUnknownSignals: true
         function onRawEvent(event) {
-            if (event.name !== "configreloaded")
+            if (event.name !== "configreloaded" || Date.now() < root.quietUntil)
                 return;
             root.apply(true);
             root.refresh();

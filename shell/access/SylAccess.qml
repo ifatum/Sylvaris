@@ -18,6 +18,7 @@ Popup {
     property bool started: false
     property var tools: ({})
     property var applied: []
+    property real quietUntil: 0
 
     namespace: "sylaccess"
     corner: "top-center"
@@ -29,6 +30,7 @@ Popup {
             return;
         const cmds = A.hyprCommands(Compositor.usingLua, root.cfg, root.shaderDir);
         root.applied = cmds;
+        root.quietUntil = Date.now() + 2000;
         for (const c of cmds)
             Quickshell.execDetached(["hyprctl"].concat(c));
         if (root.cfg.cursor > 0)
@@ -79,7 +81,7 @@ Popup {
         target: Compositor.name === "hyprland" ? Hyprland : null
         ignoreUnknownSignals: true
         function onRawEvent(event) {
-            if (event.name === "configreloaded")
+            if (event.name === "configreloaded" && Date.now() >= root.quietUntil)
                 root.apply();
         }
     }
