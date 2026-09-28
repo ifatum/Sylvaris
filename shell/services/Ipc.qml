@@ -63,8 +63,12 @@ Singleton {
 
     Process {
         running: true
-        command: ["sh", "-c", "mkdir -p \"$1\" && rm -f \"$2\"", "sylvaris-ipc", root.dir, root.socketPath]
-        onExited: root.ready = true
+        command: ["sh", "-c", "mkdir -p -m 700 \"$1\" && chmod 700 \"$1\" && rm -f \"$2\"", "sylvaris-ipc", root.dir, root.socketPath]
+        onExited: code => {
+            root.ready = code === 0;
+            if (code !== 0)
+                console.warn("sylvaris: could not prepare " + root.dir + " for the ipc socket");
+        }
     }
 
     SocketServer {
