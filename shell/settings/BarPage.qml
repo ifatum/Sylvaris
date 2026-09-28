@@ -19,8 +19,8 @@ Column {
             title: "Show the bar"
 
             Toggle {
-                checked: Settings.values.bar.enabled
-                onToggled: v => Settings.set("bar.enabled", v)
+                checked: Settings.shown.bar.enabled
+                onToggled: v => Settings.put("bar.enabled", v)
             }
         }
 
@@ -30,12 +30,12 @@ Column {
 
             Segmented {
                 width: 320
-                current: Settings.values.bar.position
+                current: Settings.shown.bar.position
                 options: B.POSITIONS.map(p => ({
                             key: p,
                             label: p.charAt(0).toUpperCase() + p.slice(1)
                         }))
-                onPicked: key => Settings.set("bar.position", key)
+                onPicked: key => Settings.put("bar.position", key)
             }
         }
 
@@ -45,7 +45,7 @@ Column {
 
             Segmented {
                 width: 240
-                current: Settings.values.bar.style
+                current: Settings.shown.bar.style
                 options: [
                     {
                         key: "islands",
@@ -56,13 +56,13 @@ Column {
                         label: "Slab"
                     }
                 ]
-                onPicked: key => Settings.set("bar.style", key)
+                onPicked: key => Settings.put("bar.style", key)
             }
         }
 
         SettingRow {
             title: "Workspace icons"
-            subtitle: Settings.values.bar.workspaceIcons === "auto" ? "Follows the theme" + (Theme.theme.workspaceIcon ? " (" + Theme.theme.workspaceIcon + ")" : ", which picks numbers") : "The same everywhere"
+            subtitle: Settings.shown.bar.workspaceIcons === "auto" ? "Follows the theme" + (Theme.theme.workspaceIcon ? " (" + Theme.theme.workspaceIcon + ")" : ", which picks numbers") : "The same everywhere"
         }
 
         Flow {
@@ -77,8 +77,8 @@ Column {
                     required property string modelData
                     text: modelData.charAt(0).toUpperCase() + modelData.slice(1)
                     glyph: B.WORKSPACE_ICONS[modelData] || ""
-                    lit: Settings.values.bar.workspaceIcons === modelData
-                    onClicked: Settings.set("bar.workspaceIcons", modelData)
+                    lit: Settings.shown.bar.workspaceIcons === modelData
+                    onClicked: Settings.put("bar.workspaceIcons", modelData)
                 }
             }
         }
@@ -89,8 +89,8 @@ Column {
             last: true
 
             Toggle {
-                checked: Settings.values.bar.floating
-                onToggled: v => Settings.set("bar.floating", v)
+                checked: Settings.shown.bar.floating
+                onToggled: v => Settings.put("bar.floating", v)
             }
         }
     }
@@ -106,7 +106,7 @@ Column {
                 id: side
                 required property string modelData
                 property int picked: -1
-                readonly property var list: Settings.values.bar[modelData]
+                readonly property var list: Settings.shown.bar[modelData]
                 width: parent.width
                 height: sideFlow.implicitHeight + 50
 
@@ -163,10 +163,10 @@ Column {
                                         const list = side.list;
                                         const i = side.picked;
                                         if (modelData.act === 0) {
-                                            Settings.set("bar." + side.modelData, list.filter((m, k) => k !== i));
+                                            Settings.put("bar." + side.modelData, list.filter((m, k) => k !== i));
                                             side.picked = -1;
                                         } else {
-                                            Settings.set("bar." + side.modelData, B.shift(list, i, modelData.act));
+                                            Settings.put("bar." + side.modelData, B.shift(list, i, modelData.act));
                                             side.picked = Math.max(0, Math.min(list.length - 1, i + modelData.act));
                                         }
                                     }
@@ -176,7 +176,7 @@ Column {
                     }
 
                     Repeater {
-                        model: B.unused(Settings.values.bar)
+                        model: B.unused(Settings.shown.bar)
 
                         delegate: Chip {
                             required property string modelData
@@ -185,7 +185,7 @@ Column {
                             glyph: Icons.GLYPHS.plus
                             opacity: dead ? 0.25 : 0.6
                             enabled: !dead
-                            onClicked: Settings.set("bar." + side.modelData, side.list.concat([modelData]))
+                            onClicked: Settings.put("bar." + side.modelData, side.list.concat([modelData]))
                         }
                     }
                 }

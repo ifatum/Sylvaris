@@ -20,7 +20,7 @@ MiniScreen {
         spacing: 10
 
         Repeater {
-            model: Settings.values.power.actions
+            model: Settings.shown.power.actions
 
             delegate: Column {
                 required property string modelData

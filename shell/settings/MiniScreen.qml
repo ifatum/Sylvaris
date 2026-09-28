@@ -10,8 +10,8 @@ Item {
 
     property bool showBar: true
     property bool dim: true
-    readonly property var bar: Settings.values.bar
-    readonly property bool barOn: root.showBar && root.bar.enabled && Settings.values.parts.bar
+    readonly property var bar: Settings.shown.bar
+    readonly property bool barOn: root.showBar && root.bar.enabled && Settings.shown.parts.bar
     readonly property bool vertical: B.vertical(root.bar.position)
     readonly property real k: screen.width / 1920
     readonly property real barThick: Math.max(6, 44 * root.k)

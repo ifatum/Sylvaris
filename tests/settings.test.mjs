@@ -4,7 +4,7 @@ import assert from "node:assert/strict"
 import {
     CORNERS, DEFAULT_CONFIG, DEFAULT_SETTINGS, parseJson, expandHome, deepMerge, migrate,
     validateConfig, validateSettings, merge, getPath, setPath, serialize, DEFAULT_GLASS, resolveGlass, settingsLayer, effectiveSettings,
-    PARTS, OPT_IN, SERVICE_DEPS, liveParts, liveServices, CENTER_TILES
+    PARTS, OPT_IN, SERVICE_DEPS, liveParts, screenSettings, screenKey, liveServices, CENTER_TILES
 } from "../shell/lib/settings.mjs"
 
 test("parseJson treats empty text as an empty object", () => {
@@ -318,4 +318,35 @@ test("placement keeps each panel's spot and falls back per panel", () => {
     assert.equal(v.diver, "top-right")
     assert.equal(v.extra, 1)
     assert.deepEqual(validateSettings({ placement: "x" }).placement, d)
+})
+
+test("screens keep only per-screen overrides the validator accepts", () => {
+    const v = validateSettings({ screens: { "DP-6": { bar: { position: "left" }, deck: { pinned: ["x"], size: 64 }, island: { position: "bottom-left", media: false }, clock: { corner: "nope" }, performance: true }, "HDMI-A-1": "x" } })
+    assert.deepEqual(v.screens, { "DP-6": { bar: { position: "left" }, deck: { size: 64 }, island: { position: "bottom-left" } } })
+    assert.deepEqual(validateSettings({}).screens, {})
+    assert.deepEqual(validateSettings({ screens: [] }).screens, {})
+    assert.deepEqual(validateSettings({ screens: { "DP-6": {} } }).screens, { "DP-6": {} })
+})
+
+test("screenSettings lays a screen's overrides over the shared settings", () => {
+    const v = validateSettings({ bar: { floating: false }, screens: { "DP-6": { bar: { position: "left" }, placement: { clip: "center" } } } })
+    const s = screenSettings(v, "DP-6")
+    assert.equal(s.bar.position, "left")
+    assert.equal(s.bar.floating, false)
+    assert.equal(s.placement.clip, "center")
+    assert.equal(screenSettings(v, "DP-5").bar.position, "top")
+    assert.equal(screenSettings(v, "").bar.position, "top")
+    assert.equal(screenSettings(v, "DP-5"), v)
+})
+
+test("screenKey tells which settings can differ per screen", () => {
+    assert.equal(screenKey("bar.position"), true)
+    assert.equal(screenKey("bar"), true)
+    assert.equal(screenKey("deck.size"), true)
+    assert.equal(screenKey("deck.pinned"), false)
+    assert.equal(screenKey("island.position"), true)
+    assert.equal(screenKey("island.media"), false)
+    assert.equal(screenKey("notifications.corner"), true)
+    assert.equal(screenKey("notifications.dnd"), false)
+    assert.equal(screenKey("parts.bar"), false)
 })

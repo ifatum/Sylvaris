@@ -21,7 +21,7 @@ Popup {
     property real quietUntil: 0
 
     namespace: "sylaccess"
-    corner: Settings.values.placement.access
+    corner: root.local.placement.access
     panelWidth: Tokens.accessWidth
     panelHeight: Tokens.accessHeight
 

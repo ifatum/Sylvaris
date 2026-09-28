@@ -9,7 +9,8 @@ import "../lib/bar.mjs" as B
 Scope {
     id: root
 
-    readonly property string corner: B.placeCorner(Settings.values.notifications.corner, Settings.values.parts.bar ? Settings.values.bar.position : "top")
+    readonly property var local: Settings.at(root.screenInfo ? root.screenInfo.name : Compositor.focusedName())
+    readonly property string corner: B.placeCorner(root.local.notifications.corner, root.local.parts.bar ? root.local.bar.position : "top")
     property var screenInfo: null
     property var avoid: null
     readonly property var shift: N.toastShift(root.corner, root.screenInfo ? root.screenInfo.name : "", root.avoid, Tokens.toastGap)

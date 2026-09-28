@@ -9,7 +9,7 @@ Column {
     id: page
 
     required property var host
-    readonly property var cfg: Settings.values.center
+    readonly property var cfg: Settings.shown.center
     readonly property var toggleTiles: Config.values.toggles.map(t => ({
                 key: "toggle:" + t.id,
                 label: t.label,
@@ -43,7 +43,7 @@ Column {
             glyph: Icons.GLYPHS.hotspot
         }
     ], page.toggleTiles.slice(1))
-    readonly property var extras: C.offeredExtras(Settings.values.plugins).map(e => ({
+    readonly property var extras: C.offeredExtras(Settings.shown.plugins).map(e => ({
                 key: e.key,
                 label: e.label,
                 glyph: Icons.GLYPHS[e.glyph]
@@ -59,7 +59,7 @@ Column {
             next.push(key);
         else
             next.splice(i, 1);
-        Settings.set("center." + list, next);
+        Settings.put("center." + list, next);
     }
 
     Card {
@@ -230,7 +230,7 @@ Column {
 
             Toggle {
                 checked: page.cfg.volume
-                onToggled: v => Settings.set("center.volume", v)
+                onToggled: v => Settings.put("center.volume", v)
             }
         }
 
@@ -240,7 +240,7 @@ Column {
 
             Toggle {
                 checked: page.cfg.media
-                onToggled: v => Settings.set("center.media", v)
+                onToggled: v => Settings.put("center.media", v)
             }
         }
 
@@ -253,7 +253,7 @@ Column {
                 width: 300
                 options: page.host.corners
                 current: page.cfg.corner
-                onPicked: key => Settings.set("center.corner", key)
+                onPicked: key => Settings.put("center.corner", key)
             }
         }
     }
@@ -269,11 +269,11 @@ Column {
             TextBox {
                 id: ssid
                 width: 220
-                text: Settings.values.hotspot.ssid
+                text: Settings.shown.hotspot.ssid
                 placeholder: "Sylvaris"
                 onAccepted: {
                     if (ssid.text.length >= 1 && ssid.text.length <= 32)
-                        Settings.set("hotspot.ssid", ssid.text);
+                        Settings.put("hotspot.ssid", ssid.text);
                 }
             }
         }
@@ -295,8 +295,8 @@ Column {
                         label: "5 GHz"
                     }
                 ]
-                current: Settings.values.hotspot.band
-                onPicked: key => Settings.set("hotspot.band", key)
+                current: Settings.shown.hotspot.band
+                onPicked: key => Settings.put("hotspot.band", key)
             }
         }
     }

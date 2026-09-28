@@ -8,7 +8,7 @@ import "../lib/capture.mjs" as K
 Column {
     id: root
 
-    readonly property var cfg: Settings.values.capture
+    readonly property var cfg: Settings.shown.capture
     readonly property var shotChoices: [
         {
             key: "format",
@@ -105,7 +105,7 @@ Column {
             current: String(root.cfg[choice.modelData.key])
             onPicked: key => {
                 const hit = choice.modelData.options.find(o => String(o[0]) === key);
-                Settings.set("capture." + choice.modelData.key, hit[0]);
+                Settings.put("capture." + choice.modelData.key, hit[0]);
             }
         }
     }
@@ -187,7 +187,7 @@ Column {
 
             Toggle {
                 checked: root.cfg.copy
-                onToggled: v => Settings.set("capture.copy", v)
+                onToggled: v => Settings.put("capture.copy", v)
             }
         }
 
@@ -197,7 +197,7 @@ Column {
 
             Toggle {
                 checked: root.cfg.save
-                onToggled: v => Settings.set("capture.save", v)
+                onToggled: v => Settings.put("capture.save", v)
             }
         }
 
@@ -209,7 +209,7 @@ Column {
                 width: 260
                 text: root.cfg.folder
                 placeholder: "~/Pictures/Screenshots"
-                onAccepted: Settings.set("capture.folder", text.trim() === "" ? "~/Pictures/Screenshots" : text.trim())
+                onAccepted: Settings.put("capture.folder", text.trim() === "" ? "~/Pictures/Screenshots" : text.trim())
             }
         }
 
@@ -224,7 +224,7 @@ Column {
                 to: 100
                 step: 5
                 suffix: " %"
-                onStepped: v => Settings.set("capture.quality", v)
+                onStepped: v => Settings.put("capture.quality", v)
             }
         }
 
@@ -233,7 +233,7 @@ Column {
 
             Toggle {
                 checked: root.cfg.cursor
-                onToggled: v => Settings.set("capture.cursor", v)
+                onToggled: v => Settings.put("capture.cursor", v)
             }
         }
 
@@ -252,7 +252,7 @@ Column {
                 width: 260
                 text: root.cfg.pattern
                 placeholder: "{kind} {date} {time}"
-                onAccepted: Settings.set("capture.pattern", text.trim() === "" ? "{kind} {date} {time}" : text)
+                onAccepted: Settings.put("capture.pattern", text.trim() === "" ? "{kind} {date} {time}" : text)
             }
         }
     }
@@ -280,7 +280,7 @@ Column {
                 width: 260
                 text: root.cfg.videos
                 placeholder: "~/Videos/Recordings"
-                onAccepted: Settings.set("capture.videos", text.trim() === "" ? "~/Videos/Recordings" : text.trim())
+                onAccepted: Settings.put("capture.videos", text.trim() === "" ? "~/Videos/Recordings" : text.trim())
             }
         }
 
@@ -296,7 +296,7 @@ Column {
 
             Toggle {
                 checked: root.cfg.constant
-                onToggled: v => Settings.set("capture.constant", v)
+                onToggled: v => Settings.put("capture.constant", v)
             }
         }
 
@@ -306,7 +306,7 @@ Column {
 
             Toggle {
                 checked: root.cfg.audio
-                onToggled: v => Settings.set("capture.audio", v)
+                onToggled: v => Settings.put("capture.audio", v)
             }
         }
 
@@ -328,7 +328,7 @@ Column {
                     }
                 ]
                 current: root.cfg.audioSource
-                onPicked: key => Settings.set("capture.audioSource", key)
+                onPicked: key => Settings.put("capture.audioSource", key)
             }
         }
     }

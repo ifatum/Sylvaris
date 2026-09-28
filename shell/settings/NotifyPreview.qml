@@ -7,7 +7,7 @@ import "../lib/bar.mjs" as B
 MiniScreen {
     id: root
 
-    readonly property string corner: B.placeCorner(Settings.values.notifications.corner, Settings.values.parts.bar ? Settings.values.bar.position : "top")
+    readonly property string corner: B.placeCorner(Settings.shown.notifications.corner, Settings.shown.parts.bar ? Settings.shown.bar.position : "top")
 
     Repeater {
         model: 2
@@ -20,7 +20,7 @@ MiniScreen {
             width: 380 * root.k
             height: 96 * root.k
             radius: 6
-            opacity: Settings.values.notifications.dnd ? 0.25 : 1
+            opacity: Settings.shown.notifications.dnd ? 0.25 : 1
             color: Qt.alpha(Theme.surface, 0.92)
             border.width: 1
             border.color: Theme.line

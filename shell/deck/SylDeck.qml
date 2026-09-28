@@ -11,7 +11,8 @@ import "../lib/icons.mjs" as Icons
 Scope {
     id: root
 
-    readonly property var cfg: Settings.values.deck
+    property var screens: Quickshell.screens
+    readonly property var cfg: Settings.at(root.screens.length === 1 ? root.screens[0].name : "").deck
     readonly property int size: root.cfg.size
     readonly property real reach: root.size * 2.6
     readonly property var windows: Compositor.windows
@@ -96,7 +97,7 @@ Scope {
     }
 
     Variants {
-        model: root.cfg.enabled ? Quickshell.screens : []
+        model: root.cfg.enabled ? root.screens : []
 
         delegate: PanelWindow {
             id: deck

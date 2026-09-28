@@ -7,7 +7,7 @@ import "../lib/icons.mjs" as Icons
 Column {
     id: root
 
-    readonly property var cons: Settings.values.constellation
+    readonly property var cons: Settings.shown.constellation
 
     spacing: 18
 
@@ -25,7 +25,7 @@ Column {
         icon: Icons.GLYPHS.timer
         label: root.cons.speed === 0 ? "Still" : "Drift ×" + root.cons.speed.toFixed(1)
         value: root.cons.speed / 3
-        onMoved: v => Settings.set("constellation.speed", Math.round(v * 30) / 10)
+        onMoved: v => Settings.put("constellation.speed", Math.round(v * 30) / 10)
     }
 
     Repeater {
@@ -87,7 +87,7 @@ Column {
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
                 checked: root.cons[modelData.key]
-                onToggled: v => Settings.set("constellation." + modelData.key, v)
+                onToggled: v => Settings.put("constellation." + modelData.key, v)
             }
         }
     }

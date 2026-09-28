@@ -7,7 +7,7 @@ import "../lib/sync.mjs" as S
 Column {
     id: root
 
-    readonly property var cfg: Settings.values.sync
+    readonly property var cfg: Settings.shown.sync
     readonly property var pal: S.palette(Theme.theme.colors)
 
     function statusFor(id: string): string {
@@ -79,7 +79,7 @@ Column {
 
             Toggle {
                 checked: root.cfg.enabled
-                onToggled: v => Settings.set("sync.enabled", v)
+                onToggled: v => Settings.put("sync.enabled", v)
             }
         }
     }
@@ -101,7 +101,7 @@ Column {
 
                 Toggle {
                     checked: root.cfg.targets[modelData.id]
-                    onToggled: v => Settings.set("sync.targets." + modelData.id, v)
+                    onToggled: v => Settings.put("sync.targets." + modelData.id, v)
                 }
             }
         }

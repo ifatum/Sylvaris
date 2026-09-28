@@ -7,7 +7,7 @@ import qs.components
 MiniScreen {
     id: root
 
-    readonly property var paper: Settings.values.paper
+    readonly property var paper: Settings.shown.paper
 
     dim: false
     showBar: false

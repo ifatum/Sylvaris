@@ -1,0 +1,17 @@
+sleep 1.5
+sway create_output
+sleep 1.5
+syl set screens.HEADLESS-2.bar.position left
+syl set screens.HEADLESS-2.bar.position nope
+check sylvaris settings get screens | grep -q '"HEADLESS-2":{"bar":{"position":"left"}}'
+check sylvaris settings get bar.position | grep -qx 'top'
+sleep 1
+shot per-screen-bars
+syl settings open bar
+syl settings screen HEADLESS-2
+sleep 1.2
+shot per-screen-settings
+syl settings screen nope
+syl settings screen all
+syl set screens.HEADLESS-2 {}
+check sylvaris settings get screens | grep -qx '{"HEADLESS-2":{}}'

@@ -106,6 +106,7 @@ export const DEFAULT_SETTINGS = {
     clip: DEFAULT_CLIP,
     island: DEFAULT_ISLAND,
     placement: DEFAULT_PLACEMENT,
+    screens: {},
     capture: DEFAULT_CAPTURE,
     access: DEFAULT_ACCESS,
     keybinds: {},
@@ -367,7 +368,61 @@ export function validateSettings(raw) {
         eq: validateEq(media.eq),
         airpods: typeof media.airpods === "string" && /^([0-9A-F]{2}:){5}[0-9A-F]{2}$/i.test(media.airpods) ? media.airpods.toUpperCase() : ""
     })
+    v.screens = validateScreens(v.screens, v)
     return v
+}
+
+export const SCREEN_KEYS = [
+    "bar", "deck.enabled", "deck.pad", "deck.power", "deck.effect", "deck.hide", "deck.peek", "deck.peekSize", "deck.reserve", "deck.size",
+    "center.corner", "clock.corner", "notifications.corner", "placement", "island.position", "island.idle", "island.shortcuts",
+    "paper.fit", "paper.blur", "paper.dim", "paper.tint", "paper.drift", "paper.transition", "paper.duration"
+]
+
+const underScreenKey = path => SCREEN_KEYS.some(k => path === k || path.indexOf(k + ".") === 0)
+
+export function screenKey(key) {
+    return SCREEN_KEYS.some(k => key === k || key.indexOf(k + ".") === 0 || k.indexOf(key + ".") === 0)
+}
+
+function leaves(obj, prefix) {
+    const out = []
+    for (const key of Object.keys(obj)) {
+        const path = prefix === "" ? key : prefix + "." + key
+        if (isObject(obj[key]))
+            out.push(...leaves(obj[key], path))
+        else
+            out.push([path, obj[key]])
+    }
+    return out
+}
+
+function validateScreens(raw, base) {
+    const out = {}
+    if (!isObject(raw))
+        return out
+    const shared = Object.assign({}, base, { screens: {} })
+    for (const name of Object.keys(raw)) {
+        if (!isObject(raw[name]) || ["__proto__", "constructor", "prototype"].includes(name))
+            continue
+        if (Object.keys(raw[name]).length === 0)
+            out[name] = {}
+        const pairs = leaves(raw[name], "").filter(([path]) => underScreenKey(path))
+        if (pairs.length === 0)
+            continue
+        const layer = pairs.reduce((acc, [path, value]) => setPath(acc, path, value), {})
+        const merged = validateSettings(deepMerge(shared, layer))
+        const kept = pairs.filter(([path, value]) => JSON.stringify(getPath(merged, path)) === JSON.stringify(value))
+        if (kept.length > 0)
+            out[name] = kept.reduce((acc, [path, value]) => setPath(acc, path, value), {})
+    }
+    return out
+}
+
+export function screenSettings(values, name) {
+    const layer = isObject(values.screens) ? values.screens[name] : undefined
+    if (!isObject(layer))
+        return values
+    return Object.assign(validateSettings(deepMerge(Object.assign({}, values, { screens: {} }), layer)), { screens: values.screens })
 }
 
 function pluggedOff(plugins, key, name) {

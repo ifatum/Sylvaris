@@ -6,7 +6,7 @@ import qs.components
 MiniScreen {
     id: root
 
-    readonly property var pad: Settings.values.pad
+    readonly property var pad: Settings.shown.pad
 
     showBar: false
 

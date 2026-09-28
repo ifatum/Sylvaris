@@ -28,8 +28,8 @@ Column {
             subtitle: "App icons in the bar, deck, launcher, switcher and notifications take the theme's accent"
 
             Toggle {
-                checked: Settings.values.iconTint
-                onToggled: v => Settings.set("iconTint", v)
+                checked: Settings.shown.iconTint
+                onToggled: v => Settings.put("iconTint", v)
             }
         }
 
@@ -68,7 +68,7 @@ Column {
 
             Toggle {
                 checked: Resin.enabled
-                onToggled: v => Settings.set("glass.enabled", v)
+                onToggled: v => Settings.put("glass.enabled", v)
             }
         }
 
@@ -86,7 +86,7 @@ Column {
                     width: 300
                     value: host.glass(modelData.key) / modelData.max
                     label: host.glass(modelData.key).toFixed(modelData.max < 1 ? 3 : 2)
-                    onMoved: v => Settings.set("glass." + modelData.key, Math.round(v * modelData.max * 1000) / 1000)
+                    onMoved: v => Settings.put("glass." + modelData.key, Math.round(v * modelData.max * 1000) / 1000)
                 }
             }
         }

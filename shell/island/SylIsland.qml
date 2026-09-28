@@ -11,7 +11,7 @@ import "../lib/notify.mjs" as N
 Scope {
     id: root
 
-    readonly property var cfg: Settings.values.island
+    readonly property var cfg: Settings.at(Compositor.focusedName()).island
     property var peers: ({})
     property var live: []
     property var avoid: null

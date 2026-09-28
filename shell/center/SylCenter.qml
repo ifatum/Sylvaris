@@ -23,7 +23,8 @@ Scope {
     readonly property int panelWidth: root.expanded ? Tokens.centerExpandedWidth : Tokens.centerCompactWidth
     readonly property int panelHeight: Tokens.centerHeight
     readonly property real grow: 0.94 + 0.06 * root.phase
-    readonly property string corner: B.placeCorner(Settings.values.center.corner, Settings.values.parts.bar ? Settings.values.bar.position : "top")
+    readonly property var local: Settings.at(root.screenInfo ? root.screenInfo.name : Compositor.focusedName())
+    readonly property string corner: B.placeCorner(root.local.center.corner, root.local.parts.bar ? root.local.bar.position : "top")
     readonly property var origin: M.origin(root.corner)
     readonly property bool expanded: root.view !== "compact"
     signal partRequested(string name)

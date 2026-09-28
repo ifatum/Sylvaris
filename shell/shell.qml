@@ -505,24 +505,40 @@ ShellRoot {
     LazyLoader {
         active: root.on("bar")
 
-        SylBar {
-            open: ({
-                    center: root.screenOf(root.part("center")),
-                    clock: root.screenOf(root.part("clock")),
-                    notify: root.screenOf(root.part("notify")),
-                    pad: root.screenOf(root.part("pad")),
-                    power: root.screenOf(root.part("power"))
-                })
-            onRequest: (name, arg, screen) => root.openOn(name, arg, screen)
+        Scope {
+            Variants {
+                model: Quickshell.screens
+
+                SylBar {
+                    required property var modelData
+                    screens: [modelData]
+                    open: ({
+                            center: root.screenOf(root.part("center")),
+                            clock: root.screenOf(root.part("clock")),
+                            notify: root.screenOf(root.part("notify")),
+                            pad: root.screenOf(root.part("pad")),
+                            power: root.screenOf(root.part("power"))
+                        })
+                    onRequest: (name, arg, screen) => root.openOn(name, arg, screen)
+                }
+            }
         }
     }
 
     LazyLoader {
         active: root.on("deck")
 
-        SylDeck {
-            padOpen: root.part("pad") !== null && root.part("pad").wanted
-            onRequest: (name, arg, screen) => root.openOn(name, arg, screen)
+        Scope {
+            Variants {
+                model: Quickshell.screens
+
+                SylDeck {
+                    required property var modelData
+                    screens: [modelData]
+                    padOpen: root.part("pad") !== null && root.part("pad").wanted
+                    onRequest: (name, arg, screen) => root.openOn(name, arg, screen)
+                }
+            }
         }
     }
 
@@ -622,6 +638,12 @@ ShellRoot {
                 toggle: () => root.need("settings").toggle(),
                 open: section => root.need("settings").showSection(section || ""),
                 close: () => root.need("settings").close(),
+                screen: name => {
+                    const n = String(name || "");
+                    if (n !== "all" && n !== "" && Quickshell.screens.every(s => s.name !== n))
+                        throw new Error("usage: settings screen <all|" + Quickshell.screens.map(s => s.name).join("|") + ">");
+                    Settings.editing = n === "all" ? "" : n;
+                },
                 all: () => Settings.values,
                 get: key => Settings.get(key) === undefined ? null : Settings.get(key),
                 set: (key, ...rest) => root.setting(key || "", rest.join(" "))

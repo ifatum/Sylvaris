@@ -16,13 +16,13 @@ Column {
 
         SettingRow {
             title: "Animation speed"
-            subtitle: Settings.values.motion.scale === 1 ? "Default" : Settings.values.motion.scale < 1 ? "Faster" : "Slower"
+            subtitle: Settings.shown.motion.scale === 1 ? "Default" : Settings.shown.motion.scale < 1 ? "Faster" : "Slower"
 
             Slider {
                 width: 300
-                value: (Settings.values.motion.scale - 0.25) / 1.75
-                label: "×" + (1 / Settings.values.motion.scale).toFixed(2)
-                onMoved: v => Settings.set("motion.scale", Math.round((0.25 + v * 1.75) * 20) / 20)
+                value: (Settings.shown.motion.scale - 0.25) / 1.75
+                label: "×" + (1 / Settings.shown.motion.scale).toFixed(2)
+                onMoved: v => Settings.put("motion.scale", Math.round((0.25 + v * 1.75) * 20) / 20)
             }
         }
 
@@ -46,8 +46,8 @@ Column {
                         label: "Fade"
                     }
                 ]
-                current: Settings.values.motion.reveal
-                onPicked: key => Settings.set("motion.reveal", key)
+                current: Settings.shown.motion.reveal
+                onPicked: key => Settings.put("motion.reveal", key)
             }
         }
 
@@ -57,8 +57,8 @@ Column {
             last: true
 
             Toggle {
-                checked: Settings.values.motion.reduced
-                onToggled: v => Settings.set("motion.reduced", v)
+                checked: Settings.shown.motion.reduced
+                onToggled: v => Settings.put("motion.reduced", v)
             }
         }
     }
@@ -73,8 +73,8 @@ Column {
             last: true
 
             Toggle {
-                checked: Settings.values.performance
-                onToggled: v => Settings.set("performance", v)
+                checked: Settings.shown.performance
+                onToggled: v => Settings.put("performance", v)
             }
         }
     }

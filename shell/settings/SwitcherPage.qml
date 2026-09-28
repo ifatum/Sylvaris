@@ -7,7 +7,7 @@ import "../lib/icons.mjs" as Icons
 Column {
     id: root
 
-    readonly property var cfg: Settings.values.switcher
+    readonly property var cfg: Settings.shown.switcher
 
     spacing: 24
 
@@ -103,7 +103,7 @@ Column {
 
             Toggle {
                 checked: root.cfg.previews
-                onToggled: v => Settings.set("switcher.previews", v)
+                onToggled: v => Settings.put("switcher.previews", v)
             }
         }
 
@@ -114,7 +114,7 @@ Column {
 
             Toggle {
                 checked: root.cfg.titles
-                onToggled: v => Settings.set("switcher.titles", v)
+                onToggled: v => Settings.put("switcher.titles", v)
             }
         }
     }

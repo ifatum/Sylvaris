@@ -13,7 +13,7 @@ Popup {
     readonly property var groups: N.groups(Notifications.list, e => e.n.appName)
 
     namespace: "sylnotify"
-    corner: Settings.values.notifications.corner
+    corner: root.local.notifications.corner
     panelWidth: Tokens.notifyWidth
     panelHeight: Tokens.notifyHeight
 

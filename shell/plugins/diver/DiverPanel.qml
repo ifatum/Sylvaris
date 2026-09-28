@@ -14,7 +14,7 @@ Popup {
     readonly property bool editing: sheet.open
 
     namespace: "syldiver-panel"
-    corner: Settings.values.placement.diver
+    corner: root.local.placement.diver
     panelWidth: Tokens.diverWidth
     panelHeight: Tokens.diverHeight
     dim: 0.3

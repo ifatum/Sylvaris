@@ -22,7 +22,7 @@ Popup {
     readonly property real headline: root.st.phase === "download" || root.st.phase === "upload" ? root.st.live : root.st.phase === "done" ? root.st.download : root.st.phase === "error" ? 0 : root.history.length > 0 ? root.history[0].download : 0
 
     namespace: "sylfatest"
-    corner: Settings.values.placement.fatest
+    corner: root.local.placement.fatest
     panelWidth: Tokens.testWidth
     panelHeight: Tokens.testHeight
 

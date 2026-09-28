@@ -10,7 +10,7 @@ Column {
 
     property var access: null
     readonly property var tools: root.access !== null ? root.access.tools : ({})
-    readonly property var cfg: Settings.values.access
+    readonly property var cfg: Settings.shown.access
     readonly property var can: A.supports(Compositor.name)
     readonly property var names: ({
             none: "Off",
@@ -56,7 +56,7 @@ Column {
                 width: 240
                 value: (root.cfg.zoom - 1) / 4
                 label: "×" + root.cfg.zoom.toFixed(1)
-                onMoved: v => Settings.set("access.zoom", Math.round((1 + v * 4) * 10) / 10)
+                onMoved: v => Settings.put("access.zoom", Math.round((1 + v * 4) * 10) / 10)
             }
         }
 
@@ -68,7 +68,7 @@ Column {
                 width: 240
                 value: (root.cfg.text - 0.8) / 0.8
                 label: Math.round(root.cfg.text * 100) + "%"
-                onMoved: v => Settings.set("access.text", Math.round((0.8 + v * 0.8) * 20) / 20)
+                onMoved: v => Settings.put("access.text", Math.round((0.8 + v * 0.8) * 20) / 20)
             }
         }
 
@@ -83,7 +83,7 @@ Column {
                             label: n === 0 ? "System" : String(n)
                         }))
                 current: String(root.cfg.cursor)
-                onPicked: key => Settings.set("access.cursor", Number(key))
+                onPicked: key => Settings.put("access.cursor", Number(key))
             }
         }
 
@@ -108,7 +108,7 @@ Column {
                     required property string modelData
                     text: root.names[modelData]
                     lit: root.cfg.filter === modelData
-                    onClicked: Settings.set("access.filter", modelData)
+                    onClicked: Settings.put("access.filter", modelData)
                 }
             }
         }
@@ -122,8 +122,8 @@ Column {
             subtitle: "Panels appear without moving"
 
             Toggle {
-                checked: Settings.values.motion.reduced
-                onToggled: v => Settings.set("motion.reduced", v)
+                checked: Settings.shown.motion.reduced
+                onToggled: v => Settings.put("motion.reduced", v)
             }
         }
 
@@ -134,7 +134,7 @@ Column {
 
             Toggle {
                 checked: !Resin.enabled
-                onToggled: v => Settings.set("glass.enabled", !v)
+                onToggled: v => Settings.put("glass.enabled", !v)
             }
         }
 

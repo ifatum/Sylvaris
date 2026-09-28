@@ -7,7 +7,7 @@ import "../lib/icons.mjs" as Icons
 Column {
     id: root
 
-    readonly property var cfg: Settings.values.clip
+    readonly property var cfg: Settings.shown.clip
 
     spacing: 24
 
@@ -91,7 +91,7 @@ Column {
                 from: 5
                 to: 500
                 step: 5
-                onStepped: v => Settings.set("clip.limit", v)
+                onStepped: v => Settings.put("clip.limit", v)
             }
         }
 
@@ -101,7 +101,7 @@ Column {
 
             Toggle {
                 checked: root.cfg.images
-                onToggled: v => Settings.set("clip.images", v)
+                onToggled: v => Settings.put("clip.images", v)
             }
         }
 
@@ -112,7 +112,7 @@ Column {
 
             Toggle {
                 checked: root.cfg.persist
-                onToggled: v => Settings.set("clip.persist", v)
+                onToggled: v => Settings.put("clip.persist", v)
             }
         }
     }

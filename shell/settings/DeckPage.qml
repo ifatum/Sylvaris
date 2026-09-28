@@ -21,8 +21,8 @@ Column {
             subtitle: "A dock for pinned and running apps along the bottom"
 
             Toggle {
-                checked: Settings.values.deck.enabled
-                onToggled: v => Settings.set("deck.enabled", v)
+                checked: Settings.shown.deck.enabled
+                onToggled: v => Settings.put("deck.enabled", v)
             }
         }
 
@@ -32,7 +32,7 @@ Column {
 
             Segmented {
                 width: 300
-                current: Settings.values.deck.effect
+                current: Settings.shown.deck.effect
                 options: [
                     {
                         key: "bloom",
@@ -47,7 +47,7 @@ Column {
                         label: "None"
                     }
                 ]
-                onPicked: key => Settings.set("deck.effect", key)
+                onPicked: key => Settings.put("deck.effect", key)
             }
         }
 
@@ -56,14 +56,14 @@ Column {
             subtitle: "Off lets windows go underneath the deck"
 
             Toggle {
-                checked: Settings.values.deck.reserve
-                onToggled: v => Settings.set("deck.reserve", v)
+                checked: Settings.shown.deck.reserve
+                onToggled: v => Settings.put("deck.reserve", v)
             }
         }
 
         SettingRow {
             title: "Hide"
-            subtitle: Settings.values.deck.hide === "windows" ? "Shows on an empty desktop and slides away when a window opens on this screen" : Settings.values.deck.hide === "always" ? "Slides away until the pointer reaches the bottom edge" : "Always visible"
+            subtitle: Settings.shown.deck.hide === "windows" ? "Shows on an empty desktop and slides away when a window opens on this screen" : Settings.shown.deck.hide === "always" ? "Slides away until the pointer reaches the bottom edge" : "Always visible"
 
             Segmented {
                 width: 300
@@ -81,8 +81,8 @@ Column {
                         label: "Always"
                     }
                 ]
-                current: Settings.values.deck.hide
-                onPicked: key => Settings.set("deck.hide", key)
+                current: Settings.shown.deck.hide
+                onPicked: key => Settings.put("deck.hide", key)
             }
         }
 
@@ -91,21 +91,21 @@ Column {
             subtitle: "A small line in your theme colour that stays while the deck is hidden"
 
             Toggle {
-                checked: Settings.values.deck.peek
-                onToggled: v => Settings.set("deck.peek", v)
+                checked: Settings.shown.deck.peek
+                onToggled: v => Settings.put("deck.peek", v)
             }
         }
 
         SettingRow {
             title: "Peek thickness"
-            enabled: Settings.values.deck.peek
+            enabled: Settings.shown.deck.peek
 
             Stepper {
-                value: Settings.values.deck.peekSize
+                value: Settings.shown.deck.peekSize
                 from: 2
                 to: 12
                 suffix: " px"
-                onStepped: v => Settings.set("deck.peekSize", v)
+                onStepped: v => Settings.put("deck.peekSize", v)
             }
         }
 
@@ -113,10 +113,10 @@ Column {
             title: "Icon size"
 
             Stepper {
-                value: Settings.values.deck.size
+                value: Settings.shown.deck.size
                 from: 36
                 to: 96
-                onStepped: v => Settings.set("deck.size", v)
+                onStepped: v => Settings.put("deck.size", v)
             }
         }
 
@@ -125,7 +125,7 @@ Column {
 
             Segmented {
                 width: 280
-                current: Settings.values.deck.power
+                current: Settings.shown.deck.power
                 options: [
                     {
                         key: "start",
@@ -140,7 +140,7 @@ Column {
                         label: "None"
                     }
                 ]
-                onPicked: key => Settings.set("deck.power", key)
+                onPicked: key => Settings.put("deck.power", key)
             }
         }
 
@@ -150,7 +150,7 @@ Column {
 
             Segmented {
                 width: 280
-                current: Settings.values.deck.pad
+                current: Settings.shown.deck.pad
                 options: [
                     {
                         key: "start",
@@ -165,17 +165,17 @@ Column {
                         label: "None"
                     }
                 ]
-                onPicked: key => Settings.set("deck.pad", key)
+                onPicked: key => Settings.put("deck.pad", key)
             }
         }
     }
 
     Card {
         title: "Pinned apps"
-        note: Settings.values.deck.pinned.length === 0 ? "Nothing pinned yet. Right-click an app in SylPad or in the deck to keep it here." : ""
+        note: Settings.shown.deck.pinned.length === 0 ? "Nothing pinned yet. Right-click an app in SylPad or in the deck to keep it here." : ""
 
         Repeater {
-            model: Settings.values.deck.pinned
+            model: Settings.shown.deck.pinned
 
             delegate: SettingRow {
                 required property string modelData
@@ -183,7 +183,7 @@ Column {
                 readonly property var entry: Demo.enabled ? Apps.byId(modelData) : DesktopEntries.byId(modelData)
                 title: entry ? entry.name : modelData
                 subtitle: modelData
-                last: index === Settings.values.deck.pinned.length - 1
+                last: index === Settings.shown.deck.pinned.length - 1
 
                 Row {
                     spacing: 6
@@ -208,8 +208,8 @@ Column {
                             required property var modelData
                             glyph: modelData.glyph
                             onClicked: {
-                                const list = Settings.values.deck.pinned;
-                                Settings.set("deck.pinned", modelData.act === 0 ? list.filter((p, k) => k !== index) : B.shift(list, index, modelData.act));
+                                const list = Settings.shown.deck.pinned;
+                                Settings.put("deck.pinned", modelData.act === 0 ? list.filter((p, k) => k !== index) : B.shift(list, index, modelData.act));
                             }
                         }
                     }

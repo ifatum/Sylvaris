@@ -7,7 +7,7 @@ import "../lib/icons.mjs" as Icons
 Column {
     id: root
 
-    readonly property var cfg: Settings.values.lock
+    readonly property var cfg: Settings.shown.lock
 
     signal lockRequested
 
@@ -108,7 +108,7 @@ Column {
                     }
                 ]
                 current: root.cfg.pam
-                onPicked: key => Settings.set("lock.pam", key)
+                onPicked: key => Settings.put("lock.pam", key)
             }
         }
 
@@ -118,7 +118,7 @@ Column {
 
             Toggle {
                 checked: root.cfg.seconds
-                onToggled: v => Settings.set("lock.seconds", v)
+                onToggled: v => Settings.put("lock.seconds", v)
             }
         }
 
@@ -128,7 +128,7 @@ Column {
 
             Toggle {
                 checked: root.cfg.logind
-                onToggled: v => Settings.set("lock.logind", v)
+                onToggled: v => Settings.put("lock.logind", v)
             }
         }
 

@@ -45,12 +45,12 @@ MiniScreen {
 
     Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
-        y: parent.height * 0.22 + (1 - root.phase) * (Settings.values.motion.reduced ? 0 : -12)
+        y: parent.height * 0.22 + (1 - root.phase) * (Settings.shown.motion.reduced ? 0 : -12)
         width: parent.width * 0.4
         height: parent.height * 0.5
         radius: 10
         opacity: root.phase
-        scale: Settings.values.motion.reduced ? 1 : 0.94 + 0.06 * root.phase
+        scale: Settings.shown.motion.reduced ? 1 : 0.94 + 0.06 * root.phase
         color: Qt.alpha(Theme.surface, 0.95)
         border.width: 1
         border.color: Theme.line

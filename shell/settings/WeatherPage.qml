@@ -17,8 +17,8 @@ Column {
             subtitle: "In SylClock, refreshed in the background"
 
             Toggle {
-                checked: Settings.values.weather.enabled
-                onToggled: v => Settings.set("weather.enabled", v)
+                checked: Settings.shown.weather.enabled
+                onToggled: v => Settings.put("weather.enabled", v)
             }
         }
 
@@ -27,7 +27,7 @@ Column {
 
             Segmented {
                 width: 240
-                current: Settings.values.weather.units
+                current: Settings.shown.weather.units
                 options: [
                     {
                         key: "metric",
@@ -38,7 +38,7 @@ Column {
                         label: "°F · mph"
                     }
                 ]
-                onPicked: key => Settings.set("weather.units", key)
+                onPicked: key => Settings.put("weather.units", key)
             }
         }
 
@@ -47,12 +47,12 @@ Column {
             last: true
 
             Stepper {
-                value: Settings.values.weather.refresh
+                value: Settings.shown.weather.refresh
                 from: 10
                 to: 360
                 step: 10
                 suffix: " min"
-                onStepped: v => Settings.set("weather.refresh", v)
+                onStepped: v => Settings.put("weather.refresh", v)
             }
         }
     }

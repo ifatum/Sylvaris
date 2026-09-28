@@ -11,7 +11,7 @@ PanelWindow {
     id: root
 
     required property var modelData
-    readonly property var cfg: Settings.values.paper
+    readonly property var cfg: Settings.at(root.modelData.name).paper
     readonly property string path: S.expandHome(W.resolve(root.cfg, Theme.currentId, Theme.wallpaper, root.modelData.name), Quickshell.env("HOME"))
     property bool flip: false
     property real mix: 1

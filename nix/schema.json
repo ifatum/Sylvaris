@@ -195,6 +195,7 @@
     "diver": "center",
     "fatest": "top-right"
   },
+  "screens": {},
   "capture": {
     "folder": "~/Pictures/Screenshots",
     "videos": "~/Videos/Recordings",

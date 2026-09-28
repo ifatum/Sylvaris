@@ -30,16 +30,16 @@ Column {
 
                     delegate: Chip {
                         required property string modelData
-                        readonly property bool on: Settings.values.power.actions.indexOf(modelData) >= 0
+                        readonly property bool on: Settings.shown.power.actions.indexOf(modelData) >= 0
                         text: Pw.ACTIONS[modelData].label
                         glyph: Icons.GLYPHS[Pw.ACTIONS[modelData].glyph]
                         lit: on
                         onClicked: {
-                            const list = Settings.values.power.actions;
+                            const list = Settings.shown.power.actions;
                             const order = Object.keys(Pw.ACTIONS);
                             const next = on ? list.filter(a => a !== modelData) : list.concat([modelData]).sort((x, y) => order.indexOf(x) - order.indexOf(y));
                             if (next.length > 0)
-                                Settings.set("power.actions", next);
+                                Settings.put("power.actions", next);
                         }
                     }
                 }
@@ -51,8 +51,8 @@ Column {
             subtitle: "Log out, restart, shut down and hibernate wait for a countdown"
 
             Toggle {
-                checked: Settings.values.power.confirm
-                onToggled: v => Settings.set("power.confirm", v)
+                checked: Settings.shown.power.confirm
+                onToggled: v => Settings.put("power.confirm", v)
             }
         }
 
@@ -61,11 +61,11 @@ Column {
             last: true
 
             Stepper {
-                value: Settings.values.power.countdown
+                value: Settings.shown.power.countdown
                 from: 1
                 to: 10
                 suffix: " s"
-                onStepped: v => Settings.set("power.countdown", v)
+                onStepped: v => Settings.put("power.countdown", v)
             }
         }
     }

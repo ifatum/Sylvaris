@@ -8,23 +8,23 @@ import "../lib/notify.mjs" as N
 MiniScreen {
     id: root
 
-    readonly property string pos: Settings.values.parts.bar ? Settings.values.bar.position : "top"
+    readonly property string pos: Settings.shown.parts.bar ? Settings.shown.bar.position : "top"
     readonly property var boxes: [
         {
             label: "SylCenter",
-            corner: B.placeCorner(Settings.values.center.corner, root.pos),
+            corner: B.placeCorner(Settings.shown.center.corner, root.pos),
             w: 460,
             h: 560
         },
         {
             label: "SylClock",
-            corner: B.placeCorner(Settings.values.clock.corner, root.pos),
+            corner: B.placeCorner(Settings.shown.clock.corner, root.pos),
             w: 700,
             h: 420
         },
         {
             label: "Toasts",
-            corner: B.placeCorner(Settings.values.notifications.corner, root.pos),
+            corner: B.placeCorner(Settings.shown.notifications.corner, root.pos),
             w: 380,
             h: 110
         }

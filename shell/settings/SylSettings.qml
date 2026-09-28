@@ -28,7 +28,7 @@ Scope {
     property string uptimeText: ""
     readonly property string version: V.VERSION
     readonly property bool hasBattery: UPower.displayDevice !== null && UPower.displayDevice.isLaptopBattery
-    readonly property var cons: Settings.values.constellation
+    readonly property var cons: Settings.shown.constellation
     readonly property var sections: [
         {
             key: "general",
@@ -209,7 +209,7 @@ Scope {
     ]
     property string group: "settings"
     property real flip: 1
-    readonly property var shownSections: root.sections.filter(s => s.group === root.group && (s.key !== "diver" || Settings.values.plugins.enabled.diver === true) && (s.key !== "fatest" || Settings.values.plugins.enabled.fatest === true))
+    readonly property var shownSections: root.sections.filter(s => s.group === root.group && (s.key !== "diver" || Settings.shown.plugins.enabled.diver === true) && (s.key !== "fatest" || Settings.shown.plugins.enabled.fatest === true))
     readonly property var corners: [
         {
             key: "top-left",
@@ -557,8 +557,10 @@ Scope {
     }
 
     onShownChanged: {
-        if (!root.shown)
+        if (!root.shown) {
             keep.restart();
+            Settings.editing = "";
+        }
     }
 
     Timer {
@@ -958,6 +960,13 @@ Scope {
                         font.pixelSize: 26
                         font.weight: Font.DemiBold
                     }
+                }
+
+                ScreenPicker {
+                    anchors.right: parent.right
+                    anchors.rightMargin: 68
+                    y: sheetHead.y
+                    opacity: root.swap
                 }
 
                 Glyph {

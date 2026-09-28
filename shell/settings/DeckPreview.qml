@@ -6,7 +6,7 @@ import qs.components
 MiniScreen {
     id: root
 
-    readonly property var deck: Settings.values.deck
+    readonly property var deck: Settings.shown.deck
     readonly property int count: Math.max(3, root.deck.pinned.length + 2)
     readonly property real cell: root.deck.size * root.k * 1.6
     readonly property bool hidden: root.deck.hide !== "never"

@@ -11,7 +11,8 @@ Scope {
 
     property string namespace: "sylpopup"
     property string corner: "top-center"
-    readonly property string placed: B.placeCorner(root.corner, Settings.values.parts.bar ? Settings.values.bar.position : "top")
+    readonly property var local: Settings.at(root.screenInfo ? root.screenInfo.name : Compositor.focusedName())
+    readonly property string placed: B.placeCorner(root.corner, root.local.parts.bar ? root.local.bar.position : "top")
     property int panelWidth: Tokens.centerCompactWidth
     property int panelHeight: Tokens.centerHeight
     property real radius: Tokens.radiusPanel

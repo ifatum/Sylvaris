@@ -29,7 +29,7 @@ Popup {
     readonly property var busy: Diver.busy(root.year, root.month)
 
     namespace: "sylclock"
-    corner: Settings.values.clock.corner
+    corner: root.local.clock.corner
     panelWidth: Tokens.clockWidth
     panelHeight: Tokens.clockHeight + (Weather.enabled ? Tokens.clockWeatherHeight + Tokens.gap : 0)
 

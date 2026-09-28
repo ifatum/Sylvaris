@@ -20,7 +20,7 @@ Column {
 
             Segmented {
                 width: 260
-                current: Settings.values.pad.mode
+                current: Settings.shown.pad.mode
                 options: [
                     {
                         key: "launchpad",
@@ -31,7 +31,7 @@ Column {
                         label: "List"
                     }
                 ]
-                onPicked: key => Settings.set("pad.mode", key)
+                onPicked: key => Settings.put("pad.mode", key)
             }
         }
 
@@ -39,10 +39,10 @@ Column {
             title: "Columns"
 
             Stepper {
-                value: Settings.values.pad.columns
+                value: Settings.shown.pad.columns
                 from: 3
                 to: 10
-                onStepped: v => Settings.set("pad.columns", v)
+                onStepped: v => Settings.put("pad.columns", v)
             }
         }
 
@@ -51,10 +51,10 @@ Column {
             last: true
 
             Stepper {
-                value: Settings.values.pad.rows
+                value: Settings.shown.pad.rows
                 from: 2
                 to: 8
-                onStepped: v => Settings.set("pad.rows", v)
+                onStepped: v => Settings.put("pad.rows", v)
             }
         }
     }

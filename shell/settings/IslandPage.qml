@@ -9,8 +9,8 @@ import "../lib/icons.mjs" as Icons
 Column {
     id: root
 
-    readonly property var cfg: Settings.values.island
-    readonly property bool on: Settings.values.parts.island
+    readonly property var cfg: Settings.shown.island
+    readonly property bool on: Settings.shown.parts.island
     readonly property var sample: I.activities({
         flash: null,
         recording: {
@@ -41,7 +41,7 @@ Column {
             next.splice(i, 1);
         else if (next.length < I.MAX_SHORTCUTS)
             next.push(id);
-        Settings.set("island.shortcuts", next);
+        Settings.put("island.shortcuts", next);
     }
 
     Card {
@@ -85,7 +85,7 @@ Column {
 
             Toggle {
                 checked: root.on
-                onToggled: v => Settings.set("parts.island", v)
+                onToggled: v => Settings.put("parts.island", v)
             }
         }
 
@@ -106,7 +106,7 @@ Column {
                     }
                 ]
                 current: I.placeOf(root.cfg.position).top ? "top" : "bottom"
-                onPicked: key => Settings.set("island.position", key + "-" + I.placeOf(root.cfg.position).side)
+                onPicked: key => Settings.put("island.position", key + "-" + I.placeOf(root.cfg.position).side)
             }
         }
 
@@ -130,7 +130,7 @@ Column {
                     }
                 ]
                 current: I.placeOf(root.cfg.position).side
-                onPicked: key => Settings.set("island.position", (I.placeOf(root.cfg.position).top ? "top-" : "bottom-") + key)
+                onPicked: key => Settings.put("island.position", (I.placeOf(root.cfg.position).top ? "top-" : "bottom-") + key)
             }
         }
 
@@ -155,7 +155,7 @@ Column {
                     }
                 ]
                 current: root.cfg.idle
-                onPicked: key => Settings.set("island.idle", key)
+                onPicked: key => Settings.put("island.idle", key)
             }
         }
 
@@ -166,7 +166,7 @@ Column {
             Toggle {
                 checked: root.cfg.hover
                 enabled: root.on
-                onToggled: v => Settings.set("island.hover", v)
+                onToggled: v => Settings.put("island.hover", v)
             }
         }
 
@@ -180,7 +180,7 @@ Column {
                 from: 1
                 to: 10
                 suffix: " s"
-                onStepped: v => Settings.set("island.seconds", v)
+                onStepped: v => Settings.put("island.seconds", v)
             }
         }
     }
@@ -270,7 +270,7 @@ Column {
 
                 Toggle {
                     checked: root.cfg[modelData.key]
-                    onToggled: v => Settings.set("island." + modelData.key, v)
+                    onToggled: v => Settings.put("island." + modelData.key, v)
                 }
             }
         }

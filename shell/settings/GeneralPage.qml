@@ -22,8 +22,8 @@ Column {
             Segmented {
                 width: 300
                 options: host.corners
-                current: Settings.values.center.corner
-                onPicked: key => Settings.set("center.corner", key)
+                current: Settings.shown.center.corner
+                onPicked: key => Settings.put("center.corner", key)
             }
         }
 
@@ -34,8 +34,8 @@ Column {
             Segmented {
                 width: 300
                 options: host.corners
-                current: Settings.values.clock.corner
-                onPicked: key => Settings.set("clock.corner", key)
+                current: Settings.shown.clock.corner
+                onPicked: key => Settings.put("clock.corner", key)
             }
         }
 
@@ -47,8 +47,8 @@ Column {
             Segmented {
                 width: 300
                 options: host.corners
-                current: Settings.values.notifications.corner
-                onPicked: key => Settings.set("notifications.corner", key)
+                current: Settings.shown.notifications.corner
+                onPicked: key => Settings.put("notifications.corner", key)
             }
         }
     }
@@ -111,8 +111,8 @@ Column {
                             label: "Middle"
                         }
                     ])
-                    current: Settings.values.placement[modelData.key]
-                    onPicked: key => Settings.set("placement." + modelData.key, key)
+                    current: Settings.shown.placement[modelData.key]
+                    onPicked: key => Settings.put("placement." + modelData.key, key)
                 }
             }
         }
@@ -133,8 +133,8 @@ Column {
                 last: index === Object.keys(S.PARTS).length - 1
 
                 Toggle {
-                    checked: Settings.values.parts[modelData]
-                    onToggled: v => Settings.set("parts." + modelData, v)
+                    checked: Settings.shown.parts[modelData]
+                    onToggled: v => Settings.put("parts." + modelData, v)
                 }
             }
         }

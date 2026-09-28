@@ -30,7 +30,7 @@ Column {
                 width: 300
                 value: (NightLight.temperature - 2500) / 4000
                 label: NightLight.temperature + " K"
-                onMoved: v => Settings.set("nightLight.temperature", Math.round((2500 + v * 4000) / 100) * 100)
+                onMoved: v => Settings.put("nightLight.temperature", Math.round((2500 + v * 4000) / 100) * 100)
             }
         }
     }

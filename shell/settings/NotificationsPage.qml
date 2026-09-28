@@ -30,9 +30,9 @@ Column {
 
             Slider {
                 width: 300
-                value: (Settings.values.notifications.timeout - 1000) / 59000
-                label: (Settings.values.notifications.timeout / 1000).toFixed(0) + " s"
-                onMoved: v => Settings.set("notifications.timeout", Math.round(1000 + v * 59) * 1000)
+                value: (Settings.shown.notifications.timeout - 1000) / 59000
+                label: (Settings.shown.notifications.timeout / 1000).toFixed(0) + " s"
+                onMoved: v => Settings.put("notifications.timeout", Math.round(1000 + v * 59) * 1000)
             }
         }
     }

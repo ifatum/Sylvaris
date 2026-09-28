@@ -9,7 +9,7 @@ Card {
     id: root
 
     property string capturing: ""
-    readonly property var binds: Settings.values.keybinds
+    readonly property var binds: Settings.shown.keybinds
 
     function assign(id: string, combo: string): void {
         const next = Object.assign({}, root.binds);
@@ -17,7 +17,7 @@ Card {
             delete next[id];
         else
             next[id] = combo;
-        Settings.set("keybinds", next);
+        Settings.put("keybinds", next);
     }
 
     title: "Key bindings"

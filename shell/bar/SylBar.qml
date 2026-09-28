@@ -14,7 +14,8 @@ import "../lib/bar.mjs" as B
 Scope {
     id: root
 
-    readonly property var cfg: Settings.values.bar
+    property var screens: Quickshell.screens
+    readonly property var cfg: Settings.at(root.screens.length === 1 ? root.screens[0].name : "").bar
     readonly property string position: root.cfg.position
     readonly property bool vertical: B.vertical(root.position)
     readonly property bool islands: root.cfg.style === "islands"
@@ -56,7 +57,7 @@ Scope {
     }
 
     Variants {
-        model: root.cfg.enabled ? Quickshell.screens : []
+        model: root.cfg.enabled ? root.screens : []
 
         delegate: PanelWindow {
             id: bar

@@ -14,6 +14,8 @@ Singleton {
     property var raw: ({})
     readonly property var values: S.effectiveSettings(Config.values, root.raw)
     property string notice: ""
+    property string editing: ""
+    readonly property var shown: root.editing === "" ? root.values : S.screenSettings(root.values, root.editing)
     property string lastWritten: ""
     property bool loadedOnce: false
     property bool frozen: false
@@ -26,6 +28,17 @@ Singleton {
 
     function get(key: string): var {
         return S.getPath(root.values, key);
+    }
+
+    function at(name: string): var {
+        return S.screenSettings(root.values, name || "");
+    }
+
+    function put(key: string, value: var): void {
+        if (root.editing !== "" && S.screenKey(key))
+            root.set("screens." + root.editing + "." + key, value);
+        else
+            root.set(key, value);
     }
 
     function trySet(key: string, value: var): bool {
