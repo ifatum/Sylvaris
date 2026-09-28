@@ -26,6 +26,8 @@ Popup {
     property string editing: ""
     property string editTarget: ""
     readonly property bool recording: recorder.running
+    property bool stopping: false
+    property string queued: ""
 
     namespace: "sylcapture"
     corner: "top-center"
@@ -38,8 +40,11 @@ Popup {
     }
 
     function record(mode: string): void {
-        if (root.recording)
+        if (root.recording) {
+            if (root.stopping)
+                root.queued = mode;
             return;
+        }
         root.kind = "video";
         root.start(mode === "screen" ? "screen" : "region");
     }
@@ -60,8 +65,11 @@ Popup {
     }
 
     function stop(): void {
-        if (root.recording)
-            recorder.signal(root.started ? 2 : 15);
+        if (!root.recording)
+            return;
+        root.stopping = true;
+        root.queued = "";
+        recorder.signal(root.started ? 2 : 15);
     }
 
     function edit(file: string): void {
@@ -176,6 +184,12 @@ Popup {
                 root.problem = "could not create " + root.cfg.videos;
             root.started = false;
             root.waitUntil = 0;
+            root.stopping = false;
+            if (root.queued !== "") {
+                const next = root.queued;
+                root.queued = "";
+                root.record(next);
+            }
         }
     }
 
