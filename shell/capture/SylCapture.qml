@@ -30,7 +30,7 @@ Popup {
     property string queued: ""
 
     namespace: "sylcapture"
-    corner: "top-center"
+    corner: Settings.values.placement.capture
     panelWidth: Tokens.captureWidth
     panelHeight: Tokens.captureHeight
 

@@ -54,6 +54,71 @@ Column {
     }
 
     Card {
+        title: "More panels"
+        note: "Middle opens a panel in the middle of the screen. With the bar at the bottom or on a side, the top spots follow it."
+
+        Repeater {
+            model: [
+                {
+                    key: "media",
+                    title: "Media",
+                    subtitle: "Same spot as the Control Center unless you pick one"
+                },
+                {
+                    key: "clip",
+                    title: "Clipboard",
+                    subtitle: "Where SylClip opens"
+                },
+                {
+                    key: "capture",
+                    title: "Capture",
+                    subtitle: "Where the screenshot and recording panel opens"
+                },
+                {
+                    key: "access",
+                    title: "Accessibility",
+                    subtitle: "Where SylAccessibility opens"
+                },
+                {
+                    key: "diver",
+                    title: "Diver",
+                    subtitle: "Where the Diver planner opens"
+                },
+                {
+                    key: "fatest",
+                    title: "FaTest",
+                    subtitle: "Where the speed test opens"
+                }
+            ]
+
+            delegate: SettingRow {
+                required property var modelData
+                required property int index
+                title: modelData.title
+                subtitle: modelData.subtitle
+                last: index === 5
+
+                Segmented {
+                    width: 360
+                    options: (modelData.key === "media" ? [
+                            {
+                                key: "auto",
+                                label: "Auto"
+                            }
+                        ] : []).concat(host.corners, [
+                        {
+                            key: "center",
+                            label: "Middle"
+                        }
+                    ])
+                    current: Settings.values.placement[modelData.key]
+                    onPicked: key => Settings.set("placement." + modelData.key, key)
+                }
+            }
+        }
+    }
+
+    Card {
         title: "Parts"
         note: "An excluded part is not loaded, and neither is anything only it uses. The same switch works without this panel: sylvaris set parts.<name> false"
 

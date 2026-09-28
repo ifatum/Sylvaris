@@ -306,3 +306,16 @@ test("center settings keep known tiles and section switches", () => {
     assert.deepEqual(validateSettings({ center: { hidden: "wifi" } }).center.hidden, [])
     assert.deepEqual(CENTER_TILES, ["wifi", "bluetooth", "night", "dnd", "hotspot"])
 })
+
+test("placement keeps each panel's spot and falls back per panel", () => {
+    const d = validateSettings({}).placement
+    assert.deepEqual(d, { media: "auto", clip: "top-center", capture: "top-center", access: "top-center", diver: "center", fatest: "top-right" })
+    const v = validateSettings({ placement: { media: "top-left", clip: "center", capture: "nope", access: "auto", diver: "top-right", extra: 1 } }).placement
+    assert.equal(v.media, "top-left")
+    assert.equal(v.clip, "center")
+    assert.equal(v.capture, "top-center")
+    assert.equal(v.access, "top-center")
+    assert.equal(v.diver, "top-right")
+    assert.equal(v.extra, 1)
+    assert.deepEqual(validateSettings({ placement: "x" }).placement, d)
+})

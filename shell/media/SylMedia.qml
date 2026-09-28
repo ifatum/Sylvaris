@@ -14,7 +14,7 @@ Popup {
     property string tab: "playing"
 
     namespace: "sylmedia"
-    corner: Settings.values.center.corner
+    corner: Settings.values.placement.media === "auto" ? Settings.values.center.corner : Settings.values.placement.media
     panelWidth: Tokens.mediaWidth
     panelHeight: Tokens.mediaHeight
 

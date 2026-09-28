@@ -1,0 +1,16 @@
+sleep 1.5
+syl set placement.clip top-left
+syl set placement.media center
+syl set placement.capture nope
+check sylvaris settings get placement.capture | grep -q top-center
+syl clip open
+sleep 0.8
+shot placement-clip
+syl clip close
+syl media open
+sleep 0.8
+shot placement-media
+syl media close
+syl settings open general
+sleep 1
+shot placement-settings

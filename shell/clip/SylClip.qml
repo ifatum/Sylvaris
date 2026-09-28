@@ -20,7 +20,7 @@ Popup {
     readonly property var shownList: C.find(root.history, root.query)
 
     namespace: "sylclip"
-    corner: "top-center"
+    corner: Settings.values.placement.clip
     panelWidth: Tokens.clipWidth
     panelHeight: Tokens.clipHeight
     focusTarget: search

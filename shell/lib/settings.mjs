@@ -15,6 +15,8 @@ import { DEFAULT_WEATHER, validateWeather } from "./weather.mjs"
 
 export const CORNERS = ["top-left", "top-center", "top-right"]
 export const REVEALS = ["edges", "center", "fade"]
+export const PLACES = CORNERS.concat("center")
+export const DEFAULT_PLACEMENT = { media: "auto", clip: "top-center", capture: "top-center", access: "top-center", diver: "center", fatest: "top-right" }
 export const CENTER_TILES = ["wifi", "bluetooth", "night", "dnd", "hotspot"]
 
 export const PARTS = {
@@ -103,6 +105,7 @@ export const DEFAULT_SETTINGS = {
     lock: DEFAULT_LOCK,
     clip: DEFAULT_CLIP,
     island: DEFAULT_ISLAND,
+    placement: DEFAULT_PLACEMENT,
     capture: DEFAULT_CAPTURE,
     access: DEFAULT_ACCESS,
     keybinds: {},
@@ -340,6 +343,10 @@ export function validateSettings(raw) {
     v.lock = validateLock(v.lock)
     v.clip = validateClip(v.clip)
     v.island = validateIsland(v.island)
+    const place = isObject(v.placement) ? v.placement : {}
+    v.placement = Object.assign({}, place)
+    for (const key of Object.keys(DEFAULT_PLACEMENT))
+        v.placement[key] = PLACES.includes(place[key]) || key === "media" && place[key] === "auto" ? place[key] : DEFAULT_PLACEMENT[key]
     v.capture = validateCapture(v.capture)
     v.access = validateAccess(v.access)
     v.keybinds = validateKeybinds(v.keybinds)

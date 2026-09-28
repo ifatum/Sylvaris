@@ -175,6 +175,14 @@
     "hover": true,
     "seconds": 3
   },
+  "placement": {
+    "media": "auto",
+    "clip": "top-center",
+    "capture": "top-center",
+    "access": "top-center",
+    "diver": "center",
+    "fatest": "top-right"
+  },
   "capture": {
     "folder": "~/Pictures/Screenshots",
     "videos": "~/Videos/Recordings",
