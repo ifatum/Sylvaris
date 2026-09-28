@@ -72,10 +72,13 @@ Scope {
         } else {
             inAnim.stop();
             outAnim.restart();
-            if (root.preview !== null) {
-                root.preview.destroy();
-                root.preview = null;
-            }
+            const done = root.preview;
+            if (done !== null)
+                Qt.callLater(() => {
+                    if (root.preview === done)
+                        root.preview = null;
+                    done.destroy();
+                });
         }
     }
 
