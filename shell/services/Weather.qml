@@ -46,7 +46,7 @@ Singleton {
             available: root.available,
             error: root.error,
             now: root.data === null ? null : Object.assign({
-                label: root.now.label
+                label: W.describe(root.data.code, root.data.day).label
             }, root.data, {
                 hours: root.data.hours.length,
                 days: root.data.days.length
