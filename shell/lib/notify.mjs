@@ -50,7 +50,7 @@ export function ago(then, now) {
 const ALLOWED = /^\/?(b|i|u|a|br)(\s|>|\/|$)/i
 
 export function cleanBody(text) {
-    return String(text || "").replace(/<([^>]*)>/g, (m, inner) => ALLOWED.test(inner.trim()) ? m : "").replace(/\n/g, "<br>")
+    return String(text || "").replace(/<([^<>]*)>|</g, (m, inner) => inner === undefined ? "&lt;" : ALLOWED.test(inner.trim()) ? m : "").replace(/\n/g, "<br>")
 }
 
 export function plainText(text) {

@@ -41,6 +41,9 @@ test("cleanBody keeps simple markup, drops images and other tags", () => {
     assert.equal(cleanBody("<b>hi</b> <img src=\"http://x/y.png\"/><script>x</script>\nline"), "<b>hi</b> x<br>line")
     assert.equal(cleanBody("<a href=\"https://e.com\">link</a>"), "<a href=\"https://e.com\">link</a>")
     assert.equal(cleanBody(undefined), "")
+    assert.equal(cleanBody("<img src=\"http://x/y.png\"\nhi"), "&lt;img src=\"http://x/y.png\"<br>hi")
+    assert.equal(cleanBody("a < b <b>c</b>"), "a &lt; b <b>c</b>")
+    assert.equal(cleanBody("<b <img src=x>>t"), "&lt;b >t")
 })
 
 test("plainText strips tags and decodes entities", () => {

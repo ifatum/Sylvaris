@@ -207,7 +207,10 @@ Item {
             color: Theme.textSoft
             font.family: Tokens.fontUi
             font.pixelSize: Tokens.smallSize
-            onLinkActivated: link => Qt.openUrlExternally(link)
+            onLinkActivated: link => {
+                if (/^(https?|mailto):/i.test(link))
+                    Qt.openUrlExternally(link);
+            }
         }
 
         Item {
