@@ -1,6 +1,31 @@
 import { elapsed } from "./capture.mjs"
 
-export const DEFAULT_ISLAND = { media: true, recording: true, diver: true, volume: true, devices: true, notifications: false, hover: true, seconds: 3 }
+export const DEFAULT_ISLAND = {
+    media: true, recording: true, diver: true, volume: true, devices: true, notifications: false, hover: true, seconds: 3,
+    position: "top-center", idle: "pill", shortcuts: ["notify", "center", "media", "screenshot", "record", "dnd"]
+}
+
+export const POSITIONS = ["top-left", "top-center", "top-right", "bottom-left", "bottom-center", "bottom-right"]
+export const IDLE = ["hide", "pill", "clock"]
+export const MAX_SHORTCUTS = 8
+
+export const SHORTCUTS = {
+    notify: { label: "Notifications", glyph: "bell", run: ["notify", "toggle"], needs: "notify" },
+    center: { label: "Control Center", glyph: "toggle", run: ["center", "toggle"], needs: "center" },
+    media: { label: "Media", glyph: "music", run: ["media", "open"], needs: "media" },
+    clock: { label: "Calendar", glyph: "calendar", run: ["clock", "toggle"], needs: "clock" },
+    pad: { label: "Launcher", glyph: "apps", run: ["pad", "toggle"], needs: "pad" },
+    clip: { label: "Clipboard", glyph: "clipboard", run: ["clip", "toggle"], needs: "clip" },
+    screenshot: { label: "Screenshot", glyph: "screenshot", run: ["capture", "shot", "region"], needs: "capture" },
+    record: { label: "Record", glyph: "record", run: ["capture", "record", "region"], needs: "capture" },
+    dnd: { label: "Do not disturb", glyph: "dnd", run: ["dnd", "toggle"], needs: "Dnd" },
+    wifi: { label: "Wi-Fi", glyph: "wifi", run: ["wifi", "toggle"], needs: "NetworkService" },
+    bluetooth: { label: "Bluetooth", glyph: "bluetooth", run: ["bluetooth", "toggle"], needs: "BluetoothService" },
+    night: { label: "Night light", glyph: "nightLight", run: ["nightlight", "toggle"], needs: "NightLight" },
+    settings: { label: "Settings", glyph: "settings", run: ["settings", "toggle"], needs: "settings" },
+    power: { label: "Power", glyph: "power", run: ["power", "toggle"], needs: "power" },
+    lock: { label: "Lock", glyph: "lock", run: ["lock", "now"], needs: "lock" }
+}
 
 const FLASHES = { volume: "volume", notification: "notifications", device: "devices", custom: null }
 
@@ -11,6 +36,9 @@ export function validateIsland(raw) {
         if (typeof DEFAULT_ISLAND[key] === "boolean")
             out[key] = typeof v[key] === "boolean" ? v[key] : DEFAULT_ISLAND[key]
     out.seconds = Number.isInteger(v.seconds) && v.seconds >= 1 && v.seconds <= 10 ? v.seconds : DEFAULT_ISLAND.seconds
+    out.position = POSITIONS.includes(v.position) ? v.position : DEFAULT_ISLAND.position
+    out.idle = IDLE.includes(v.idle) ? v.idle : DEFAULT_ISLAND.idle
+    out.shortcuts = Array.isArray(v.shortcuts) ? [...new Set(v.shortcuts.filter(id => Object.prototype.hasOwnProperty.call(SHORTCUTS, id)))].slice(0, MAX_SHORTCUTS) : DEFAULT_ISLAND.shortcuts.slice()
     return out
 }
 
@@ -63,4 +91,22 @@ export function joined(before, after) {
 export function custom(text) {
     const t = String(text === undefined || text === null ? "" : text).replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim().slice(0, 120)
     return t === "" ? null : { kind: "custom", text: t }
+}
+
+export function shortcutsFor(ids, live) {
+    return ids.filter(id => live.includes(SHORTCUTS[id].needs)).map(id => Object.assign({ id: id }, SHORTCUTS[id]))
+}
+
+export function placeOf(position) {
+    const [edge, side] = position.split("-")
+    return { top: edge === "top", side: side }
+}
+
+export function rowHeight(kind) {
+    return kind === "media" || kind === "volume" ? 84 : 60
+}
+
+export function cardHeight(kinds, shortcuts) {
+    const parts = kinds.map(rowHeight).concat(shortcuts ? [44] : [])
+    return parts.length === 0 ? 0 : 24 + parts.reduce((a, b) => a + b, 0) + 6 * (parts.length - 1)
 }

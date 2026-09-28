@@ -6,18 +6,37 @@ sleep 2
 syl island
 check sylvaris island | grep -q '"kind":"media"'
 shot island-media
+syl set capture.countdown 0
+syl capture record screen
+sleep 2
+check sylvaris island | grep -q '"kind":"recording".*"kind":"media"'
 syl island open
 sleep 0.8
-shot island-expanded
+shot island-rows
+syl capture stop
+sleep 2
 syl island close
 syl audio set 40
 sleep 0.6
 check sylvaris island | grep -q '"label":"40%"'
-shot island-volume
 syl island show Build   finished
 sleep 0.4
 check sylvaris island | grep -q '"label":"Build finished"'
 syl island show
+syl island run dnd
+check sylvaris state notifications | grep -q '"dnd":true'
+syl island run dnd
+syl island run nope
+syl set island.shortcuts ["wifi","lock"]
+check sylvaris island | grep -q '"shortcuts":\["wifi","lock"\]'
+syl set island.position bottom-right
+syl set island.media false
+syl set island.idle clock
+sleep 4
+syl island
+syl island open
+sleep 0.8
+shot island-bottom-idle
 syl center open
 sleep 0.6
 syl island

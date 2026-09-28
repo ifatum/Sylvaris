@@ -13,17 +13,22 @@ Scope {
 
     readonly property var cfg: Settings.values.island
     property var peers: ({})
+    property var live: []
     property var avoid: null
     property bool wanted: false
     property bool hovered: false
+    property bool hot: false
     property var flash: null
     property bool armed: false
     property real now: Date.now()
+    property string time: Qt.formatTime(new Date(), "HH:mm")
     property int lastNote: -1
     property var devicesBefore: []
+    readonly property var place: I.placeOf(root.cfg.position)
     readonly property var screenInfo: Compositor.screenFor(Compositor.focusedName())
     readonly property var capture: root.peers.capture === undefined ? null : root.peers.capture
-    readonly property bool covered: root.avoid !== null && root.avoid.corner === "top-center" && root.screenInfo !== null && root.avoid.screen === root.screenInfo.name
+    readonly property bool recording: root.capture !== null && root.capture.recording
+    readonly property bool covered: root.avoid !== null && root.avoid.corner === root.cfg.position && root.screenInfo !== null && root.avoid.screen === root.screenInfo.name
     readonly property var items: I.activities({
         flash: root.flash,
         recording: root.capture === null ? null : {
@@ -52,9 +57,30 @@ Scope {
             playing: Media.playing
         }
     }, root.cfg)
-    readonly property bool expanded: root.items.length > 0 && (root.wanted || root.cfg.hover && root.hovered)
+    readonly property var shortcuts: I.shortcutsFor(root.cfg.shortcuts, root.live).map(s => Object.assign({}, s, {
+                lit: root.litOf(s.id),
+                badge: s.id === "notify" ? Notifications.count : 0
+            }))
+    readonly property bool expanded: root.wanted || root.cfg.hover && root.hot
 
     signal requested(string part)
+
+    function litOf(id: string): bool {
+        switch (id) {
+        case "dnd":
+            return Notifications.dnd;
+        case "wifi":
+            return NetworkService.enabled;
+        case "bluetooth":
+            return BluetoothService.enabled;
+        case "night":
+            return NightLight.enabled;
+        case "record":
+            return root.recording;
+        default:
+            return false;
+        }
+    }
 
     function close(): void {
         root.wanted = false;
@@ -65,10 +91,7 @@ Scope {
     }
 
     function toggle(): void {
-        if (root.wanted)
-            root.close();
-        else
-            root.open();
+        root.wanted = !root.wanted;
     }
 
     function toggleOn(screen: var): void {
@@ -87,6 +110,20 @@ Scope {
         root.show(f);
     }
 
+    function runShortcut(id: string): void {
+        const s = I.SHORTCUTS[id];
+        if (s === undefined)
+            throw new Error("unknown shortcut: " + id + "; one of " + Object.keys(I.SHORTCUTS).join(", "));
+        if (s.needs.toLowerCase() === s.needs) {
+            root.close();
+            root.hot = false;
+        }
+        const words = id === "record" && root.recording ? ["capture", "stop"] : s.run;
+        const out = Ipc.run(words);
+        if (out.indexOf("error:") === 0)
+            root.say(out.slice(6).trim());
+    }
+
     function partFor(kind: string): string {
         return ({
                 media: "media",
@@ -102,14 +139,11 @@ Scope {
 
     function act(kind: string, what: string): void {
         const a = root.items.find(x => x.kind === kind) || null;
-        if (what === "open" && !root.expanded) {
-            root.open();
-            return;
-        }
-        if (what === "open" || what === "menu") {
+        if (what === "open") {
             const part = root.partFor(kind);
             root.close();
-            if (part !== "" && kind !== "recording")
+            root.hot = false;
+            if (part !== "")
                 root.requested(part);
             return;
         }
@@ -141,12 +175,36 @@ Scope {
         return {
             expanded: root.expanded,
             covered: root.covered,
+            position: root.cfg.position,
             screen: root.screenInfo ? root.screenInfo.name : "",
+            shortcuts: root.shortcuts.map(s => s.id),
             items: root.items.map(a => ({
                         kind: a.kind,
                         label: I.label(a)
                     }))
         };
+    }
+
+    onHoveredChanged: {
+        if (root.hovered) {
+            leaveTimer.stop();
+            enterTimer.restart();
+        } else {
+            enterTimer.stop();
+            leaveTimer.restart();
+        }
+    }
+
+    Timer {
+        id: enterTimer
+        interval: 90
+        onTriggered: root.hot = true
+    }
+
+    Timer {
+        id: leaveTimer
+        interval: 320
+        onTriggered: root.hot = false
     }
 
     Timer {
@@ -173,8 +231,16 @@ Scope {
     Timer {
         interval: 1000
         repeat: true
-        running: root.capture !== null && root.capture.recording || root.cfg.diver && (Diver.focusEnd > root.now || Diver.next !== null)
+        running: root.recording || root.cfg.diver && (Diver.focusEnd > root.now || Diver.next !== null)
         onTriggered: root.now = Date.now()
+    }
+
+    Timer {
+        interval: 10000
+        repeat: true
+        triggeredOnStart: true
+        running: root.cfg.idle === "clock"
+        onTriggered: root.time = Qt.formatTime(new Date(), "HH:mm")
     }
 
     Timer {
@@ -244,12 +310,18 @@ Scope {
     }
 
     PanelWindow {
-        visible: root.items.length > 0 && !root.covered
+        visible: body.shown && !root.covered
         screen: root.screenInfo
-        anchors.top: true
+        anchors.top: root.place.top
+        anchors.bottom: !root.place.top
+        anchors.left: root.place.side === "left"
+        anchors.right: root.place.side === "right"
         margins.top: Tokens.edgeMargin
+        margins.bottom: Tokens.edgeMargin
+        margins.left: Tokens.edgeMargin
+        margins.right: Tokens.edgeMargin
         implicitWidth: body.cardWidth + body.pillHeight + 16
-        implicitHeight: body.cardHeight + 24
+        implicitHeight: 540
         color: "transparent"
         exclusionMode: ExclusionMode.Normal
         exclusiveZone: 0
@@ -277,11 +349,18 @@ Scope {
 
         IslandBody {
             id: body
-            x: (parent.width - body.bodyWidth) / 2
+            x: root.place.side === "left" ? 0 : root.place.side === "right" ? parent.width - width : (parent.width - body.pill.width) / 2
+            y: root.place.top ? 0 : parent.height - height
             items: root.items
+            shortcuts: root.shortcuts
             expanded: root.expanded
+            atTop: root.place.top
+            idle: root.cfg.idle
+            time: root.time
             progress: Media.length > 0 ? Media.position / Media.length : 0
             onAct: (kind, what) => root.act(kind, what)
+            onRun: id => root.runShortcut(id)
+            onPin: root.toggle()
             onWheel: steps => Audio.setVolume(Audio.volume + steps * 0.05)
 
             HoverHandler {

@@ -173,7 +173,17 @@
     "devices": true,
     "notifications": false,
     "hover": true,
-    "seconds": 3
+    "seconds": 3,
+    "position": "top-center",
+    "idle": "pill",
+    "shortcuts": [
+      "notify",
+      "center",
+      "media",
+      "screenshot",
+      "record",
+      "dnd"
+    ]
   },
   "placement": {
     "media": "auto",

@@ -9,28 +9,40 @@ Item {
     id: root
 
     property var items: []
+    property var shortcuts: []
     property bool expanded: false
+    property bool atTop: true
+    property string idle: "pill"
+    property string time: ""
     property real progress: 0
+    readonly property string kindKey: root.items.map(a => a.kind).join(",")
+    readonly property var kinds: root.kindKey === "" ? [] : root.kindKey.split(",")
+    readonly property string shortcutKey: root.shortcuts.map(s => s.id).join(",")
+    readonly property var shortcutIds: root.shortcutKey === "" ? [] : root.shortcutKey.split(",")
     readonly property var main: root.items.length > 0 ? root.items[0] : null
     readonly property var second: root.items.length > 1 ? root.items[1] : null
-    readonly property bool shown: root.main !== null
+    readonly property bool shown: root.main !== null || root.idle !== "hide"
     readonly property real pillHeight: 38
     readonly property real cardWidth: 380
-    readonly property real cardHeight: root.main !== null && (root.main.kind === "media" || root.main.kind === "volume") ? 118 : 96
-    readonly property real bodyWidth: root.expanded ? root.cardWidth : Math.min(340, compactRow.implicitWidth + 28)
-    readonly property real bodyHeight: root.expanded ? root.cardHeight : root.pillHeight
-    readonly property bool bubble: root.second !== null && !root.expanded
-
+    readonly property real cardHeight: I.cardHeight(root.kinds, root.shortcutIds.length > 0)
+    readonly property bool open: root.expanded && root.cardHeight > 0
+    readonly property real compactWidth: root.main !== null ? Math.min(340, compactRow.implicitWidth + 28) : root.idle === "clock" ? clockText.implicitWidth + 32 : 104
+    readonly property real bodyWidth: root.open ? root.cardWidth : root.compactWidth
+    readonly property real bodyHeight: root.open ? root.cardHeight : root.pillHeight
+    readonly property bool bubble: root.second !== null && !root.open
+    readonly property bool calm: Tokens.lite || Tokens.motion < 0.05
     readonly property Item pill: body
     readonly property Item side: bubbleItem
 
     signal act(string kind, string what)
+    signal run(string id)
+    signal pin
     signal wheel(int steps)
 
-    implicitWidth: root.bodyWidth + (root.bubble ? root.pillHeight + 8 : 0)
-    implicitHeight: root.bodyHeight
+    implicitWidth: body.width + (root.bubble ? root.pillHeight + 8 : 0)
+    implicitHeight: body.height
     opacity: root.shown ? 1 : 0
-    scale: root.shown ? 1 : 0.86
+    visible: opacity > 0
 
     Behavior on opacity {
         NumberAnimation {
@@ -39,12 +51,12 @@ Item {
         }
     }
 
-    Behavior on scale {
-        NumberAnimation {
-            duration: Tokens.morphDuration
-            easing.type: Easing.OutBack
-            easing.overshoot: 1.2
+    function find(kind: string): var {
+        for (const a of root.items) {
+            if (a.kind === kind)
+                return a;
         }
+        return null;
     }
 
     function glyphOf(a: var): string {
@@ -89,7 +101,6 @@ Item {
         case "recording":
             return a.started ? "Recording" : "Recording soon";
         case "alarm":
-            return a.title;
         case "focus":
             return a.title;
         case "next":
@@ -105,13 +116,12 @@ Item {
             return "";
         switch (a.kind) {
         case "volume":
+        case "recording":
             return I.label(a);
         case "notification":
             return a.body || a.app;
         case "device":
             return a.battery >= 0 ? "Connected · " + a.battery + "% battery" : "Connected";
-        case "recording":
-            return I.label(a);
         case "alarm":
             return "Diver alarm";
         case "focus":
@@ -125,66 +135,35 @@ Item {
         }
     }
 
-    function actionsOf(a: var): var {
-        if (a === null)
-            return [];
-        switch (a.kind) {
-        case "media":
-            return [
-                {
-                    id: "previous",
-                    glyph: Icons.GLYPHS.previous
-                },
-                {
-                    id: "toggle",
-                    glyph: Icons.GLYPHS.pause
-                },
-                {
-                    id: "next",
-                    glyph: Icons.GLYPHS.next
-                }
-            ];
-        case "recording":
-            return [
-                {
-                    id: "stop",
-                    glyph: Icons.GLYPHS.stopCircle
-                }
-            ];
-        case "alarm":
-            return [
-                {
-                    id: "snooze",
-                    glyph: Icons.GLYPHS.sleep
-                },
-                {
-                    id: "done",
-                    glyph: Icons.GLYPHS.check
-                }
-            ];
-        case "focus":
-            return [
-                {
-                    id: "stop",
-                    glyph: Icons.GLYPHS.close
-                }
-            ];
-        case "volume":
-            return [
-                {
-                    id: "mute",
-                    glyph: a.muted ? Icons.GLYPHS.volumeMute : Icons.GLYPHS.volume
-                }
-            ];
-        case "notification":
-            return [
-                {
-                    id: "dismiss",
-                    glyph: Icons.GLYPHS.close
-                }
-            ];
+    function actionsOf(kind: string): var {
+        return ({
+                media: ["previous", "toggle", "next"],
+                recording: ["stop"],
+                alarm: ["snooze", "done"],
+                focus: ["end"],
+                volume: ["mute"],
+                notification: ["dismiss"]
+            })[kind] || [];
+    }
+
+    function actionGlyph(id: string, a: var): string {
+        switch (id) {
+        case "previous":
+            return Icons.GLYPHS.previous;
+        case "next":
+            return Icons.GLYPHS.next;
+        case "toggle":
+            return a !== null && a.playing ? Icons.GLYPHS.pause : Icons.GLYPHS.play;
+        case "stop":
+            return Icons.GLYPHS.stopCircle;
+        case "snooze":
+            return Icons.GLYPHS.sleep;
+        case "done":
+            return Icons.GLYPHS.check;
+        case "mute":
+            return a !== null && a.muted ? Icons.GLYPHS.volumeMute : Icons.GLYPHS.volume;
         default:
-            return [];
+            return Icons.GLYPHS.close;
         }
     }
 
@@ -215,7 +194,7 @@ Item {
             color: Theme.danger
 
             SequentialAnimation on opacity {
-                running: lead.visible && lead.a !== null && lead.a.kind === "recording" && Tokens.motion > 0.05
+                running: lead.visible && lead.a !== null && lead.a.kind === "recording" && !root.calm
                 loops: Animation.Infinite
                 NumberAnimation {
                     to: 0.3
@@ -232,7 +211,7 @@ Item {
             anchors.centerIn: parent
             visible: !artImage.visible && lead.a !== null && lead.a.kind !== "recording"
             text: root.glyphOf(lead.a)
-            size: lead.size * 0.72
+            size: lead.size * 0.62
             color: root.tintOf(lead.a)
         }
     }
@@ -252,7 +231,7 @@ Item {
                 id: bar
 
                 required property int index
-                property real level: 0.4
+                property real level: 0.25 + 0.18 * bar.index
 
                 anchors.bottom: parent.bottom
                 width: 3
@@ -261,7 +240,7 @@ Item {
                 color: Theme.accent
 
                 SequentialAnimation on level {
-                    running: bars.live && Tokens.motion > 0.05
+                    running: bars.live && !root.calm
                     loops: Animation.Infinite
                     NumberAnimation {
                         to: 1
@@ -283,6 +262,9 @@ Item {
 
         property string glyph: ""
         property bool strong: false
+        property bool lit: false
+        property int badge: 0
+        property string tip: ""
 
         signal clicked
 
@@ -290,6 +272,9 @@ Item {
         height: 34
         opacity: press.enabled ? 1 : 0.4
         scale: area.pressed ? 0.9 : 1
+        activeFocusOnTab: true
+        Accessible.role: Accessible.Button
+        Accessible.name: press.tip
 
         Behavior on scale {
             NumberAnimation {
@@ -301,7 +286,7 @@ Item {
         Rectangle {
             anchors.fill: parent
             radius: width / 2
-            color: press.strong ? Theme.accent : area.pressed ? Qt.alpha(Theme.text, 0.18) : area.containsMouse || press.activeFocus ? Qt.alpha(Theme.text, 0.1) : "transparent"
+            color: press.strong ? Theme.accent : press.lit ? Qt.alpha(Theme.accent, area.pressed ? 0.45 : area.containsMouse ? 0.35 : 0.26) : area.pressed ? Qt.alpha(Theme.text, 0.18) : area.containsMouse || press.activeFocus ? Qt.alpha(Theme.text, 0.1) : "transparent"
             border.width: press.activeFocus ? 1 : 0
             border.color: Theme.accent
 
@@ -316,7 +301,27 @@ Item {
             anchors.centerIn: parent
             text: press.glyph
             size: 18
-            color: press.strong ? Theme.onAccent : Theme.text
+            color: press.strong ? Theme.onAccent : press.lit ? Theme.accent : Theme.text
+        }
+
+        Rectangle {
+            visible: press.badge > 0
+            anchors.right: parent.right
+            anchors.top: parent.top
+            width: Math.max(16, badgeText.implicitWidth + 8)
+            height: 16
+            radius: 8
+            color: Theme.accent
+
+            Text {
+                id: badgeText
+                anchors.centerIn: parent
+                text: press.badge > 99 ? "99+" : String(press.badge)
+                color: Theme.onAccent
+                font.family: Tokens.fontMono
+                font.pixelSize: Tokens.tinySize - 2
+                font.weight: Font.DemiBold
+            }
         }
 
         MouseArea {
@@ -331,6 +336,124 @@ Item {
         Keys.onSpacePressed: press.clicked()
     }
 
+    component ActivityRow: Item {
+        id: row
+
+        required property string modelData
+        readonly property var a: root.find(row.modelData)
+        readonly property bool bar: row.modelData === "media" || row.modelData === "volume"
+
+        width: root.cardWidth - 24
+        height: I.rowHeight(row.modelData)
+
+        Rectangle {
+            anchors.fill: parent
+            radius: Tokens.radiusRow
+            color: rowArea.pressed ? Qt.alpha(Theme.text, 0.1) : rowArea.containsMouse ? Qt.alpha(Theme.text, 0.06) : "transparent"
+
+            Behavior on color {
+                ColorAnimation {
+                    duration: Tokens.stateDuration
+                }
+            }
+        }
+
+        MouseArea {
+            id: rowArea
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: root.act(row.modelData, "open")
+        }
+
+        Lead {
+            id: rowLead
+            x: 8
+            y: 8
+            a: row.a
+            size: 44
+        }
+
+        Column {
+            anchors.left: rowLead.right
+            anchors.leftMargin: 12
+            anchors.right: rowActions.left
+            anchors.rightMargin: 6
+            y: rowLead.y + (rowLead.height - height) / 2
+            spacing: 2
+
+            Text {
+                width: parent.width
+                text: root.headOf(row.a)
+                elide: Text.ElideRight
+                color: Theme.text
+                font.family: Tokens.fontUi
+                font.pixelSize: Tokens.bodySize
+                font.weight: Font.DemiBold
+            }
+
+            Text {
+                width: parent.width
+                text: root.subOf(row.a)
+                elide: Text.ElideRight
+                color: Theme.textDim
+                font.family: row.modelData === "recording" || row.modelData === "volume" || row.modelData === "focus" ? Tokens.fontMono : Tokens.fontUi
+                font.pixelSize: Tokens.smallSize
+            }
+        }
+
+        Row {
+            id: rowActions
+            anchors.right: parent.right
+            anchors.rightMargin: 6
+            y: rowLead.y + (rowLead.height - height) / 2
+            spacing: 2
+
+            Repeater {
+                model: root.actionsOf(row.modelData)
+
+                Press {
+                    required property string modelData
+                    glyph: root.actionGlyph(modelData, row.a)
+                    tip: modelData
+                    strong: modelData === "toggle" || modelData === "done" || modelData === "stop"
+                    onClicked: root.act(row.modelData, modelData)
+                }
+            }
+        }
+
+        Rectangle {
+            visible: row.bar
+            x: 8
+            width: parent.width - 16
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 10
+            height: 4
+            radius: 2
+            color: Qt.alpha(Theme.text, 0.14)
+
+            Rectangle {
+                width: parent.width * Math.max(0, Math.min(1, row.a === null ? 0 : row.modelData === "volume" ? row.a.value : root.progress))
+                height: parent.height
+                radius: 2
+                color: row.a !== null && row.a.muted ? Theme.textDim : Theme.accent
+
+                Behavior on width {
+                    NumberAnimation {
+                        duration: Tokens.stateDuration
+                    }
+                }
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                anchors.margins: -8
+                cursorShape: Qt.PointingHandCursor
+                onClicked: e => root.act(row.modelData, "seek:" + Math.max(0, Math.min(1, (e.x - 8) / (width - 16))))
+            }
+        }
+    }
+
     Item {
         id: body
         width: root.bodyWidth
@@ -339,17 +462,17 @@ Item {
 
         Behavior on width {
             NumberAnimation {
-                duration: Tokens.morphDuration
-                easing.type: Easing.OutBack
-                easing.overshoot: 0.9
+                duration: Tokens.moveDuration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: [0.2, 0, 0, 1, 1, 1]
             }
         }
 
         Behavior on height {
             NumberAnimation {
-                duration: Tokens.morphDuration
-                easing.type: Easing.OutBack
-                easing.overshoot: 0.9
+                duration: Tokens.moveDuration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: [0.2, 0, 0, 1, 1, 1]
             }
         }
 
@@ -357,6 +480,7 @@ Item {
             anchors.fill: parent
             radius: Math.min(height / 2, Tokens.radiusPanel)
             raised: true
+            flowing: false
             offColor: Theme.surface
             offBorder: Theme.line
         }
@@ -365,140 +489,112 @@ Item {
             anchors.fill: parent
             acceptedButtons: Qt.LeftButton | Qt.RightButton
             cursorShape: Qt.PointingHandCursor
-            onClicked: e => root.act(root.main ? root.main.kind : "", e.button === Qt.RightButton ? "menu" : "open")
+            onClicked: e => {
+                if (e.button === Qt.RightButton && root.main !== null)
+                    root.act(root.main.kind, "open");
+                else
+                    root.pin();
+            }
             onWheel: e => root.wheel(e.angleDelta.y > 0 ? 1 : e.angleDelta.y < 0 ? -1 : 0)
         }
 
-        Row {
-            id: compactRow
-            x: 14
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: 10
-            opacity: root.expanded ? 0 : 1
-            visible: opacity > 0
-
-            Behavior on opacity {
-                NumberAnimation {
-                    duration: Tokens.fadeDuration
-                }
-            }
-
-            Lead {
-                anchors.verticalCenter: parent.verticalCenter
-                a: root.main
-                size: 22
-            }
-
-            Text {
-                anchors.verticalCenter: parent.verticalCenter
-                width: Math.min(implicitWidth, 220)
-                text: root.main !== null ? I.label(root.main) : ""
-                elide: Text.ElideRight
-                color: Theme.text
-                font.family: root.main !== null && ["recording", "focus", "volume"].indexOf(root.main.kind) >= 0 ? Tokens.fontMono : Tokens.fontUi
-                font.pixelSize: Tokens.smallSize
-                font.weight: Font.DemiBold
-            }
-
-            Bars {
-                anchors.verticalCenter: parent.verticalCenter
-                visible: root.main !== null && root.main.kind === "media"
-                live: visible && root.shown
-            }
-        }
-
         Item {
-            anchors.fill: parent
-            anchors.margins: 16
-            opacity: root.expanded ? 1 : 0
+            width: root.compactWidth
+            height: root.pillHeight
+            y: root.atTop ? 0 : body.height - root.pillHeight
+            opacity: root.open ? 0 : 1
             visible: opacity > 0
 
             Behavior on opacity {
                 NumberAnimation {
                     duration: Tokens.fadeDuration
-                }
-            }
-
-            Lead {
-                id: bigLead
-                a: root.main
-                size: 56
-            }
-
-            Column {
-                anchors.left: bigLead.right
-                anchors.leftMargin: 14
-                anchors.right: actions.left
-                anchors.rightMargin: 8
-                y: (bigLead.height - height) / 2
-                spacing: 3
-
-                Text {
-                    width: parent.width
-                    text: root.headOf(root.main)
-                    elide: Text.ElideRight
-                    color: Theme.text
-                    font.family: Tokens.fontUi
-                    font.pixelSize: Tokens.bodySize
-                    font.weight: Font.DemiBold
-                }
-
-                Text {
-                    width: parent.width
-                    text: root.subOf(root.main)
-                    elide: Text.ElideRight
-                    maximumLineCount: 1
-                    color: Theme.textDim
-                    font.family: root.main !== null && ["recording", "volume"].indexOf(root.main.kind) >= 0 ? Tokens.fontMono : Tokens.fontUi
-                    font.pixelSize: Tokens.smallSize
                 }
             }
 
             Row {
-                id: actions
-                anchors.right: parent.right
-                y: (bigLead.height - height) / 2
-                spacing: 2
+                id: compactRow
+                x: 14
+                anchors.verticalCenter: parent.verticalCenter
+                visible: root.main !== null
+                spacing: 10
 
-                Repeater {
-                    model: root.actionsOf(root.main)
+                Lead {
+                    anchors.verticalCenter: parent.verticalCenter
+                    a: root.main
+                    size: 22
+                }
 
-                    Press {
-                        required property var modelData
-                        glyph: modelData.id === "toggle" ? (root.main !== null && root.main.playing ? Icons.GLYPHS.pause : Icons.GLYPHS.play) : modelData.glyph
-                        strong: modelData.id === "toggle" || modelData.id === "done" || modelData.id === "stop" && root.main !== null && root.main.kind === "recording"
-                        onClicked: root.act(root.main.kind, modelData.id)
-                    }
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: Math.min(implicitWidth, 220)
+                    text: root.main !== null ? I.label(root.main) : ""
+                    elide: Text.ElideRight
+                    color: Theme.text
+                    font.family: root.main !== null && ["recording", "focus", "volume"].indexOf(root.main.kind) >= 0 ? Tokens.fontMono : Tokens.fontUi
+                    font.pixelSize: Tokens.smallSize
+                    font.weight: Font.DemiBold
+                }
+
+                Bars {
+                    anchors.verticalCenter: parent.verticalCenter
+                    visible: root.main !== null && root.main.kind === "media"
+                    live: visible && root.shown && !root.open
                 }
             }
 
-            Rectangle {
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                visible: root.main !== null && (root.main.kind === "media" || root.main.kind === "volume")
-                height: 4
-                radius: 2
-                color: Qt.alpha(Theme.text, 0.14)
+            Text {
+                id: clockText
+                anchors.centerIn: parent
+                visible: root.main === null && root.idle === "clock"
+                text: root.time
+                color: Theme.text
+                font.family: Tokens.fontMono
+                font.pixelSize: Tokens.smallSize
+                font.weight: Font.DemiBold
+            }
+        }
 
-                Rectangle {
-                    width: parent.width * Math.max(0, Math.min(1, root.main !== null && root.main.kind === "volume" ? root.main.value : root.progress))
-                    height: parent.height
-                    radius: 2
-                    color: root.main !== null && root.main.kind === "volume" && root.main.muted ? Theme.textDim : Theme.accent
+        Column {
+            x: 12
+            y: 12
+            width: root.cardWidth - 24
+            spacing: 6
+            opacity: root.open ? 1 : 0
+            visible: opacity > 0
 
-                    Behavior on width {
-                        NumberAnimation {
-                            duration: Tokens.stateDuration
-                        }
-                    }
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: Tokens.fadeDuration
                 }
+            }
 
-                MouseArea {
-                    anchors.fill: parent
-                    anchors.margins: -6
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: e => root.act(root.main.kind, "seek:" + Math.max(0, Math.min(1, (e.x - 6) / (width - 12))))
+            Repeater {
+                model: root.kinds
+
+                ActivityRow {}
+            }
+
+            Row {
+                visible: root.shortcutIds.length > 0
+                width: parent.width
+                height: 44
+                readonly property int count: root.shortcutIds.length
+                spacing: Math.min(22, Math.max(0, (width - count * 34) / Math.max(1, count - 1)))
+                leftPadding: Math.max(0, (width - count * 34 - (count - 1) * spacing) / 2)
+
+                Repeater {
+                    model: root.shortcutIds
+
+                    Press {
+                        required property string modelData
+                        readonly property var s: root.shortcuts.find(x => x.id === modelData) || null
+                        anchors.verticalCenter: parent.verticalCenter
+                        glyph: s !== null ? Icons.GLYPHS[s.glyph] : ""
+                        tip: s !== null ? s.label : ""
+                        lit: s !== null && s.lit === true
+                        badge: s !== null && s.badge !== undefined ? s.badge : 0
+                        onClicked: root.run(modelData)
+                    }
                 }
             }
         }
@@ -506,11 +602,12 @@ Item {
 
     Item {
         id: bubbleItem
-        x: root.bodyWidth + 8
+        x: body.width + 8
+        y: root.atTop ? 0 : body.height - root.pillHeight
         width: root.pillHeight
         height: root.pillHeight
         opacity: root.bubble ? 1 : 0
-        scale: root.bubble ? 1 : 0.4
+        scale: root.bubble ? 1 : 0.6
         visible: opacity > 0
 
         Behavior on opacity {
@@ -521,8 +618,9 @@ Item {
 
         Behavior on scale {
             NumberAnimation {
-                duration: Tokens.morphDuration
-                easing.type: Easing.OutBack
+                duration: Tokens.moveDuration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: [0.2, 0, 0, 1, 1, 1]
             }
         }
 
@@ -530,6 +628,7 @@ Item {
             anchors.fill: parent
             radius: height / 2
             raised: true
+            flowing: false
             offColor: Theme.surface
             offBorder: Theme.line
         }
@@ -543,7 +642,7 @@ Item {
         MouseArea {
             anchors.fill: parent
             cursorShape: Qt.PointingHandCursor
-            onClicked: root.act(root.second ? root.second.kind : "", "open")
+            onClicked: root.pin()
         }
     }
 }

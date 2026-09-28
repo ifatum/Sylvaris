@@ -4,6 +4,7 @@ import qs.services
 import qs.components
 import qs.island
 import "../lib/island.mjs" as I
+import "../lib/icons.mjs" as Icons
 
 Column {
     id: root
@@ -33,13 +34,23 @@ Column {
 
     spacing: 24
 
+    function flip(id: string): void {
+        const next = root.cfg.shortcuts.slice();
+        const i = next.indexOf(id);
+        if (i >= 0)
+            next.splice(i, 1);
+        else if (next.length < I.MAX_SHORTCUTS)
+            next.push(id);
+        Settings.set("island.shortcuts", next);
+    }
+
     Card {
         title: "Island"
-        note: "A pill at the top of the focused screen that shows what is going on: music from any MPRIS player, screen recordings, Diver focus timers and alarms, volume changes, new Bluetooth devices and, if you like, notifications. Hover to expand it, click to open the matching panel, scroll on it to change the volume. Scripts can post to it with “sylvaris island show <text>”."
+        note: "A pill on the focused screen that shows what is going on: music from any MPRIS player, screen recordings, Diver focus timers and alarms, volume changes, new Bluetooth devices and, if you like, notifications. Hover to expand it: every activity gets its own row and controls, so you can stop a recording and skip a song side by side. Click a row to open its panel, scroll on the island to change the volume, and hover the preview below to try it. Scripts can post to it with “sylvaris island show <text>”."
 
         Item {
             width: parent.width
-            height: 150
+            height: 270
 
             Glass {
                 anchors.fill: parent
@@ -50,9 +61,15 @@ Column {
             IslandBody {
                 id: preview
                 anchors.horizontalCenter: parent.horizontalCenter
-                y: 16
-                items: root.sample.length > 0 ? root.sample : [I.custom("Nothing is shown with every source off")]
+                y: I.placeOf(root.cfg.position).top ? 16 : parent.height - height - 16
+                items: root.sample
+                shortcuts: I.shortcutsFor(root.cfg.shortcuts, Object.keys(I.SHORTCUTS).map(k => I.SHORTCUTS[k].needs)).map(s => Object.assign({}, s, {
+                            lit: s.id === "dnd"
+                        }))
                 expanded: previewHover.hovered
+                atTop: I.placeOf(root.cfg.position).top
+                idle: root.cfg.idle
+                time: Qt.formatTime(new Date(), "HH:mm")
                 progress: 0.42
                 opacity: root.on ? 1 : 0.5
 
@@ -69,6 +86,76 @@ Column {
             Toggle {
                 checked: root.on
                 onToggled: v => Settings.set("parts.island", v)
+            }
+        }
+
+        SettingRow {
+            title: "Edge"
+            subtitle: "Top or bottom of the focused screen"
+
+            Segmented {
+                width: 240
+                options: [
+                    {
+                        key: "top",
+                        label: "Top"
+                    },
+                    {
+                        key: "bottom",
+                        label: "Bottom"
+                    }
+                ]
+                current: I.placeOf(root.cfg.position).top ? "top" : "bottom"
+                onPicked: key => Settings.set("island.position", key + "-" + I.placeOf(root.cfg.position).side)
+            }
+        }
+
+        SettingRow {
+            title: "Side"
+
+            Segmented {
+                width: 300
+                options: [
+                    {
+                        key: "left",
+                        label: "Left"
+                    },
+                    {
+                        key: "center",
+                        label: "Center"
+                    },
+                    {
+                        key: "right",
+                        label: "Right"
+                    }
+                ]
+                current: I.placeOf(root.cfg.position).side
+                onPicked: key => Settings.set("island.position", (I.placeOf(root.cfg.position).top ? "top-" : "bottom-") + key)
+            }
+        }
+
+        SettingRow {
+            title: "When nothing is going on"
+            subtitle: "A pill keeps your shortcuts one hover away"
+
+            Segmented {
+                width: 300
+                options: [
+                    {
+                        key: "hide",
+                        label: "Hide"
+                    },
+                    {
+                        key: "pill",
+                        label: "Pill"
+                    },
+                    {
+                        key: "clock",
+                        label: "Clock"
+                    }
+                ]
+                current: root.cfg.idle
+                onPicked: key => Settings.set("island.idle", key)
             }
         }
 
@@ -94,6 +181,34 @@ Column {
                 to: 10
                 suffix: " s"
                 onStepped: v => Settings.set("island.seconds", v)
+            }
+        }
+    }
+
+    Card {
+        title: "Shortcuts"
+        note: "Buttons along the bottom of the expanded island, up to " + I.MAX_SHORTCUTS + ". Panels close the island, switches stay. Scripts: sylvaris island run <name>"
+
+        SettingRow {
+            title: "Buttons"
+            subtitle: "Click to add or remove, in the order you pick them"
+            last: true
+
+            Flow {
+                width: 420
+                spacing: 8
+
+                Repeater {
+                    model: Object.keys(I.SHORTCUTS)
+
+                    delegate: Chip {
+                        required property string modelData
+                        text: I.SHORTCUTS[modelData].label
+                        glyph: Icons.GLYPHS[I.SHORTCUTS[modelData].glyph]
+                        lit: root.cfg.shortcuts.indexOf(modelData) >= 0
+                        onClicked: root.flip(modelData)
+                    }
+                }
             }
         }
     }

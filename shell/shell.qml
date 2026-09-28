@@ -448,6 +448,7 @@ ShellRoot {
         SylIsland {
             id: islandPart
             peers: root.parts
+            live: root.live
             avoid: root.openPanel
             onRequested: part => root.openOn(part, "", islandPart.screenInfo)
         }
@@ -780,6 +781,7 @@ ShellRoot {
                 open: () => root.need("island").open(),
                 close: () => root.need("island").close(),
                 show: (...words) => root.need("island").say(words.join(" ")),
+                run: id => root.need("island").runShortcut(String(id || "")),
                 state: () => root.need("island").state()
             },
             clip: {

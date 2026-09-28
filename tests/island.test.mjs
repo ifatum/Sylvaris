@@ -1,6 +1,6 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
-import { DEFAULT_ISLAND, validateIsland, activities, label, joined, custom } from "../shell/lib/island.mjs"
+import { DEFAULT_ISLAND, validateIsland, activities, label, joined, custom, SHORTCUTS, shortcutsFor, placeOf, cardHeight } from "../shell/lib/island.mjs"
 
 const idle = { flash: null, recording: { on: false }, alarm: null, focus: null, next: null, media: { title: "", playing: false } }
 
@@ -87,4 +87,47 @@ test("custom turns script text into a safe flash", () => {
     assert.equal(custom(undefined), null)
     assert.deepEqual(activities({ flash: custom("Hi") }, Object.assign({}, DEFAULT_ISLAND, { volume: false, notifications: false, devices: false })).map(a => a.kind), ["custom"])
     assert.equal(label(custom("Hi")), "Hi")
+})
+
+test("validateIsland checks position, idle and shortcuts", () => {
+    const d = validateIsland({})
+    assert.equal(d.position, "top-center")
+    assert.equal(d.idle, "pill")
+    assert.deepEqual(d.shortcuts, ["notify", "center", "media", "screenshot", "record", "dnd"])
+    const v = validateIsland({ position: "bottom-left", idle: "clock", shortcuts: ["wifi", "nope", "wifi", "lock", 3] })
+    assert.equal(v.position, "bottom-left")
+    assert.equal(v.idle, "clock")
+    assert.deepEqual(v.shortcuts, ["wifi", "lock"])
+    assert.equal(validateIsland({ position: "middle" }).position, "top-center")
+    assert.equal(validateIsland({ idle: "x" }).idle, "pill")
+    assert.deepEqual(validateIsland({ shortcuts: "wifi" }).shortcuts, d.shortcuts)
+    assert.deepEqual(validateIsland({ shortcuts: [] }).shortcuts, [])
+    assert.equal(validateIsland({ shortcuts: Object.keys(SHORTCUTS) }).shortcuts.length, 8)
+})
+
+test("every shortcut runs a real command and names what it needs", () => {
+    for (const [id, s] of Object.entries(SHORTCUTS)) {
+        assert.ok(Array.isArray(s.run) && s.run.length >= 2, id)
+        assert.equal(typeof s.label, "string", id)
+        assert.equal(typeof s.glyph, "string", id)
+        assert.equal(typeof s.needs, "string", id)
+    }
+})
+
+test("shortcutsFor keeps the chosen ones whose part or service runs", () => {
+    const got = shortcutsFor(["clip", "wifi", "notify"], ["notify", "NetworkService"])
+    assert.deepEqual(got.map(s => s.id), ["wifi", "notify"])
+    assert.deepEqual(got[0].run, ["wifi", "toggle"])
+})
+
+test("placeOf splits a position into edge and side", () => {
+    assert.deepEqual(placeOf("top-center"), { top: true, side: "center" })
+    assert.deepEqual(placeOf("bottom-right"), { top: false, side: "right" })
+})
+
+test("cardHeight stacks one row per activity and the shortcut row", () => {
+    assert.equal(cardHeight([], false), 0)
+    assert.equal(cardHeight([], true), 12 + 44 + 12)
+    assert.equal(cardHeight(["recording"], false), 12 + 60 + 12)
+    assert.equal(cardHeight(["recording", "media"], true), 12 + 60 + 6 + 84 + 6 + 44 + 12)
 })
