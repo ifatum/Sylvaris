@@ -10,10 +10,10 @@ syl rgb open
 sleep 1.5
 shot rgb
 syl rgb color ff8800
-wait grep -q '"dev": "Krux Atax Pro RGB", "colors": \["#ff8800", "#ff8800", "#ff8800"\]' "$OUT/openrgb.log"
+wait grep -q '"dev": "Krux Atax Pro RGB", "mode": "Static", "colors": \["#ff8800"\]' "$OUT/openrgb.log"
 check grep -q '"dev": "Gigabyte RGB", "mode": "Static", "colors": \["#ff8800"\]' "$OUT/openrgb.log"
 syl rgb brightness 50
-wait grep -q '"dev": "SteelSeries Rival 3 Wireless", "colors": \["#804400"\]' "$OUT/openrgb.log"
+wait grep -q '"dev": "SteelSeries Rival 3 Wireless", "mode": "Static", "colors": \["#804400"\]' "$OUT/openrgb.log"
 check sylvaris rgb mode "Spectrum Cycle" "Krux Atax Pro RGB"
 wait grep -q '"dev": "Krux Atax Pro RGB", "mode": "Spectrum Cycle"' "$OUT/openrgb.log"
 check sylvaris rgb | grep -q '"own":{"off":false,"color":"","mode":"Spectrum Cycle","press":""}'

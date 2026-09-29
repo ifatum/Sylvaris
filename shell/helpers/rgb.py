@@ -233,8 +233,21 @@ def mode_index(d, name):
     return -1
 
 
+def colour_mode(d, fast):
+    modes = list(enumerate(d["modes"]))
+    static = [i for i, m in modes if m["color_mode"] == MODE_SPECIFIC and m["name"].lower() == "static"]
+    direct = [i for i, m in modes if m["color_mode"] == PER_LED and m["name"].lower() in ("direct", "custom", "static")]
+    other = [i for i, m in modes if m["color_mode"] == MODE_SPECIFIC]
+    for group in (direct, static, other) if fast else (static, direct, other):
+        if group:
+            return group[0]
+    return -1
+
+
 def paint(c, i, d, idx, color):
     m = dict(d["modes"][idx])
+    if m["bmax"] > m["bmin"]:
+        m["brightness"] = m["bmax"]
     c.update_mode(i, idx, dict(m, colors=[color] * max(1, len(m["colors"]))) if m["color_mode"] == MODE_SPECIFIC else m)
     if m["color_mode"] == PER_LED:
         c.update_leds(i, [color] * d["leds"])
@@ -252,12 +265,11 @@ def run(c, devices, op):
     if what == "color":
         if not color:
             return "no colour given"
-        for want in (PER_LED, MODE_SPECIFIC):
-            for idx, m in enumerate(d["modes"]):
-                if m["color_mode"] == want and (want == MODE_SPECIFIC or m["name"].lower() in ("direct", "custom", "static")):
-                    paint(c, i, d, idx, rgbof(color))
-                    return ""
-        return d["name"] + " has no colour you can set"
+        idx = colour_mode(d, op.get("fast") is True)
+        if idx < 0:
+            return d["name"] + " has no colour you can set"
+        paint(c, i, d, idx, rgbof(color))
+        return ""
     if what == "off":
         idx = mode_index(d, "off")
         if idx >= 0:
@@ -349,7 +361,7 @@ def react(host, port, targets, out, stopped=lambda: False):
             d = devices[i]
             direct = next((idx for idx, m in enumerate(d["modes"]) if m["color_mode"] == PER_LED and m["name"].lower() in ("direct", "custom", "static")), -1)
             state = {"i": i, "d": d, "direct": direct, "base": rgbof(t["base"]), "press": rgbof(t["press"]), "held": set()}
-            run(c, devices, {"id": i, "name": d["name"], "do": "color", "color": t["base"]})
+            run(c, devices, {"id": i, "name": d["name"], "do": "color", "color": t["base"], "fast": True})
             for path in t.get("events") or event_nodes(d["location"]):
                 try:
                     watched[os.open(path, os.O_RDONLY | os.O_NONBLOCK)] = (state, bytearray())
@@ -364,7 +376,7 @@ def react(host, port, targets, out, stopped=lambda: False):
             if s["direct"] >= 0:
                 c.update_leds(s["i"], [color] * s["d"]["leds"])
             else:
-                run(c, devices, {"id": s["i"], "name": s["d"]["name"], "do": "color", "color": hexof(color)})
+                run(c, devices, {"id": s["i"], "name": s["d"]["name"], "do": "color", "color": hexof(color), "fast": True})
 
         while not stopped():
             ready = select.select(list(watched), [], [], 0.3)[0]

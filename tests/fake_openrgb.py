@@ -212,6 +212,7 @@ class Server:
             d["active"] = idx
             d["modes"][idx]["colors"] = m["colors"]
             self.record({"op": "mode", "dev": d["name"], "mode": d["modes"][idx]["name"], "colors": hexes(m["colors"]), "speed": m["speed"]})
+            d["modes"][idx]["brightness"] = m.get("brightness", d["modes"][idx]["brightness"])
         elif pid == 1050:
             r = Reader(data)
             r.take("<I")

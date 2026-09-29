@@ -56,8 +56,27 @@ class RGBTest(unittest.TestCase):
         ])
         self.assertTrue(got["ok"], got)
         self.assertEqual([r["ok"] for r in got["results"]], [True, True])
+        modes = self.ops(srv, "mode", 2)
+        self.assertEqual(modes[0], {"op": "mode", "dev": "SteelSeries Rival 3 Wireless", "mode": "Static", "colors": ["#112233"], "speed": 0})
+        self.assertEqual(modes[1], {"op": "mode", "dev": "Gigabyte RGB", "mode": "Static", "colors": ["#445566"], "speed": 0})
+        self.assertEqual(self.ops(srv, "leds"), [])
+
+    def test_colour_prefers_static_over_an_effect_and_turns_the_brightness_up(self):
+        srv = self.serve()
+        board = srv.devices[2]
+        board["modes"].insert(0, fake_openrgb.mode("Color Wave", fake_openrgb.MODE_SPECIFIC, [(0, 0, 0)], flags=1 << 6))
+        board["active"] = 0
+        board["modes"][1]["brightness"] = 0
+        got = rgb.apply("127.0.0.1", srv.port, [{"id": 2, "name": "Gigabyte RGB", "do": "color", "color": "#445566"}])
+        self.assertTrue(got["results"][0]["ok"], got)
+        self.assertEqual(self.ops(srv, "mode", 1)[-1]["mode"], "Static")
+        self.assertEqual(board["modes"][1]["brightness"], 100)
+
+    def test_fast_colour_keeps_to_direct_leds(self):
+        srv = self.serve()
+        got = rgb.apply("127.0.0.1", srv.port, [{"id": 0, "name": "SteelSeries Rival 3 Wireless", "do": "color", "color": "#112233", "fast": True}])
+        self.assertTrue(got["results"][0]["ok"], got)
         self.assertEqual(self.ops(srv, "leds", 1), [{"op": "leds", "dev": "SteelSeries Rival 3 Wireless", "colors": ["#112233"]}])
-        self.assertEqual(self.ops(srv, "mode", 2)[-1], {"op": "mode", "dev": "Gigabyte RGB", "mode": "Static", "colors": ["#445566"], "speed": 0})
 
     def test_effects_and_off(self):
         srv = self.serve()
@@ -79,10 +98,10 @@ class RGBTest(unittest.TestCase):
         got = rgb.apply("127.0.0.1", srv.port, [{"id": 0, "name": "Krux Atax Pro RGB", "do": "color", "color": "#ffffff"}])
         self.assertTrue(got["ok"])
         self.assertTrue(got["results"][0]["ok"])
-        self.assertEqual(self.ops(srv, "leds", 1), [{"op": "leds", "dev": "Krux Atax Pro RGB", "colors": ["#ffffff"] * 3}])
+        self.assertEqual(self.ops(srv, "mode", 1), [{"op": "mode", "dev": "Krux Atax Pro RGB", "mode": "Static", "colors": ["#ffffff"], "speed": 0}])
         got = rgb.apply("127.0.0.1", srv.port, [{"id": 0, "name": "Gone Mouse", "do": "color", "color": "#ffffff"}])
         self.assertFalse(got["results"][0]["ok"])
-        self.assertEqual(len(self.ops(srv, "leds")), 1)
+        self.assertEqual(len(self.ops(srv, "mode")), 1)
 
     def test_bad_colours_are_refused(self):
         srv = self.serve()
