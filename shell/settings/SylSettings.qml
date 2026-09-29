@@ -834,6 +834,8 @@ Scope {
                             anchors.horizontalCenter: parent.horizontalCenter
                             anchors.top: parent.bottom
                             anchors.topMargin: 10
+                            transformOrigin: Item.Top
+                            scale: Math.max(1, 0.72 / (1 - (1 - hub.mini) * root.dive))
                             text: star.modelData.label
                             color: star.hot || star.on ? Theme.text : Theme.textSoft
                             font.family: Tokens.fontUi
