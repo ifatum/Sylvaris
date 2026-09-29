@@ -7,6 +7,7 @@ export const PART_PACKAGES = {
     deck: [],
     diver: ["pipewire", "python", "libnotify"],
     fatest: [],
+    rgb: ["python"],
     media: ["pulseaudio", "pipewire", "python"],
     notify: [],
     pad: [],

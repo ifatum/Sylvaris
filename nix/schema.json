@@ -193,13 +193,24 @@
       "youtu.be"
     ]
   },
+  "rgb": {
+    "on": true,
+    "color": "",
+    "follow": false,
+    "brightness": 100,
+    "restore": true,
+    "devices": {},
+    "host": "127.0.0.1",
+    "port": 6742
+  },
   "placement": {
     "media": "auto",
     "clip": "top-center",
     "capture": "top-center",
     "access": "top-center",
     "diver": "center",
-    "fatest": "top-right"
+    "fatest": "top-right",
+    "rgb": "top-right"
   },
   "screens": {},
   "capture": {

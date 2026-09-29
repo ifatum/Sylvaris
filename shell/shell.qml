@@ -16,6 +16,7 @@ import qs.power
 import qs.paper
 import qs.plugins.diver
 import qs.plugins.fatest
+import qs.plugins.rgb
 import qs.switcher
 import qs.lock
 import qs.polkit
@@ -47,6 +48,7 @@ ShellRoot {
             paper: paperLoader,
             diver: diverLoader,
             fatest: fatestLoader,
+            rgb: rgbLoader,
             switcher: switcherLoader,
             lock: lockLoader,
             polkit: polkitLoader,
@@ -89,7 +91,7 @@ ShellRoot {
     readonly property var boot: [Tokens, Ipc, Config, Settings, Theme, Resin, Compositor, Keybinds].concat(root.live.filter(name => root.services[name] !== undefined).map(name => root.services[name]()))
 
     readonly property var openPanel: {
-        for (const name of ["center", "clock", "media", "notify", "paper", "clip", "capture", "access", "diver", "fatest"]) {
+        for (const name of ["center", "clock", "media", "notify", "paper", "clip", "capture", "access", "diver", "fatest", "rgb"]) {
             const p = root.part(name);
             if (p !== null && p.wanted && p.screenInfo && p.placed !== undefined)
                 return {
@@ -237,6 +239,7 @@ ShellRoot {
             capture: root.part("capture") !== null ? root.part("capture").state() : undefined,
             access: root.part("access") !== null ? root.part("access").state() : undefined,
             fatest: root.part("fatest") !== null ? root.part("fatest").state() : undefined,
+            rgb: root.part("rgb") !== null ? root.part("rgb").state() : undefined,
             keybinds: Keybinds.applied,
             sync: root.on("Sync") ? Sync.state() : undefined,
             plugins: root.on("Plugins") ? Plugins.state() : undefined,
@@ -326,7 +329,7 @@ ShellRoot {
 
         SylPad {
             id: padPart
-            tiles: root.on("settings") ? M.tiles().filter(t => (t.id !== "sylvaris.diver" || Diver.plugged) && (t.id !== "sylvaris.fatest" || root.on("fatest"))) : []
+            tiles: root.on("settings") ? M.tiles().filter(t => (t.id !== "sylvaris.diver" || Diver.plugged) && (t.id !== "sylvaris.fatest" || root.on("fatest")) && (t.id !== "sylvaris.rgb" || root.on("rgb"))) : []
             onOpened: root.solo(padPart)
             onSettingsRequested: section => root.need("settings").showSection(section)
         }
@@ -401,6 +404,16 @@ ShellRoot {
         FaTest {
             id: fatestPart
             onOpened: root.solo(fatestPart)
+        }
+    }
+
+    LazyLoader {
+        id: rgbLoader
+        active: root.on("rgb")
+
+        SylRGB {
+            id: rgbPart
+            onOpened: root.solo(rgbPart)
         }
     }
 
@@ -787,6 +800,22 @@ ShellRoot {
                 history: () => root.need("fatest").history,
                 state: () => root.need("fatest").state()
             }, () => root.part("fatest") !== null, "FaTest is off; turn it on in SylSettings › Plugins or with: sylvaris plugins enable fatest"),
+            rgb: I.gated({
+                default: "state",
+                toggle: () => root.need("rgb").toggle(),
+                open: () => root.need("rgb").open(),
+                close: () => root.need("rgb").close(),
+                on: () => root.need("rgb").setOn(true),
+                off: () => root.need("rgb").setOn(false),
+                color: (value, ...device) => root.need("rgb").setColor(String(value || ""), device),
+                mode: (name, ...device) => root.need("rgb").setMode(String(name || ""), device),
+                follow: v => root.need("rgb").setFollow(v !== "off" && v !== "false"),
+                brightness: v => root.need("rgb").setBrightness(Number(v)),
+                profile: (...name) => root.need("rgb").loadProfile(name.join(" ")),
+                refresh: () => root.need("rgb").refresh(),
+                list: () => root.need("rgb").state().devices.map(d => d.name + " (" + d.type + "): " + d.modes.join(", ")).join("\n"),
+                state: () => root.need("rgb").state()
+            }, () => root.part("rgb") !== null, "SylRGB is off; turn it on in SylSettings › Plugins or with: sylvaris plugins enable rgb"),
             capture: {
                 toggle: () => root.need("capture").toggle(),
                 open: () => root.need("capture").open(),

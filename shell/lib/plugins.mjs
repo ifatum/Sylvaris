@@ -109,7 +109,8 @@ export function pendingSummary(p) {
 export const BUILTIN = [
     { id: "diver", name: "Diver", kind: "builtin", part: "diver", services: ["Diver"], description: "Plans, reminders and alarms from diver.fatum.cc in SylClock, SylCenter, the bar and the SylDiver panel. Pair it in SylSettings › Diver." },
     { id: "airpods", name: "AirPods", kind: "builtin", part: "", services: [], description: "Battery, listening modes and conversation awareness for AirPods in SylMedia › Devices." },
-    { id: "fatest", name: "FaTest", kind: "builtin", part: "fatest", services: [], description: "Internet speed tests with FaTest in the FaTest panel, sharing its history and default server. Needs the fatest command." }
+    { id: "fatest", name: "FaTest", kind: "builtin", part: "fatest", services: [], description: "Internet speed tests with FaTest in the FaTest panel, sharing its history and default server. Needs the fatest command." },
+    { id: "rgb", name: "SylRGB", kind: "builtin", part: "rgb", services: [], description: "One place for the lights on your mouse, keyboard, memory, graphics card, motherboard and LED strips, through OpenRGB. Colours can follow your theme and come back when a device reconnects. Needs OpenRGB with its SDK server on." }
 ]
 
 export function builtinOn(plugins, id) {

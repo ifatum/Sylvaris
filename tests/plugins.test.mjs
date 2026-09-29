@@ -69,8 +69,8 @@ test("pendingSummary names the commit and warns about permissions", () => {
     assert.equal(pendingSummary(null), "")
 })
 
-test("Diver, AirPods and FaTest ship as built-in plugins that are off until turned on", () => {
-    assert.deepEqual(BUILTIN.map(p => p.id), ["diver", "airpods", "fatest"])
+test("Diver, AirPods, FaTest and SylRGB ship as built-in plugins that are off until turned on", () => {
+    assert.deepEqual(BUILTIN.map(p => p.id), ["diver", "airpods", "fatest", "rgb"])
     for (const p of BUILTIN) {
         assert.equal(p.kind, "builtin")
         assert.ok(p.name !== "" && p.description !== "")

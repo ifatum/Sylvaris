@@ -88,6 +88,11 @@ Column {
                     key: "fatest",
                     title: "FaTest",
                     subtitle: "Where the speed test opens"
+                },
+                {
+                    key: "rgb",
+                    title: "Lighting",
+                    subtitle: "Where SylRGB opens"
                 }
             ]
 
@@ -96,7 +101,7 @@ Column {
                 required property int index
                 title: modelData.title
                 subtitle: modelData.subtitle
-                last: index === 5
+                last: index === 6
 
                 Segmented {
                     width: 360

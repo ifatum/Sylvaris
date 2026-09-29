@@ -71,6 +71,7 @@ let
     island = [ ];
     access = [ ];
     fatest = [ ];
+    rgb = [ python ];
     plugins = [ git ];
     sync = [
       python

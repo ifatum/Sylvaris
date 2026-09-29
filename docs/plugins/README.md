@@ -1,6 +1,6 @@
 # SylPlugins
 
-Plugins add widgets, panels and background helpers to Sylvaris. Three come built in, and you can write or install your own.
+Plugins add widgets, panels and background helpers to Sylvaris. Four come built in, and you can write or install your own.
 
 Every plugin, built in or not, stays off until you turn it on in SylSettings › Plugins or from a terminal:
 
@@ -16,6 +16,7 @@ With Home Manager: `programs.sylvaris.plugins.enabled = { diver = true; airpods 
 - [Diver](diver.md) brings your [Diver](https://diver.fatum.cc) plans, reminders and alarms to the desktop.
 - [AirPods](airpods.md) shows battery, listening modes and conversation awareness for AirPods and Beats.
 - [FaTest](fatest.md) runs internet speed tests.
+- [SylRGB](rgb.md) controls the lights on your mouse, keyboard, memory, graphics card and every other device OpenRGB supports.
 
 They are listed first, turn on and off like any other plugin, and cannot be removed. A built-in plugin that is off runs nothing, and its commands, settings page, bar module and launcher tile are hidden.
 

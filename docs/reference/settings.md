@@ -249,6 +249,21 @@ Explained in [island](../parts/island.md).
 | `island.screens` | `"focused"` |  |
 | `island.hideSites` | `["youtube.com","youtu.be"]` |  |
 
+## rgb
+
+Explained in [plugins/rgb](../plugins/rgb.md).
+
+| Key | Default | Per screen |
+|---|---|:---:|
+| `rgb.on` | `true` |  |
+| `rgb.color` | `""` |  |
+| `rgb.follow` | `false` |  |
+| `rgb.brightness` | `100` |  |
+| `rgb.restore` | `true` |  |
+| `rgb.devices` | `{}` |  |
+| `rgb.host` | `"127.0.0.1"` |  |
+| `rgb.port` | `6742` |  |
+
 ## placement
 
 Explained in [configuration](../configuration.md#where-panels-open).
@@ -261,6 +276,7 @@ Explained in [configuration](../configuration.md#where-panels-open).
 | `placement.access` | `"top-center"` | yes |
 | `placement.diver` | `"center"` | yes |
 | `placement.fatest` | `"top-right"` | yes |
+| `placement.rgb` | `"top-right"` | yes |
 
 ## screens
 
@@ -370,6 +386,7 @@ Explained in [configuration](../configuration.md#turning-parts-off).
 | `parts.deck` | `true` |  |
 | `parts.diver` | `true` |  |
 | `parts.fatest` | `true` |  |
+| `parts.rgb` | `true` |  |
 | `parts.media` | `true` |  |
 | `parts.notify` | `true` |  |
 | `parts.pad` | `true` |  |

@@ -6,6 +6,7 @@ import qs.components
 import "../lib/icons.mjs" as Icons
 import "../lib/settings.mjs" as S
 import "../lib/center.mjs" as C
+import "../lib/rgb.mjs" as R
 
 Item {
     id: root
@@ -115,6 +116,9 @@ Item {
         if (e.key === "fatest") {
             tile.subtitle = C.speedLine(p.st.phase, p.st.live, p.history.length > 0 ? p.history[0] : null);
             tile.active = p.running;
+        } else if (e.key === "rgb") {
+            tile.subtitle = R.summary(p.cfg, p.devices.length, p.error);
+            tile.active = p.cfg.on && p.error === "";
         } else if (e.key === "record") {
             tile.subtitle = p.recording ? "Recording" : "Select an area";
             tile.active = p.recording;
@@ -137,6 +141,8 @@ Item {
                 Headphones.setNoise(Headphones.noise === "anc" ? "transparency" : "anc");
             else
                 root.extraOpen(key);
+        } else if (key === "rgb") {
+            root.peers.rgb.setOn(!root.peers.rgb.cfg.on);
         } else if (key === "record" && cap.recording) {
             cap.stop();
         } else {
@@ -149,6 +155,8 @@ Item {
         root.dismiss();
         if (key === "fatest")
             root.peers.fatest.open();
+        else if (key === "rgb")
+            root.peers.rgb.open();
         else if (key === "airpods" && root.peers.media) {
             root.peers.media.openTab("devices");
             root.peers.media.open();

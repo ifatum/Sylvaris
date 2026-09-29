@@ -133,6 +133,8 @@ Singleton {
     readonly property int pluginsHeight: 520
     readonly property int testWidth: 460
     readonly property int testHeight: 660
+    readonly property int rgbWidth: 480
+    readonly property int rgbHeight: 720
     readonly property int diverHeight: 720
     readonly property int settingsHeight: 760
     readonly property int settingsSidebar: 250

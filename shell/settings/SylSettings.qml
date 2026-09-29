@@ -127,6 +127,12 @@ Scope {
             group: "apps"
         },
         {
+            key: "rgb",
+            label: "Lighting",
+            glyph: Icons.GLYPHS.rgb,
+            group: "apps"
+        },
+        {
             key: "switcher",
             label: "Switcher",
             glyph: Icons.GLYPHS.switcher,
@@ -209,7 +215,7 @@ Scope {
     ]
     property string group: "settings"
     property real flip: 1
-    readonly property var shownSections: root.sections.filter(s => s.group === root.group && (s.key !== "diver" || Settings.shown.plugins.enabled.diver === true) && (s.key !== "fatest" || Settings.shown.plugins.enabled.fatest === true))
+    readonly property var shownSections: root.sections.filter(s => s.group === root.group && (s.key !== "diver" || Settings.shown.plugins.enabled.diver === true) && (s.key !== "fatest" || Settings.shown.plugins.enabled.fatest === true) && (s.key !== "rgb" || Settings.shown.plugins.enabled.rgb === true))
     readonly property var corners: [
         {
             key: "top-left",
@@ -1025,6 +1031,7 @@ Scope {
                                 power: powerPage,
                                 diver: diverPage,
                                 fatest: fatestPage,
+                                rgb: rgbPage,
                                 switcher: switcherPage,
                                 lock: lockPage,
                                 polkit: polkitPage,
@@ -1228,6 +1235,16 @@ Scope {
 
         Loader {
             Component.onCompleted: setSource("../plugins/fatest/FaTestPage.qml", {
+                host: root
+            })
+        }
+    }
+
+    Component {
+        id: rgbPage
+
+        Loader {
+            Component.onCompleted: setSource("../plugins/rgb/RGBPage.qml", {
                 host: root
             })
         }

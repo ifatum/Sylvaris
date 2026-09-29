@@ -4,7 +4,7 @@ const PAGES = {
     bar: "parts/bar.md", deck: "parts/deck.md", center: "parts/center.md", clock: "parts/clock.md", notifications: "parts/notify.md",
     pad: "parts/pad.md", media: "parts/media.md", power: "parts/power.md", paper: "parts/paper.md", switcher: "parts/switcher.md",
     lock: "parts/lock.md", clip: "parts/clip.md", capture: "parts/capture.md", access: "parts/access.md", island: "parts/island.md",
-    sync: "parts/sync.md", diver: "plugins/diver.md", plugins: "plugins/README.md", weather: "parts/clock.md", sky: "parts/clock.md",
+    sync: "parts/sync.md", diver: "plugins/diver.md", rgb: "plugins/rgb.md", plugins: "plugins/README.md", weather: "parts/clock.md", sky: "parts/clock.md",
     placement: "configuration.md#where-panels-open", screens: "configuration.md#one-screen-at-a-time", parts: "configuration.md#turning-parts-off",
     motion: "look.md#motion-and-performance", glass: "look.md#resin-glass", keybinds: "keybinds.md", eq: "parts/media.md",
     nightLight: "parts/center.md", displays: "parts/center.md#displays", hotspot: "parts/center.md#hotspot", toggleState: "configuration.md#custom-toggles",
