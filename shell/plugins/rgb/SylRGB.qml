@@ -119,6 +119,13 @@ Popup {
         Settings.set("rgb.on", on);
     }
 
+    function restart(): void {
+        if (restarter.running)
+            return;
+        root.notice = "Restarting OpenRGB…";
+        restarter.running = true;
+    }
+
     function setFollow(on: bool): void {
         Settings.set("rgb.follow", on);
         Settings.set("rgb.on", true);
@@ -267,6 +274,27 @@ Popup {
     }
 
     Process {
+        id: restarter
+        command: ["sh", "-c", "if systemctl --user cat openrgb.service >/dev/null 2>&1; then systemctl --user restart openrgb.service; elif systemctl cat openrgb.service >/dev/null 2>&1; then systemctl restart openrgb.service; else exit 3; fi"]
+        onExited: code => {
+            root.notice = code === 0 ? "" : code === 3 ? "OpenRGB does not run as a systemd service here; restart it yourself" : "OpenRGB could not be restarted";
+            if (code === 0) {
+                root.reapply = true;
+                restartedLater.restart();
+            }
+        }
+    }
+
+    Timer {
+        id: restartedLater
+        interval: 2500
+        onTriggered: {
+            root.reapply = true;
+            root.refresh();
+        }
+    }
+
+    Process {
         id: loader
         stdout: StdioCollector {
             onStreamFinished: {
@@ -341,8 +369,10 @@ Popup {
         stdout: SplitParser {
             onRead: line => {
                 if (line === "ready") {
-                    if (root.watchRetries > 0 || root.error !== "")
+                    if (root.watchRetries > 0 || root.error !== "") {
+                        root.reapply = root.cfg.restore;
                         root.refresh();
+                    }
                     root.watchRetries = 0;
                 } else if (line === "changed") {
                     root.reapply = root.cfg.restore;
@@ -404,6 +434,25 @@ Popup {
                     anchors.verticalCenter: parent.verticalCenter
                     checked: root.cfg.on
                     onToggled: v => root.setOn(v)
+                }
+            }
+
+            Row {
+                width: parent.width
+                spacing: 8
+
+                RowButton {
+                    width: (parent.width - 8) / 2
+                    icon: root.cfg.on ? Icons.GLYPHS.power : Icons.GLYPHS.rgb
+                    label: root.cfg.on ? "Turn all lighting off" : "Turn lighting on"
+                    onClicked: root.setOn(!root.cfg.on)
+                }
+
+                RowButton {
+                    width: (parent.width - 8) / 2
+                    icon: Icons.GLYPHS.restart
+                    label: restarter.running ? "Restarting…" : "Restart OpenRGB"
+                    onClicked: root.restart()
                 }
             }
 

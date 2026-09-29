@@ -22,7 +22,9 @@ SylRGB needs `python3` (already there for other parts) and nothing else; it spea
 - **Brightness** scales every colour it sends.
 - **Each device on its own**: tap a device for its own colour or one of its effects (breathing, spectrum and whatever else the device offers), or switch it off with its toggle.
 - **A flash when you click**: tap a mouse and pick a colour under "When a button is pressed". The mouse shows that colour for as long as any button is held and goes back to its own colour when you let go. See [clicks and privacy](#clicks-and-privacy).
-- **Lights off** turns every device dark and back with one switch, also from SylCenter and `sylvaris rgb off`.
+- **Lights off** turns every device dark and back with one switch or the "Turn all lighting off" button, also from SylCenter and `sylvaris rgb off`.
+- **Restart OpenRGB** restarts its systemd service (a user service without asking; the system service asks for your password) and puts your colours back once it answers again. Colours also come back on their own whenever OpenRGB restarts.
+- **Colours that stick**: a plain colour goes to a device's Static mode at full brightness when it has one, so keyboards keep it after their own lighting key switches the light off and on again. Devices without one get their colour LED by LED.
 - **OpenRGB profiles** you saved in OpenRGB load with one tap. Loading one clears the colours picked in SylRGB, so the two never fight.
 - **Colours come back** when Sylvaris starts and whenever a device reconnects, for example a wireless mouse waking up. Turn this off in SylSettings › Lighting if you would rather keep whatever the device shows.
 
@@ -44,6 +46,7 @@ sylvaris rgb press ffffff                      # every mouse flashes white while
 sylvaris rgb press off "SteelSeries Aerox 3 Wireless"
 sylvaris rgb brightness 40
 sylvaris rgb off                               # also: on
+sylvaris rgb restart                           # restart OpenRGB and put the colours back
 sylvaris rgb profile Evening                   # load an OpenRGB profile
 ```
 

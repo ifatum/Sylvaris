@@ -834,6 +834,7 @@ ShellRoot {
                 vivid: v => Settings.set("rgb.vivid", v !== "off" && v !== "false"),
                 profile: (...name) => root.need("rgb").loadProfile(name.join(" ")),
                 refresh: () => root.need("rgb").refresh(),
+                restart: () => root.need("rgb").restart(),
                 list: () => root.need("rgb").state().devices.map(d => d.name + " (" + d.type + "): " + d.modes.join(", ")).join("\n"),
                 state: () => root.need("rgb").state()
             }, () => root.part("rgb") !== null, "SylRGB is off; turn it on in SylSettings › Plugins or with: sylvaris plugins enable rgb"),
