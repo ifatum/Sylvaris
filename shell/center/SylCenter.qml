@@ -282,7 +282,8 @@ Scope {
             WlrLayershell.namespace: "sylcenter"
             WlrLayershell.keyboardFocus: root.shown ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
             mask: Region {
-                item: root.shown ? panel : null
+                width: root.shown ? win.width : 0
+                height: root.shown ? win.height : 0
             }
             BackgroundEffect.blurRegion: Resin.enabled && root.phase > 0.02 ? blur : null
 

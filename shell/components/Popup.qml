@@ -187,7 +187,8 @@ Scope {
             WlrLayershell.namespace: root.namespace
             WlrLayershell.keyboardFocus: root.shown && root.keyboard ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
             mask: Region {
-                item: root.shown ? panel : null
+                width: root.shown ? win.width : 0
+                height: root.shown ? win.height : 0
             }
             BackgroundEffect.blurRegion: Resin.enabled && root.phase > 0.02 ? blur : null
             readonly property var visual: M.scaledRect(0, 0, win.width, win.height, root.placed, root.grow, (1 - root.phase) * 10 * M.rise(root.placed))

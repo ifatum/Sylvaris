@@ -1,0 +1,19 @@
+sleep 1.5
+syl set parts.island true
+syl set center.corner top-right
+sleep 2
+syl island run center
+sleep 1.5
+check sylvaris island | grep -q '"docked":true'
+pointer move 1280 420 click 1
+sleep 0.6
+check sylvaris island | grep -q '"docked":true'
+shot island-panel-input
+pointer move 200 1200 click 1
+sleep 0.8
+check sylvaris island | grep -q '"docked":false'
+syl island run clock
+sleep 1.5
+pointer move 1280 300 click 1
+sleep 0.6
+check sylvaris island | grep -q '"docked":true'
