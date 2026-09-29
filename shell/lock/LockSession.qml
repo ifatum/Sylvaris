@@ -13,7 +13,7 @@ Scope {
     id: root
 
     readonly property var cfg: Settings.values.lock
-    readonly property string user: Quickshell.env("USER") || ""
+    property string user: Quickshell.env("USER") || ""
     readonly property string avatar: S.expandHome(Config.values.avatar || "", Quickshell.env("HOME"))
     readonly property string testDir: Demo.enabled ? Quickshell.env("SYLVARIS_PAM_DIR") || "" : ""
     property bool locked: false
@@ -61,6 +61,11 @@ Scope {
         }
         if (text === "")
             return;
+        if (root.user === "") {
+            root.error = true;
+            root.message = "Could not tell which user is logged in";
+            return;
+        }
         root.pending = text;
         root.busy = true;
         root.error = false;
@@ -89,6 +94,14 @@ Scope {
         command: ["sh", "-c", "for s in " + L.PAM_SERVICES.join(" ") + "; do [ -e /etc/pam.d/$s ] && echo $s; done"]
         stdout: StdioCollector {
             onStreamFinished: root.installed = text.split("\n").filter(s => s !== "")
+        }
+    }
+
+    Process {
+        running: root.user === ""
+        command: ["id", "-un"]
+        stdout: StdioCollector {
+            onStreamFinished: root.user = text.trim()
         }
     }
 
