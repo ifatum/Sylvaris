@@ -115,6 +115,7 @@ Column {
                                 }
 
                                 Text {
+                                    textFormat: Text.PlainText
                                     anchors.verticalCenter: parent.verticalCenter
                                     width: (preview.width - 8) / 2 - 42
                                     elide: Text.ElideRight
@@ -168,6 +169,7 @@ Column {
                             }
 
                             Text {
+                                textFormat: Text.PlainText
                                 anchors.verticalCenter: parent.verticalCenter
                                 text: modelData.label
                                 color: Theme.textDim

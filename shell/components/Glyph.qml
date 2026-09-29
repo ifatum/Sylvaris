@@ -3,6 +3,7 @@ import qs
 import "../lib/icons.mjs" as Icons
 
 Text {
+    textFormat: Text.PlainText
     id: root
 
     property real size: 20

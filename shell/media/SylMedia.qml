@@ -89,6 +89,7 @@ Popup {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: "Nothing is playing"
                     color: Theme.text
@@ -180,6 +181,7 @@ Popup {
                         spacing: 4
 
                         Text {
+                            textFormat: Text.PlainText
                             width: parent.width
                             text: Media.title === "" ? "Unknown title" : Media.title
                             wrapMode: Text.Wrap
@@ -192,6 +194,7 @@ Popup {
                         }
 
                         Text {
+                            textFormat: Text.PlainText
                             width: parent.width
                             visible: Media.artist !== ""
                             text: Media.artist
@@ -202,6 +205,7 @@ Popup {
                         }
 
                         Text {
+                            textFormat: Text.PlainText
                             width: parent.width
                             visible: Media.album !== ""
                             text: Media.album
@@ -212,6 +216,7 @@ Popup {
                         }
 
                         Text {
+                            textFormat: Text.PlainText
                             topPadding: 6
                             text: Media.identity
                             color: Theme.accent
@@ -270,6 +275,7 @@ Popup {
                     }
 
                     Text {
+                        textFormat: Text.PlainText
                         anchors.left: parent.left
                         anchors.bottom: parent.bottom
                         text: root.time(Media.position)
@@ -279,6 +285,7 @@ Popup {
                     }
 
                     Text {
+                        textFormat: Text.PlainText
                         anchors.right: parent.right
                         anchors.bottom: parent.bottom
                         text: "-" + root.time(Media.length - Media.position)
@@ -408,6 +415,7 @@ Popup {
                             }
 
                             Text {
+                                textFormat: Text.PlainText
                                 id: playerText
                                 anchors.centerIn: parent
                                 text: modelData.identity
@@ -440,6 +448,7 @@ Popup {
                     height: 30
 
                     Text {
+                        textFormat: Text.PlainText
                         anchors.verticalCenter: parent.verticalCenter
                         text: "Equalizer"
                         color: Theme.text
@@ -482,6 +491,7 @@ Popup {
                             }
 
                             Text {
+                                textFormat: Text.PlainText
                                 id: presetText
                                 anchors.centerIn: parent
                                 text: E.PRESET_NAMES[modelData]
@@ -540,6 +550,7 @@ Popup {
                                 height: Tokens.eqHeight + 40
 
                                 Text {
+                                    textFormat: Text.PlainText
                                     anchors.horizontalCenter: parent.horizontalCenter
                                     text: (bandItem.gain > 0 ? "+" : "") + bandItem.gain
                                     color: bandItem.gain === 0 ? Theme.textDim : Theme.accent
@@ -594,6 +605,7 @@ Popup {
                                 }
 
                                 Text {
+                                    textFormat: Text.PlainText
                                     anchors.horizontalCenter: parent.horizontalCenter
                                     anchors.bottom: parent.bottom
                                     text: E.BANDS[bandItem.index] >= 1000 ? E.BANDS[bandItem.index] / 1000 + "k" : E.BANDS[bandItem.index]
@@ -616,6 +628,7 @@ Popup {
                         spacing: 2
 
                         Text {
+                            textFormat: Text.PlainText
                             text: "Spatial audio"
                             color: Theme.text
                             font.family: Tokens.fontUi
@@ -624,6 +637,7 @@ Popup {
                         }
 
                         Text {
+                            textFormat: Text.PlainText
                             width: parent.width
                             text: "Headphone crossfeed: a little of each side reaches the other ear, like speakers in a room."
                             wrapMode: Text.Wrap
@@ -655,6 +669,7 @@ Popup {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     width: parent.width
                     visible: Equalizer.error !== "" && !Equalizer.running && Equalizer.enabled
                     text: "The equalizer stopped: " + Equalizer.error
@@ -682,6 +697,7 @@ Popup {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     text: "Batteries"
                     color: Theme.text
                     font.family: Tokens.fontUi
@@ -690,6 +706,7 @@ Popup {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     visible: Headphones.devices.length === 0
                     text: "No devices report a battery."
                     color: Theme.textDim
@@ -714,6 +731,7 @@ Popup {
                         }
 
                         Text {
+                            textFormat: Text.PlainText
                             anchors.left: devGlyph.right
                             anchors.leftMargin: 12
                             anchors.right: pct.left
@@ -744,6 +762,7 @@ Popup {
                         }
 
                         Text {
+                            textFormat: Text.PlainText
                             id: pct
                             anchors.right: bar.left
                             anchors.rightMargin: 10

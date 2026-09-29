@@ -83,6 +83,7 @@ Rectangle {
         }
 
         Text {
+            textFormat: Text.PlainText
             anchors.verticalCenter: parent.verticalCenter
             text: root.label
             color: Theme.text
@@ -93,6 +94,7 @@ Rectangle {
     }
 
     Text {
+        textFormat: Text.PlainText
         anchors.right: parent.right
         anchors.rightMargin: 14
         anchors.verticalCenter: parent.verticalCenter

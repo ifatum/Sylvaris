@@ -169,6 +169,7 @@ Column {
                             }
 
                             Text {
+                                textFormat: Text.PlainText
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 text: modelData.label + (index === 0 && root.cfg.delay > 0 ? " · " + root.cfg.delay + " s" : "")
                                 color: index === 0 ? Theme.onAccent : Theme.text

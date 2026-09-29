@@ -45,6 +45,7 @@ MiniScreen {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: P.ACTIONS[modelData] ? P.ACTIONS[modelData].label : modelData
                     color: Theme.textSoft

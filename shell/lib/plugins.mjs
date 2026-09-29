@@ -65,6 +65,7 @@ export function skeleton(id, kind) {
         "    Text {",
         "        id: label",
         "        anchors.centerIn: parent",
+        "        textFormat: Text.PlainText",
         "        text: \"Hello from " + id + "\"",
         "        color: Theme.text",
         "        font.family: Tokens.fontUi",

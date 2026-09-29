@@ -27,6 +27,7 @@ Popup {
         height: 44
 
         Text {
+            textFormat: Text.PlainText
             id: title
             anchors.verticalCenter: parent.verticalCenter
             text: "Notifications"
@@ -47,6 +48,7 @@ Popup {
             color: Theme.accent
 
             Text {
+                textFormat: Text.PlainText
                 id: countText
                 anchors.centerIn: parent
                 text: Notifications.count
@@ -117,6 +119,7 @@ Popup {
     }
 
     Text {
+        textFormat: Text.PlainText
         visible: Dnd.enabled
         x: Tokens.panelPaddingX
         anchors.top: header.bottom
@@ -155,6 +158,7 @@ Popup {
                 height: 22
 
                 Text {
+                    textFormat: Text.PlainText
                     x: 6
                     anchors.verticalCenter: parent.verticalCenter
                     text: group.modelData.app
@@ -165,6 +169,7 @@ Popup {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     anchors.right: parent.right
                     anchors.rightMargin: 6
                     anchors.verticalCenter: parent.verticalCenter
@@ -213,6 +218,7 @@ Popup {
         }
 
         Text {
+            textFormat: Text.PlainText
             anchors.horizontalCenter: parent.horizontalCenter
             text: "You're all caught up"
             color: Theme.text
@@ -222,6 +228,7 @@ Popup {
         }
 
         Text {
+            textFormat: Text.PlainText
             anchors.horizontalCenter: parent.horizontalCenter
             text: "New notifications will show up here"
             color: Theme.textDim

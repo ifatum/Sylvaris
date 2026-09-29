@@ -60,6 +60,7 @@ Column {
                         }
 
                         Text {
+                            textFormat: Text.PlainText
                             x: 12
                             anchors.verticalCenter: parent.verticalCenter
                             text: modelData.text

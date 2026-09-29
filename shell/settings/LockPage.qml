@@ -33,6 +33,7 @@ Column {
                 spacing: 6
 
                 Text {
+                    textFormat: Text.PlainText
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: Qt.formatTime(new Date(), root.cfg.seconds ? "HH:mm:ss" : "HH:mm")
                     color: Theme.text
@@ -42,6 +43,7 @@ Column {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: Qt.formatDate(new Date(), "dddd, d MMMM")
                     color: Theme.textSoft
@@ -76,6 +78,7 @@ Column {
                     border.color: Theme.cardLine
 
                     Text {
+                        textFormat: Text.PlainText
                         anchors.left: parent.left
                         anchors.leftMargin: 12
                         anchors.verticalCenter: parent.verticalCenter

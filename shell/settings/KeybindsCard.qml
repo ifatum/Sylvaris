@@ -50,6 +50,7 @@ Card {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     anchors.centerIn: parent
                     anchors.horizontalCenterOffset: clearGlyph.visible ? -10 : 0
                     text: row.active ? "Press keys…" : row.combo === "" ? "Not set" : row.combo.split("+").join(" + ")

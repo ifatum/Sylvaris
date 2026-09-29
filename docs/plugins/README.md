@@ -55,6 +55,8 @@ A plugin is a folder in `~/.config/sylvaris/plugins/<id>/` with a `plugin.json` 
 | `entry` | a `.qml` file inside the plugin folder |
 | `version`, `description`, `author` | shown in SylSettings |
 
+Give every `Text` that shows something from outside (a window title, a song, a network name, a file) `textFormat: Text.PlainText`. Without it, Qt treats text that looks like HTML as HTML, and an `<img>` tag in a window title would make your plugin load that address from the internet.
+
 ### The api object
 
 Your root item gets an `api` property if it declares one:

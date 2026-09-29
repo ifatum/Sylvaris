@@ -148,6 +148,7 @@ Item {
             height: appLine.implicitHeight
 
             Text {
+                textFormat: Text.PlainText
                 id: appLine
                 width: parent.width - 60
                 text: (root.n.appName || "Notification") + "  ·  " + N.ago(root.entry.time, Notifications.now)
@@ -183,6 +184,7 @@ Item {
         }
 
         Text {
+            textFormat: Text.PlainText
             width: parent.width
             visible: text !== ""
             text: N.plainText(root.n.summary)
@@ -239,6 +241,7 @@ Item {
                     }
 
                     Text {
+                        textFormat: Text.PlainText
                         id: label
                         anchors.centerIn: parent
                         width: Math.min(implicitWidth, parent.width - 20)

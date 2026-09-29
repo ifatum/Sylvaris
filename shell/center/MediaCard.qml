@@ -101,6 +101,7 @@ Rectangle {
         spacing: 2
 
         Text {
+            textFormat: Text.PlainText
             width: parent.width
             text: Media.title === "" ? "Nothing playing" : Media.title
             elide: Text.ElideRight
@@ -111,6 +112,7 @@ Rectangle {
         }
 
         Text {
+            textFormat: Text.PlainText
             width: parent.width
             visible: Media.artist !== ""
             text: Media.artist

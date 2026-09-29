@@ -32,6 +32,7 @@ Item {
         }
 
         Text {
+            textFormat: Text.PlainText
             anchors.verticalCenter: parent.verticalCenter
             width: parent.width - (Diver.planner ? 60 + openLabel.width + 8 : 60)
             text: root.title + (root.items.length > 0 ? " · " + root.items.length : "")
@@ -43,6 +44,7 @@ Item {
         }
 
         Text {
+            textFormat: Text.PlainText
             id: openLabel
             visible: Diver.planner
             anchors.verticalCenter: parent.verticalCenter
@@ -88,6 +90,7 @@ Item {
         spacing: 2
 
         Text {
+            textFormat: Text.PlainText
             visible: root.items.length === 0
             text: Diver.plugged && (Diver.paired || Demo.enabled) ? "Nothing planned" : "Pair Diver in SylSettings to see your plans"
             color: Theme.textDim
@@ -164,6 +167,7 @@ Item {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     x: 22
                     anchors.verticalCenter: parent.verticalCenter
                     width: 46
@@ -174,6 +178,7 @@ Item {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     x: 70
                     anchors.verticalCenter: parent.verticalCenter
                     width: parent.width - x
@@ -187,6 +192,7 @@ Item {
         }
 
         Text {
+            textFormat: Text.PlainText
             visible: root.items.length > root.rows
             text: "+ " + (root.items.length - root.rows) + " more"
             color: Theme.textDim
@@ -210,6 +216,7 @@ Item {
         }
 
         Text {
+            textFormat: Text.PlainText
             x: 12
             anchors.verticalCenter: parent.verticalCenter
             visible: input.text === ""

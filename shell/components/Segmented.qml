@@ -64,6 +64,7 @@ Rectangle {
                     }
 
                     Text {
+                        textFormat: Text.PlainText
                         anchors.verticalCenter: parent.verticalCenter
                         text: modelData.label
                         color: on ? Theme.onAccent : Theme.text

@@ -192,6 +192,7 @@ Scope {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     anchors.horizontalCenter: parent.horizontalCenter
                     y: 160
                     text: card.a === null ? "" : Qt.formatTime(new Date(card.a.start), "HH:mm")
@@ -202,6 +203,7 @@ Scope {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     anchors.horizontalCenter: parent.horizontalCenter
                     y: 244
                     width: parent.width
@@ -217,6 +219,7 @@ Scope {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     anchors.horizontalCenter: parent.horizontalCenter
                     y: 290
                     text: card.a === null ? "" : "Diver" + (card.a.path !== "" ? " · " + card.a.path : "")
@@ -279,6 +282,7 @@ Scope {
                             }
 
                             Text {
+                                textFormat: Text.PlainText
                                 id: label
                                 anchors.centerIn: parent
                                 text: modelData.act > 0 ? "Snooze " + modelData.label : modelData.label

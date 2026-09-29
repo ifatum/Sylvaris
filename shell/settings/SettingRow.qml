@@ -22,6 +22,7 @@ Item {
         spacing: 2
 
         Text {
+            textFormat: Text.PlainText
             width: parent.width
             text: root.title
             elide: Text.ElideRight
@@ -31,6 +32,7 @@ Item {
         }
 
         Text {
+            textFormat: Text.PlainText
             width: parent.width
             visible: root.subtitle !== ""
             text: root.subtitle

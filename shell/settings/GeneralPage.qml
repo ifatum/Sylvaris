@@ -154,6 +154,7 @@ Column {
                 last: index === 4
 
                 Text {
+                    textFormat: Text.PlainText
                     width: Math.min(implicitWidth, 380)
                     text: Config.values[modelData] === "" ? "not set" : Config.values[modelData]
                     elide: Text.ElideMiddle

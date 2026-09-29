@@ -75,6 +75,7 @@ Item {
         spacing: 3
 
         Text {
+            textFormat: Text.PlainText
             width: parent.width
             text: D.plain(root.task.text)
             elide: Text.ElideRight
@@ -85,6 +86,7 @@ Item {
         }
 
         Text {
+            textFormat: Text.PlainText
             width: parent.width
             visible: root.meta !== ""
             text: root.meta

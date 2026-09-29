@@ -57,6 +57,7 @@ Flickable {
         spacing: 8
 
         Text {
+            textFormat: Text.PlainText
             visible: root.overdue.length === 0 && Diver.agendaToday.length === 0 && root.upcoming.length === 0
             width: parent.width
             topPadding: 40
@@ -79,6 +80,7 @@ Flickable {
                 visible: sec.modelData.items.length > 0
 
                 Text {
+                    textFormat: Text.PlainText
                     topPadding: 8
                     text: sec.modelData.title + "  " + sec.modelData.items.length
                     color: sec.modelData.title === "Overdue" ? Theme.danger : Theme.textDim

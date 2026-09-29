@@ -117,6 +117,7 @@ Popup {
             }
 
             Text {
+                textFormat: Text.PlainText
                 anchors.verticalCenter: parent.verticalCenter
                 text: "Diver"
                 color: Theme.text
@@ -155,6 +156,7 @@ Popup {
         }
 
         Text {
+            textFormat: Text.PlainText
             anchors.right: closeGlyph.left
             anchors.rightMargin: 14
             anchors.verticalCenter: head.verticalCenter
@@ -217,6 +219,7 @@ Popup {
             }
 
             Text {
+                textFormat: Text.PlainText
                 x: 44
                 anchors.verticalCenter: parent.verticalCenter
                 width: parent.width - 200
@@ -229,6 +232,7 @@ Popup {
             }
 
             Text {
+                textFormat: Text.PlainText
                 anchors.right: stopGlyph.left
                 anchors.rightMargin: 14
                 anchors.verticalCenter: parent.verticalCenter
@@ -291,6 +295,7 @@ Popup {
         }
 
         Text {
+            textFormat: Text.PlainText
             id: problemText
             anchors.bottom: parent.bottom
             width: parent.width

@@ -74,6 +74,7 @@ Column {
             subtitle: page.last === null ? "No runs yet" : page.last.timestamp.replace("T", " ").slice(0, 16) + " · " + String(page.last.server || "")
 
             Text {
+                textFormat: Text.PlainText
                 visible: page.last !== null
                 text: page.last === null ? "" : "↓ " + F.speed(page.last.download) + "   ↑ " + F.speed(page.last.upload) + "   " + Math.round(page.last.ping) + " ms"
                 color: Theme.text

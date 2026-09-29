@@ -34,6 +34,7 @@ Column {
         }
 
         Text {
+            textFormat: Text.PlainText
             anchors.verticalCenter: parent.verticalCenter
             text: "Accessibility"
             color: Theme.text

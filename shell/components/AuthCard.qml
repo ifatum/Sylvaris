@@ -106,6 +106,7 @@ Item {
         }
 
         Text {
+            textFormat: Text.PlainText
             anchors.horizontalCenter: parent.horizontalCenter
             visible: root.name !== ""
             text: root.name
@@ -207,6 +208,7 @@ Item {
         }
 
         Text {
+            textFormat: Text.PlainText
             width: parent.width
             height: Math.max(implicitHeight, Tokens.smallSize + 6)
             horizontalAlignment: Text.AlignHCenter

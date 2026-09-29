@@ -111,6 +111,7 @@ Column {
                 height: sideFlow.implicitHeight + 50
 
                 Text {
+                    textFormat: Text.PlainText
                     y: 14
                     text: side.modelData.charAt(0).toUpperCase() + side.modelData.slice(1)
                     color: Theme.textDim

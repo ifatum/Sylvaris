@@ -12,6 +12,7 @@ Column {
     spacing: 18
 
     Text {
+        textFormat: Text.PlainText
         width: parent.width
         text: "The constellation is how Sylvaris draws connections: these settings, SylCenter's Wi-Fi and Bluetooth orbits, and SylPower."
         wrapMode: Text.Wrap
@@ -66,6 +67,7 @@ Column {
                 spacing: 2
 
                 Text {
+                    textFormat: Text.PlainText
                     text: modelData.label
                     color: Theme.text
                     font.family: Tokens.fontUi
@@ -73,6 +75,7 @@ Column {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     width: parent.width
                     text: modelData.about
                     wrapMode: Text.Wrap

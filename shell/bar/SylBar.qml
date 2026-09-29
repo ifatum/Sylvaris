@@ -302,6 +302,7 @@ Scope {
                             }
 
                             Text {
+                                textFormat: Text.PlainText
                                 id: num
                                 visible: ws.look.mode !== "dots" || pill.on
                                 text: modelData.name.length <= 3 && modelData.name !== "" ? modelData.name : modelData.index
@@ -352,6 +353,7 @@ Scope {
                             }
 
                             Text {
+                                textFormat: Text.PlainText
                                 visible: pill.apps.more > 0
                                 text: "+" + pill.apps.more
                                 color: Theme.onAccent
@@ -492,6 +494,7 @@ Scope {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     anchors.verticalCenter: parent.verticalCenter
                     width: Math.min(implicitWidth, Tokens.barTitleMax - 26)
                     text: wm.title
@@ -521,6 +524,7 @@ Scope {
                 spacing: 3
 
                 Text {
+                    textFormat: Text.PlainText
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: Qt.formatTime(root.now, "HH")
                     color: Theme.text
@@ -541,6 +545,7 @@ Scope {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: Qt.formatTime(root.now, "mm")
                     color: Theme.textSoft
@@ -553,6 +558,7 @@ Scope {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     anchors.horizontalCenter: parent.horizontalCenter
                     topPadding: 2
                     text: Qt.formatDate(root.now, "ddd").slice(0, 2) + "\n" + Qt.formatDate(root.now, "d")
@@ -580,6 +586,7 @@ Scope {
             tint: Theme.accent
 
             Text {
+                textFormat: Text.PlainText
                 visible: !root.vertical
                 anchors.verticalCenter: parent.verticalCenter
                 width: Math.min(implicitWidth, Tokens.barMediaMax)

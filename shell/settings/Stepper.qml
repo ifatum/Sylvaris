@@ -35,6 +35,7 @@ Row {
             }
 
             Text {
+                textFormat: Text.PlainText
                 anchors.centerIn: parent
                 text: modelData === 0 ? root.value + root.suffix : modelData < 0 ? "−" : "+"
                 color: Theme.text

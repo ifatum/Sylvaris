@@ -712,6 +712,7 @@ Scope {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     anchors.centerIn: parent
                     visible: !root.loaded
                     text: root.problem !== "" ? root.problem : "Opening the screenshot…"
@@ -838,6 +839,7 @@ Scope {
             }
 
             Text {
+                textFormat: Text.PlainText
                 anchors.horizontalCenter: bar.horizontalCenter
                 anchors.top: bar.bottom
                 anchors.topMargin: 10
@@ -855,6 +857,7 @@ Scope {
             }
 
             Text {
+                textFormat: Text.PlainText
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 28

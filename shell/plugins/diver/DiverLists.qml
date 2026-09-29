@@ -83,6 +83,7 @@ Item {
         }
 
         Text {
+            textFormat: Text.PlainText
             x: 10 + node.depth * 14
             width: parent.width - x - tools.width - 8
             anchors.verticalCenter: parent.verticalCenter
@@ -303,6 +304,7 @@ Item {
         height: parent.height
 
         Text {
+            textFormat: Text.PlainText
             anchors.centerIn: parent
             visible: root.list === null
             width: parent.width
@@ -343,6 +345,7 @@ Item {
                 spacing: 6
 
                 Text {
+                    textFormat: Text.PlainText
                     visible: root.list !== null && (root.list.dives || []).length === 0
                     topPadding: 12
                     text: "No tasks here yet."

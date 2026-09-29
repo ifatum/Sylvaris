@@ -313,6 +313,7 @@ Scope {
                     }
 
                     Text {
+                        textFormat: Text.PlainText
                         anchors.left: searchGlyph.right
                         anchors.leftMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
@@ -466,6 +467,7 @@ Scope {
                                                 }
 
                                                 Text {
+                                                    textFormat: Text.PlainText
                                                     anchors.centerIn: parent
                                                     text: cell.modelData.glyph || cell.modelData.name.charAt(0).toUpperCase()
                                                     color: Theme.onAccent
@@ -490,6 +492,7 @@ Scope {
                                         }
 
                                         Text {
+                                            textFormat: Text.PlainText
                                             anchors.top: iconBox.bottom
                                             anchors.topMargin: 8
                                             anchors.horizontalCenter: parent.horizontalCenter
@@ -552,6 +555,7 @@ Scope {
                     spacing: 8
 
                     Text {
+                        textFormat: Text.PlainText
                         anchors.horizontalCenter: parent.horizontalCenter
                         text: root.query === "" ? "No applications found" : "Nothing matches “" + root.query + "”"
                         color: Theme.text
@@ -661,6 +665,7 @@ Scope {
                     }
 
                     Text {
+                        textFormat: Text.PlainText
                         anchors.left: listGlyph.right
                         anchors.leftMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
@@ -775,6 +780,7 @@ Scope {
                             }
 
                             Text {
+                                textFormat: Text.PlainText
                                 anchors.centerIn: parent
                                 text: rowItem.modelData.glyph || rowItem.modelData.name.charAt(0).toUpperCase()
                                 color: Theme.onAccent
@@ -808,6 +814,7 @@ Scope {
                             spacing: 1
 
                             Text {
+                                textFormat: Text.PlainText
                                 width: parent.width
                                 text: rowItem.modelData.name
                                 elide: Text.ElideRight
@@ -818,6 +825,7 @@ Scope {
                             }
 
                             Text {
+                                textFormat: Text.PlainText
                                 width: parent.width
                                 visible: text !== ""
                                 text: rowItem.modelData.genericName || rowItem.modelData.comment || ""
@@ -839,6 +847,7 @@ Scope {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     visible: root.results.length === 0
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: listSearchBox.bottom

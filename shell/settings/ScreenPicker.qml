@@ -42,6 +42,7 @@ Column {
     }
 
     Text {
+        textFormat: Text.PlainText
         anchors.right: parent.right
         visible: Settings.editing !== ""
         text: "Only on " + Settings.editing + ": bar, dock, panel spots, island spot and wallpaper look. Everything else stays shared."

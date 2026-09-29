@@ -319,6 +319,7 @@ Item {
             }
 
             Text {
+                textFormat: Text.PlainText
                 anchors.verticalCenter: parent.verticalCenter
                 visible: root.focusKey !== ""
                 text: root.isBt ? "Bluetooth" : "Wi-Fi"
@@ -410,6 +411,7 @@ Item {
             spacing: 14
 
             Text {
+                textFormat: Text.PlainText
                 width: parent.width
                 text: "Password for " + (root.focused !== null ? root.focused.name : "")
                 elide: Text.ElideRight
@@ -497,6 +499,7 @@ Item {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     anchors.left: rowIcon.right
                     anchors.leftMargin: 12
                     anchors.right: rowSub.left
@@ -510,6 +513,7 @@ Item {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     id: rowSub
                     anchors.right: parent.right
                     anchors.rightMargin: 12

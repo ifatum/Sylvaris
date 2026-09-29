@@ -339,6 +339,7 @@ Item {
             color: Theme.accent
 
             Text {
+                textFormat: Text.PlainText
                 id: badgeText
                 anchors.centerIn: parent
                 text: press.badge > 99 ? "99+" : String(press.badge)
@@ -430,6 +431,7 @@ Item {
             spacing: 2
 
             Text {
+                textFormat: Text.PlainText
                 width: parent.width
                 text: root.headOf(row.a)
                 elide: Text.ElideRight
@@ -440,6 +442,7 @@ Item {
             }
 
             Text {
+                textFormat: Text.PlainText
                 width: parent.width
                 text: root.subOf(row.a)
                 elide: Text.ElideRight
@@ -574,6 +577,7 @@ Item {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     anchors.verticalCenter: parent.verticalCenter
                     width: Math.min(implicitWidth, 220)
                     text: root.main !== null ? I.label(root.main) : ""
@@ -592,6 +596,7 @@ Item {
             }
 
             Text {
+                textFormat: Text.PlainText
                 id: clockText
                 anchors.centerIn: parent
                 visible: root.main === null && root.idle === "clock"

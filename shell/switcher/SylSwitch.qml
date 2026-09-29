@@ -281,6 +281,7 @@ Scope {
                                 color: card.picked ? Qt.alpha(Theme.onAccent, 0.18) : Theme.accent
 
                                 Text {
+                                    textFormat: Text.PlainText
                                     anchors.centerIn: parent
                                     text: root.nameOf(card.modelData).charAt(0).toUpperCase()
                                     color: card.picked ? Theme.onAccent : Theme.base
@@ -320,6 +321,7 @@ Scope {
                         }
 
                         Text {
+                            textFormat: Text.PlainText
                             anchors.left: parent.left
                             anchors.right: parent.right
                             anchors.bottom: parent.bottom

@@ -138,6 +138,7 @@ Item {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     anchors.centerIn: parent
                     text: screenRect.modelData
                     color: Theme.text
@@ -208,6 +209,7 @@ Item {
 
 
                     Text {
+                        textFormat: Text.PlainText
                         id: chipText
                         anchors.centerIn: parent
                         text: modelData + (root.draft[modelData].enabled ? "" : " · off")
@@ -281,6 +283,7 @@ Item {
                     border.color: Theme.accent
 
                     Text {
+                        textFormat: Text.PlainText
                         id: modeText
                         anchors.centerIn: parent
                         text: D.modeLabel(modelData, root.modes)
@@ -334,6 +337,7 @@ Item {
                     border.color: Theme.accent
 
                     Text {
+                        textFormat: Text.PlainText
                         anchors.centerIn: parent
                         text: modelData + "×"
                         color: Theme.text
@@ -399,6 +403,7 @@ Item {
         border.color: Theme.accent
 
         Text {
+            textFormat: Text.PlainText
             x: 20
             anchors.verticalCenter: parent.verticalCenter
             text: "Keep this layout? Reverting in " + Displays.countdown + " s"

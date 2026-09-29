@@ -31,6 +31,7 @@ Item {
     }
 
     Text {
+        textFormat: Text.PlainText
         anchors.left: arrow.right
         anchors.leftMargin: 16
         anchors.verticalCenter: arrow.verticalCenter

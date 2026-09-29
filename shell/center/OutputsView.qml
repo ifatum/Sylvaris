@@ -56,6 +56,7 @@ Item {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     anchors.left: speaker.right
                     anchors.leftMargin: 14
                     anchors.right: check.left

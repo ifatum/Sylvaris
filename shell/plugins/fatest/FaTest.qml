@@ -132,6 +132,7 @@ Popup {
                 width: parent.width - 30
 
                 Text {
+                    textFormat: Text.PlainText
                     text: "FaTest"
                     color: Theme.text
                     font.family: Tokens.fontUi
@@ -140,6 +141,7 @@ Popup {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     width: parent.width
                     elide: Text.ElideRight
                     text: !root.checked ? "" : !root.available ? "FaTest is not installed" : root.st.warning !== "" ? root.st.warning : root.st.server !== "" ? root.st.server + " · " + root.st.ping + " ms" : root.st.phase === "server" ? "Finding the best nearby server…" : root.history.length > 0 ? "Last run " + root.history[0].timestamp.replace("T", " ") : "Internet speed, measured by FaTest"
@@ -155,6 +157,7 @@ Popup {
             spacing: 2
 
             Text {
+                textFormat: Text.PlainText
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: F.speed(root.headline)
                 color: Theme.text
@@ -167,6 +170,7 @@ Popup {
             }
 
             Text {
+                textFormat: Text.PlainText
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: root.st.phase === "download" ? "Downloading" : root.st.phase === "upload" ? "Uploading" : root.st.phase === "saving" ? "Saving" : root.st.phase === "server" ? "Measuring ping" : root.st.phase === "error" ? root.st.error : "Download"
                 width: parent.width
@@ -218,6 +222,7 @@ Popup {
                     subtitle: String(modelData.server || "").slice(0, 40)
 
                     Text {
+                        textFormat: Text.PlainText
                         text: "↓ " + F.speed(modelData.download) + "   ↑ " + F.speed(modelData.upload) + "   " + Math.round(modelData.ping) + " ms"
                         color: Theme.text
                         font.family: Tokens.fontUi
@@ -283,6 +288,7 @@ Popup {
             }
 
             Text {
+                textFormat: Text.PlainText
                 anchors.verticalCenter: parent.verticalCenter
                 text: meter.label
                 color: Theme.text
@@ -292,6 +298,7 @@ Popup {
         }
 
         Text {
+            textFormat: Text.PlainText
             anchors.right: parent.right
             anchors.rightMargin: 16
             anchors.verticalCenter: parent.verticalCenter

@@ -19,6 +19,7 @@ MiniScreen {
             spacing: 6
 
             Text {
+                textFormat: Text.PlainText
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: "Resin Glass"
                 color: Theme.text
@@ -28,6 +29,7 @@ MiniScreen {
             }
 
             Text {
+                textFormat: Text.PlainText
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: Resin.enabled ? "What every panel is made of" : "Solid panels"
                 color: Theme.textDim

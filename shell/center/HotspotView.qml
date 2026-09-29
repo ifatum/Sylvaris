@@ -31,6 +31,7 @@ Item {
         spacing: 12
 
         Text {
+            textFormat: Text.PlainText
             text: "NETWORK NAME"
             color: Theme.textDim
             font.family: Tokens.fontUi
@@ -46,6 +47,7 @@ Item {
         }
 
         Text {
+            textFormat: Text.PlainText
             text: "PASSWORD"
             color: Theme.textDim
             font.family: Tokens.fontUi
@@ -62,6 +64,7 @@ Item {
         }
 
         Text {
+            textFormat: Text.PlainText
             text: "BAND"
             color: Theme.textDim
             font.family: Tokens.fontUi
@@ -86,6 +89,7 @@ Item {
         }
 
         Text {
+            textFormat: Text.PlainText
             width: parent.width
             visible: Hotspot.error !== ""
             text: Hotspot.error
@@ -96,6 +100,7 @@ Item {
         }
 
         Text {
+            textFormat: Text.PlainText
             text: Hotspot.active ? "Sharing as " + Settings.values.hotspot.ssid : "Hotspot is off"
             color: Theme.textSoft
             font.family: Tokens.fontUi

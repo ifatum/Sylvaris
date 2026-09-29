@@ -421,6 +421,7 @@ Scope {
                                     }
 
                                     Text {
+                                        textFormat: Text.PlainText
                                         anchors.centerIn: parent
                                         text: slot.appItem === null ? "" : root.nameOf(slot.appItem.id).charAt(0).toUpperCase()
                                         color: Theme.onAccent
@@ -523,6 +524,7 @@ Scope {
                                 }
 
                                 Text {
+                                    textFormat: Text.PlainText
                                     id: tipText
                                     anchors.centerIn: parent
                                     text: slot.modelData.kind === "pad" ? "Apps" : slot.modelData.kind === "power" ? "Power" : slot.appItem === null ? "" : root.nameOf(slot.appItem.id)
@@ -632,6 +634,7 @@ Scope {
                             }
 
                             Text {
+                                textFormat: Text.PlainText
                                 x: modelData.kind === "action" && modelData.glyph !== "" ? 38 : 12
                                 anchors.verticalCenter: parent.verticalCenter
                                 width: parent.width - x - 12

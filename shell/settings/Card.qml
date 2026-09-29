@@ -20,6 +20,7 @@ Item {
         bottomPadding: root.title === "" ? 0 : 10
 
         Text {
+            textFormat: Text.PlainText
             visible: root.title !== ""
             text: root.title
             color: Theme.textDim
@@ -31,6 +32,7 @@ Item {
         }
 
         Text {
+            textFormat: Text.PlainText
             visible: root.note !== ""
             width: parent.width
             text: root.note

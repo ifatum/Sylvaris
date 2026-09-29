@@ -124,6 +124,7 @@ Popup {
             spacing: 6
 
             Text {
+                textFormat: Text.PlainText
                 text: Qt.formatTime(root.now, "HH:mm")
                 color: Theme.text
                 font.family: Tokens.fontMono
@@ -133,6 +134,7 @@ Popup {
             }
 
             Text {
+                textFormat: Text.PlainText
                 anchors.baseline: parent.children[0].baseline
                 text: Qt.formatTime(root.now, "ss")
                 color: Theme.textDim
@@ -142,6 +144,7 @@ Popup {
         }
 
         Text {
+            textFormat: Text.PlainText
             id: dateText
             anchors.top: timeRow.bottom
             text: Qt.formatDate(root.now, "dddd, d MMMM") + (root.place() !== "" ? "  ·  " + root.place() : "")
@@ -438,6 +441,7 @@ Popup {
                     }
 
                     Text {
+                        textFormat: Text.PlainText
                         x: 40
                         y: 13
                         text: modelData.label
@@ -447,6 +451,7 @@ Popup {
                     }
 
                     Text {
+                        textFormat: Text.PlainText
                         x: 14
                         anchors.bottom: parent.bottom
                         anchors.bottomMargin: 12
@@ -528,6 +533,7 @@ Popup {
                 visible: opacity > 0
 
                 Text {
+                    textFormat: Text.PlainText
                     width: parent.width
                     text: Sky.phaseName
                     elide: Text.ElideRight
@@ -538,6 +544,7 @@ Popup {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     text: Math.round(Sky.illumination.fraction * 100) + "% illuminated"
                     color: Theme.textSoft
                     font.family: Tokens.fontUi
@@ -545,6 +552,7 @@ Popup {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     width: parent.width
                     text: root.moonNext()
                     wrapMode: Text.WordWrap
@@ -554,6 +562,7 @@ Popup {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     topPadding: 4
                     text: "↑ " + root.hhmm(Sky.moonTimes.rise) + "    ↓ " + root.hhmm(Sky.moonTimes.set)
                     color: Theme.textSoft
@@ -570,6 +579,7 @@ Popup {
             width: parent.width
 
             Text {
+                textFormat: Text.PlainText
                 id: monthTitle
                 x: 4
                 text: Qt.locale().standaloneMonthName(root.month, Locale.LongFormat) + " " + root.year
@@ -694,6 +704,7 @@ Popup {
                         }
 
                         Text {
+                            textFormat: Text.PlainText
                             anchors.centerIn: parent
                             text: modelData.day
                             color: parent.isToday ? Theme.onAccent : Theme.text
@@ -751,6 +762,7 @@ Popup {
         }
 
         Text {
+            textFormat: Text.PlainText
             anchors.centerIn: parent
             visible: weatherCard.d === null
             text: Weather.error !== "" ? Weather.error : !Sky.available ? "Set a location to see the weather" : "Fetching the forecast…"
@@ -791,6 +803,7 @@ Popup {
             }
 
             Text {
+                textFormat: Text.PlainText
                 anchors.left: nowGlyph.right
                 anchors.leftMargin: 12
                 anchors.verticalCenter: nowGlyph.verticalCenter
@@ -807,6 +820,7 @@ Popup {
                 spacing: 2
 
                 Text {
+                    textFormat: Text.PlainText
                     text: Weather.now === null ? "" : Weather.now.label + (root.place() !== "" ? " · " + root.place() : "")
                     color: Theme.text
                     font.family: Tokens.fontUi
@@ -815,6 +829,7 @@ Popup {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     text: weatherCard.d === null ? "" : "Feels " + weatherCard.d.feels + "° · " + weatherCard.d.humidity + "% · " + weatherCard.d.wind + " " + weatherCard.d.windUnit
                     color: Theme.textDim
                     font.family: Tokens.fontUi
@@ -862,6 +877,7 @@ Popup {
                     opacity: Math.max(0, Math.min(1, root.phase * 3 - 1.2 - index * 0.08))
 
                     Text {
+                        textFormat: Text.PlainText
                         anchors.horizontalCenter: parent.horizontalCenter
                         y: 0
                         text: modelData.time
@@ -888,6 +904,7 @@ Popup {
                     }
 
                     Text {
+                        textFormat: Text.PlainText
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.bottom: parent.bottom
                         anchors.bottomMargin: 14
@@ -899,6 +916,7 @@ Popup {
                     }
 
                     Text {
+                        textFormat: Text.PlainText
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.bottom: parent.bottom
                         visible: modelData.rain >= 20
@@ -937,6 +955,7 @@ Popup {
                     height: parent.height
 
                     Text {
+                        textFormat: Text.PlainText
                         id: dayName
                         x: 6
                         anchors.verticalCenter: parent.verticalCenter

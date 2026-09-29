@@ -89,6 +89,7 @@ Column {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     x: 14
                     anchors.bottom: parent.bottom
                     anchors.bottomMargin: 30
@@ -100,6 +101,7 @@ Column {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     x: 14
                     anchors.bottom: parent.bottom
                     anchors.bottomMargin: 12
@@ -123,6 +125,7 @@ Column {
         }
 
         Text {
+            textFormat: Text.PlainText
             anchors.verticalCenter: parent.verticalCenter
             text: "About"
             color: Theme.text
@@ -151,6 +154,7 @@ Column {
             spacing: 6
 
             Text {
+                textFormat: Text.PlainText
                 text: "Sylvaris " + root.version
                 color: Theme.text
                 font.family: Tokens.fontUi
@@ -159,6 +163,7 @@ Column {
             }
 
             Text {
+                textFormat: Text.PlainText
                 width: parent.width
                 text: "A Quickshell desktop for Hyprland, niri and sway. Running on " + Compositor.name + (Compositor.usingLua ? " with a Lua config" : "") + "."
                 wrapMode: Text.Wrap
@@ -168,6 +173,7 @@ Column {
             }
 
             Text {
+                textFormat: Text.PlainText
                 width: parent.width
                 text: Config.dir
                 elide: Text.ElideMiddle
@@ -194,6 +200,7 @@ Column {
             }
 
             Text {
+                textFormat: Text.PlainText
                 width: parent.width
                 topPadding: 6
                 text: "The constellation idea is inspired by ilyamiro/serpantinum. AirPods support follows the accessory protocol documented by LibrePods. Weather by Open-Meteo."

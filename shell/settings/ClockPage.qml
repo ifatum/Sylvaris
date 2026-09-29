@@ -16,6 +16,7 @@ Column {
             title: "Source"
 
             Text {
+                textFormat: Text.PlainText
                 text: Sky.source === "config" ? "config.json" : Sky.source === "timezone" ? "Time zone (" + Sky.zone + ")" : "Unknown"
                 color: Theme.textSoft
                 font.family: Tokens.fontUi
@@ -28,6 +29,7 @@ Column {
             last: true
 
             Text {
+                textFormat: Text.PlainText
                 text: Sky.available ? Sky.latitude.toFixed(2) + ", " + Sky.longitude.toFixed(2) : "—"
                 color: Theme.textSoft
                 font.family: Tokens.fontMono

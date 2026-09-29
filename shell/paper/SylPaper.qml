@@ -98,6 +98,7 @@ Popup {
                 width: parent.width - 40 - resetButton.width - scopeSwitch.width - 42
 
                 Text {
+                    textFormat: Text.PlainText
                     text: "SylPaper"
                     color: Theme.text
                     font.family: Tokens.fontUi
@@ -106,6 +107,7 @@ Popup {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     width: parent.width
                     text: root.scope === "output" && root.screenInfo ? "Only " + root.screenInfo.name + " · " + folder.count + " images in " + root.cfg.folder : "For the " + (Theme.theme.name || Theme.currentId) + " theme · " + folder.count + " images in " + root.cfg.folder
                     elide: Text.ElideMiddle
@@ -213,6 +215,7 @@ Popup {
                         }
 
                         Text {
+                            textFormat: Text.PlainText
                             anchors.centerIn: parent
                             width: parent.width - 16
                             horizontalAlignment: Text.AlignHCenter
@@ -235,6 +238,7 @@ Popup {
             }
 
             Text {
+                textFormat: Text.PlainText
                 anchors.centerIn: parent
                 visible: folder.count === 0
                 text: "No images in " + root.cfg.folder

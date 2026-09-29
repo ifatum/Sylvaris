@@ -51,6 +51,7 @@ Item {
         spacing: 4
 
         Text {
+            textFormat: Text.PlainText
             anchors.horizontalCenter: parent.horizontalCenter
             text: Qt.formatTime(new Date(root.lock.now), root.lock.cfg.seconds ? "HH:mm:ss" : "HH:mm")
             color: Theme.text
@@ -63,6 +64,7 @@ Item {
         }
 
         Text {
+            textFormat: Text.PlainText
             anchors.horizontalCenter: parent.horizontalCenter
             text: Qt.formatDate(new Date(root.lock.now), "dddd, d MMMM")
             color: Theme.textSoft
@@ -89,6 +91,7 @@ Item {
     }
 
     Text {
+        textFormat: Text.PlainText
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 36

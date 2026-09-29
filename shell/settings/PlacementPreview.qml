@@ -71,6 +71,7 @@ MiniScreen {
             }
 
             Text {
+                textFormat: Text.PlainText
                 anchors.centerIn: parent
                 text: modelData.label
                 color: index === 2 ? Theme.onAccent : Theme.textSoft

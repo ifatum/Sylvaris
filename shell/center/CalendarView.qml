@@ -138,6 +138,7 @@ Item {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     anchors.centerIn: parent
                     text: modelData.day
                     color: parent.isToday ? Theme.onAccent : Theme.text

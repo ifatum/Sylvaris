@@ -68,6 +68,7 @@ Item {
         }
 
         Text {
+            textFormat: Text.PlainText
             visible: root.label !== "" && !root.compact
             anchors.verticalCenter: parent.verticalCenter
             text: root.label
@@ -99,6 +100,7 @@ Item {
         }
 
         Text {
+            textFormat: Text.PlainText
             id: badgeText
             anchors.centerIn: parent
             text: root.badge > 99 ? "99+" : root.badge

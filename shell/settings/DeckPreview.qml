@@ -53,6 +53,7 @@ MiniScreen {
     }
 
     Text {
+        textFormat: Text.PlainText
         anchors.centerIn: parent
         visible: root.deck.enabled && root.hidden
         text: root.deck.hide === "windows" ? "Hidden while windows are open" : "Hidden until the pointer reaches the edge"

@@ -221,6 +221,7 @@ Item {
                 id: clockColumn
 
                 Text {
+                    textFormat: Text.PlainText
                     text: Qt.formatTime(root.now, "HH:mm")
                     color: Theme.text
                     font.family: Tokens.fontMono
@@ -236,6 +237,7 @@ Item {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     text: Qt.formatDate(root.now, "ddd, d MMM")
                     color: Theme.textDim
                     font.family: Tokens.fontUi
@@ -252,6 +254,7 @@ Item {
                 color: Theme.accent
 
                 Text {
+                    textFormat: Text.PlainText
                     anchors.centerIn: parent
                     visible: !avatar.ready
                     text: (Quickshell.env("USER") || "?").charAt(0).toUpperCase()
@@ -275,6 +278,7 @@ Item {
         }
 
         Text {
+            textFormat: Text.PlainText
             width: parent.width
             visible: text !== ""
             text: Config.notice !== "" ? Config.notice : Settings.notice !== "" ? Settings.notice : Resin.notice !== "" ? Resin.notice : (Theme.errors.length > 0 ? Theme.errors[0] : "")

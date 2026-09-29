@@ -259,6 +259,7 @@ Popup {
             }
 
             Text {
+                textFormat: Text.PlainText
                 anchors.verticalCenter: parent.verticalCenter
                 text: "Clipboard"
                 color: Theme.text
@@ -268,6 +269,7 @@ Popup {
             }
 
             Text {
+                textFormat: Text.PlainText
                 anchors.verticalCenter: parent.verticalCenter
                 text: root.history.length === 0 ? "" : root.history.length + (root.history.length === 1 ? " item" : " items")
                 color: Theme.textDim
@@ -300,6 +302,7 @@ Popup {
         }
 
         Text {
+            textFormat: Text.PlainText
             anchors.centerIn: list
             visible: root.shownList.length === 0
             text: root.history.length === 0 ? "Copy something and it shows up here." : "Nothing matches."
@@ -349,6 +352,7 @@ Popup {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     x: 14
                     anchors.verticalCenter: parent.verticalCenter
                     width: parent.width - tools.width - 28

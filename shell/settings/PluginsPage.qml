@@ -31,6 +31,7 @@ Column {
         note: "Diver and AirPods come with Sylvaris and stay off until you turn them on. Your own plugins live in " + Plugins.dir + ". They run with the same rights as Sylvaris, so only turn on ones you trust. A bar plugin shows up once you add plugin:<id> to a bar group; a panel opens with “sylvaris plugins open <id>”."
 
         Text {
+            textFormat: Text.PlainText
             visible: Plugins.list.every(p => p.builtin === true)
             width: parent.width
             topPadding: 4
@@ -163,6 +164,7 @@ Column {
             spacing: 8
 
             Text {
+                textFormat: Text.PlainText
                 width: parent.width
                 wrapMode: Text.Wrap
                 text: Plugins.pending === null ? "" : "Ready to install " + Plugins.pending.id + " from " + Plugins.pending.url
@@ -172,6 +174,7 @@ Column {
             }
 
             Text {
+                textFormat: Text.PlainText
                 width: parent.width
                 wrapMode: Text.WrapAnywhere
                 text: Plugins.pending === null ? "" : "Commit " + Plugins.pending.commit
@@ -181,6 +184,7 @@ Column {
             }
 
             Text {
+                textFormat: Text.PlainText
                 width: parent.width
                 wrapMode: Text.Wrap
                 text: P.INSTALL_WARNING
@@ -207,6 +211,7 @@ Column {
         }
 
         Text {
+            textFormat: Text.PlainText
             width: parent.width
             visible: text !== ""
             topPadding: 8

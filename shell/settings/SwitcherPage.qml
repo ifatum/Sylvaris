@@ -82,6 +82,7 @@ Column {
                         }
 
                         Text {
+                            textFormat: Text.PlainText
                             anchors.bottom: parent.bottom
                             anchors.bottomMargin: 8
                             width: parent.width

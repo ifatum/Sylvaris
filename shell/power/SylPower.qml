@@ -373,6 +373,7 @@ Scope {
                     spacing: 4
 
                     Text {
+                        textFormat: Text.PlainText
                         anchors.horizontalCenter: parent.horizontalCenter
                         text: Quickshell.env("USER") || ""
                         color: Theme.text
@@ -382,6 +383,7 @@ Scope {
                     }
 
                     Text {
+                        textFormat: Text.PlainText
                         anchors.horizontalCenter: parent.horizontalCenter
                         text: root.uptimeText
                         color: Theme.textDim
@@ -467,6 +469,7 @@ Scope {
                         }
 
                         Text {
+                            textFormat: Text.PlainText
                             anchors.horizontalCenter: parent.horizontalCenter
                             anchors.bottom: parent.bottom
                             anchors.bottomMargin: 26
@@ -478,6 +481,7 @@ Scope {
                         }
 
                         Text {
+                            textFormat: Text.PlainText
                             anchors.horizontalCenter: parent.horizontalCenter
                             anchors.top: parent.bottom
                             anchors.topMargin: 14
@@ -519,6 +523,7 @@ Scope {
                         spacing: 6
 
                         Text {
+                            textFormat: Text.PlainText
                             id: title
                             text: root.meta === null ? "" : root.pending !== "" ? root.meta.verb + "…" : root.meta.label
                             color: Qt.alpha(root.pending !== "" ? Theme.danger : Theme.text, 0.92)
@@ -529,6 +534,7 @@ Scope {
                         }
 
                         Text {
+                            textFormat: Text.PlainText
                             text: root.meta === null ? "" : root.pending !== "" ? "Press again to do it now, Esc to stay" : root.meta.about
                             color: Theme.textDim
                             font.family: Tokens.fontUi
@@ -550,6 +556,7 @@ Scope {
                     }
 
                     Text {
+                        textFormat: Text.PlainText
                         id: hint
                         anchors.centerIn: parent
                         text: "◀ ▶ choose · Enter confirm · letters jump · Esc close"

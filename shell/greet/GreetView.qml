@@ -71,6 +71,7 @@ Item {
         spacing: 4
 
         Text {
+            textFormat: Text.PlainText
             anchors.horizontalCenter: parent.horizontalCenter
             text: Qt.formatTime(new Date(root.greet.now), "HH:mm")
             color: Theme.text
@@ -83,6 +84,7 @@ Item {
         }
 
         Text {
+            textFormat: Text.PlainText
             anchors.horizontalCenter: parent.horizontalCenter
             text: Qt.formatDate(new Date(root.greet.now), "dddd, d MMMM")
             color: Theme.textSoft
@@ -196,6 +198,7 @@ Item {
                         color: chosen ? Theme.accent : pickArea.containsMouse ? Theme.tintStrong : "transparent"
 
                         Text {
+                            textFormat: Text.PlainText
                             anchors.left: parent.left
                             anchors.leftMargin: 14
                             anchors.verticalCenter: parent.verticalCenter
@@ -245,6 +248,7 @@ Item {
             }
 
             Text {
+                textFormat: Text.PlainText
                 anchors.verticalCenter: parent.verticalCenter
                 visible: root.greet.sessions.length > 1
                 text: "Session · F2 opens the list · ↑ ↓ change the user"

@@ -106,6 +106,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
 
             Text {
+                textFormat: Text.PlainText
                 width: parent.width
                 text: root.title
                 elide: Text.ElideRight
@@ -116,6 +117,7 @@ Item {
             }
 
             Text {
+                textFormat: Text.PlainText
                 width: parent.width
                 text: root.subtitle
                 elide: Text.ElideRight

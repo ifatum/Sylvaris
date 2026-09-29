@@ -38,6 +38,7 @@ Column {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     anchors.verticalCenter: parent.verticalCenter
                     text: Headphones.name
                     color: Theme.text
@@ -47,6 +48,7 @@ Column {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     anchors.verticalCenter: parent.verticalCenter
                     visible: !Headphones.connected
                     text: "connecting…"
@@ -112,6 +114,7 @@ Column {
                         }
 
                         Text {
+                            textFormat: Text.PlainText
                             x: (parent.width - width) / 2
                             y: 35 - height / 2
                             text: ring.b === null ? "—" : ring.b.level + "%"
@@ -134,6 +137,7 @@ Column {
                             }
 
                             Text {
+                                textFormat: Text.PlainText
                                 text: modelData.charAt(0).toUpperCase() + modelData.slice(1)
                                 color: Theme.textDim
                                 font.family: Tokens.fontUi
@@ -145,6 +149,7 @@ Column {
             }
 
             Text {
+                textFormat: Text.PlainText
                 visible: Headphones.connected
                 text: "Listening mode"
                 color: Theme.textDim
@@ -195,6 +200,7 @@ Column {
                     }
 
                     Text {
+                        textFormat: Text.PlainText
                         anchors.verticalCenter: parent.verticalCenter
                         text: "Conversation awareness"
                         color: Theme.text
@@ -212,6 +218,7 @@ Column {
             }
 
             Text {
+                textFormat: Text.PlainText
                 width: parent.width
                 visible: !Headphones.connected && Headphones.error !== ""
                 text: "Couldn't talk to the AirPods: " + Headphones.error + ". Retrying…"
@@ -224,6 +231,7 @@ Column {
     }
 
     Text {
+        textFormat: Text.PlainText
         width: parent.width
         visible: Headphones.device === null
         text: "Connect AirPods to change listening modes and conversation awareness here."

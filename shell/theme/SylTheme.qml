@@ -596,6 +596,7 @@ Scope {
                     }
 
                     Text {
+                        textFormat: Text.PlainText
                         anchors.left: searchIcon.right
                         anchors.leftMargin: 18
                         anchors.right: countText.left
@@ -632,6 +633,7 @@ Scope {
                     }
 
                     Text {
+                        textFormat: Text.PlainText
                         id: countText
                         anchors.right: parent.right
                         anchors.rightMargin: 30
@@ -644,6 +646,7 @@ Scope {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     visible: carousel.count === 0
                     anchors.centerIn: parent
                     opacity: root.phase(0.28, 0.66)
@@ -674,6 +677,7 @@ Scope {
                         }
 
                         Text {
+                            textFormat: Text.PlainText
                             id: nameText
                             text: root.shownName
                             color: Qt.alpha(root.frontEntry === null ? Theme.text : root.frontEntry.colors.text, 0.92)
@@ -690,6 +694,7 @@ Scope {
                         }
 
                         Text {
+                            textFormat: Text.PlainText
                             text: root.shownDescription
                             color: root.frontEntry === null ? Theme.textDim : root.frontEntry.colors.textDim
                             font.family: Tokens.fontUi
@@ -727,6 +732,7 @@ Scope {
                     }
 
                     Text {
+                        textFormat: Text.PlainText
                         id: applyLabel
                         anchors.centerIn: parent
                         text: "Apply theme"
@@ -761,6 +767,7 @@ Scope {
                     }
 
                     Text {
+                        textFormat: Text.PlainText
                         id: hint
                         anchors.centerIn: parent
                         text: Theme.hookError !== "" ? Theme.hookError : "◀ ▶ switch · type to search · Enter apply · Esc cancel"

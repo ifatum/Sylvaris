@@ -264,6 +264,7 @@ Item {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     visible: root.error !== ""
                     text: root.error
                     color: Theme.danger
@@ -323,6 +324,7 @@ Item {
                     }
 
                     Text {
+                        textFormat: Text.PlainText
                         anchors.fill: notesEdit
                         visible: notesEdit.text === ""
                         text: "Notes, links, markdown works"
@@ -444,6 +446,7 @@ Item {
                     spacing: 10
 
                     Text {
+                        textFormat: Text.PlainText
                         anchors.verticalCenter: parent.verticalCenter
                         text: "every"
                         color: Theme.textDim
@@ -571,6 +574,7 @@ Item {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     visible: root.draft !== null && !root.draft.time
                     text: "Set a start time to get reminders."
                     color: Theme.textDim
@@ -621,6 +625,7 @@ Item {
                     }
 
                     Text {
+                        textFormat: Text.PlainText
                         anchors.verticalCenter: parent.verticalCenter
                         text: "Alarm · rings until you stop it"
                         color: Theme.text
@@ -772,6 +777,7 @@ Item {
                         }
 
                         Text {
+                            textFormat: Text.PlainText
                             width: form.width - 70
                             text: stepRow.modelData.text
                             elide: Text.ElideRight
@@ -832,6 +838,7 @@ Item {
                 spacing: 10
 
                 Text {
+                    textFormat: Text.PlainText
                     anchors.verticalCenter: parent.verticalCenter
                     text: "Discard your changes?"
                     color: Theme.danger

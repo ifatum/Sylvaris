@@ -769,6 +769,7 @@ Scope {
                     }
 
                     Text {
+                        textFormat: Text.PlainText
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.bottom: parent.bottom
                         anchors.bottomMargin: 30
@@ -830,6 +831,7 @@ Scope {
                         }
 
                         Text {
+                            textFormat: Text.PlainText
                             visible: root.cons.labels || star.hot
                             anchors.horizontalCenter: parent.horizontalCenter
                             anchors.top: parent.bottom
@@ -863,6 +865,7 @@ Scope {
             }
 
             Text {
+                textFormat: Text.PlainText
                 x: hub.cx - width / 2
                 y: win.height - 120
                 visible: root.dive < 0.99
@@ -955,6 +958,7 @@ Scope {
                     }
 
                     Text {
+                        textFormat: Text.PlainText
                         anchors.verticalCenter: parent.verticalCenter
                         text: root.shownSection === "" ? "" : root.sectionInfo(root.shownSection).label
                         color: Theme.text

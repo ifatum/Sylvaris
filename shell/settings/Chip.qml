@@ -61,6 +61,7 @@ Item {
         }
 
         Text {
+            textFormat: Text.PlainText
             anchors.verticalCenter: parent.verticalCenter
             text: root.text
             color: root.lit ? Theme.onAccent : Theme.text

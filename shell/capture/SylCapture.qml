@@ -278,6 +278,7 @@ Popup {
                     }
 
                     Text {
+                        textFormat: Text.PlainText
                         anchors.verticalCenter: parent.verticalCenter
                         text: root.started ? K.elapsed(root.tick - root.recordStart) : "Starts in " + Math.max(1, Math.ceil((root.waitUntil - root.tick) / 1000))
                         color: Theme.text
@@ -329,6 +330,7 @@ Popup {
             }
 
             Text {
+                textFormat: Text.PlainText
                 anchors.verticalCenter: parent.verticalCenter
                 text: "Capture"
                 color: Theme.text
@@ -374,6 +376,7 @@ Popup {
                 }
 
                 Text {
+                    textFormat: Text.PlainText
                     anchors.verticalCenter: parent.verticalCenter
                     text: "Edit last"
                     color: Theme.text
@@ -481,6 +484,7 @@ Popup {
                         }
 
                         Text {
+                            textFormat: Text.PlainText
                             anchors.horizontalCenter: parent.horizontalCenter
                             text: tile.modelData.label
                             color: tileArea.containsMouse ? Theme.onAccent : Theme.text
@@ -512,6 +516,7 @@ Popup {
                 visible: root.kind === "shot"
 
                 Text {
+                    textFormat: Text.PlainText
                     anchors.verticalCenter: parent.verticalCenter
                     width: 110
                     text: "Delay"
@@ -536,6 +541,7 @@ Popup {
                 visible: root.kind === "video"
 
                 Text {
+                    textFormat: Text.PlainText
                     anchors.verticalCenter: parent.verticalCenter
                     width: 110
                     text: "Desktop sound"
@@ -551,6 +557,7 @@ Popup {
             }
 
             Text {
+                textFormat: Text.PlainText
                 width: parent.width - (editPill.visible ? editPill.width + 12 : 0)
                 text: root.problem !== "" ? root.problem : root.kind === "video" ? "Saves to " + root.cfg.videos : (root.cfg.copy ? "Copies to the clipboard" : "") + (root.cfg.copy && root.cfg.save ? " and saves to " : root.cfg.save ? "Saves to " : "") + (root.cfg.save ? root.cfg.folder : "")
                 elide: Text.ElideMiddle

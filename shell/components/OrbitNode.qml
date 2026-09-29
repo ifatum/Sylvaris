@@ -70,6 +70,7 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
 
             Text {
+                textFormat: Text.PlainText
                 width: Math.min(implicitWidth, Tokens.nodeLabelMax)
                 text: root.label
                 elide: Text.ElideRight
@@ -86,6 +87,7 @@ Rectangle {
             }
 
             Text {
+                textFormat: Text.PlainText
                 visible: root.sub !== ""
                 width: Math.min(implicitWidth, Tokens.nodeLabelMax)
                 text: root.sub

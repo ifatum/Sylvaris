@@ -74,6 +74,7 @@ Popup {
             }
 
             Text {
+                textFormat: Text.PlainText
                 anchors.verticalCenter: parent.verticalCenter
                 text: "Plugins"
                 color: Theme.text
@@ -84,6 +85,7 @@ Popup {
         }
 
         Text {
+            textFormat: Text.PlainText
             visible: root.panels.length === 0
             width: parent.width
             wrapMode: Text.Wrap

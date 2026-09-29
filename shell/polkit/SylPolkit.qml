@@ -208,6 +208,7 @@ Scope {
                         }
 
                         Text {
+                            textFormat: Text.PlainText
                             anchors.verticalCenter: parent.verticalCenter
                             text: "Authentication required"
                             color: Theme.text
@@ -218,6 +219,7 @@ Scope {
                     }
 
                     Text {
+                        textFormat: Text.PlainText
                         width: parent.width
                         wrapMode: Text.Wrap
                         text: root.shown ? root.flow.message : ""
@@ -228,6 +230,7 @@ Scope {
                     }
 
                     Text {
+                        textFormat: Text.PlainText
                         width: parent.width
                         visible: text !== ""
                         elide: Text.ElideMiddle

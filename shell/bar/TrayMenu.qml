@@ -126,6 +126,7 @@ PopupWindow {
         }
 
         Text {
+            textFormat: Text.PlainText
             x: row.glyph !== "" || row.icon !== "" ? 38 : 12
             anchors.verticalCenter: parent.verticalCenter
             width: parent.width - x - (row.trailing || row.checkable ? 34 : 12)
@@ -173,6 +174,7 @@ PopupWindow {
         }
 
         Text {
+            textFormat: Text.PlainText
             width: parent.width
             height: 30
             leftPadding: 12

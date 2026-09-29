@@ -40,6 +40,7 @@ Item {
 
         Text {
             anchors.verticalCenter: parent.verticalCenter
+            textFormat: Text.PlainText
             text: Math.floor(root.seconds / 3600) + "h " + Math.floor(root.seconds % 3600 / 60) + "m"
             color: Theme.text
             font.family: Tokens.fontUi

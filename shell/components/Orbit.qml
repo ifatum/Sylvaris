@@ -122,6 +122,7 @@ Item {
             spacing: 2
 
             Text {
+                textFormat: Text.PlainText
                 x: (parent.width - width) / 2
                 width: Math.min(implicitWidth, 260)
                 horizontalAlignment: Text.AlignHCenter
@@ -134,6 +135,7 @@ Item {
             }
 
             Text {
+                textFormat: Text.PlainText
                 x: (parent.width - width) / 2
                 width: Math.min(implicitWidth, 260)
                 horizontalAlignment: Text.AlignHCenter

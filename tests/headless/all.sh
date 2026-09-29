@@ -22,7 +22,7 @@ for steps in "$here"/*.steps; do
     if [ "$name" = fatest ]; then
         extra=(env PATH="$here/fake-fatest:$PATH")
     fi
-    if [ "$name" = keybinds-sync ]; then
+    if [ "$name" = keybinds-sync ] || [ "$name" = remote-text ]; then
         extra=(env SYLVARIS_DEMO=0)
     fi
     if [ "$name" = lock ]; then

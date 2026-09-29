@@ -55,6 +55,7 @@ Item {
             }
 
             Text {
+                textFormat: Text.PlainText
                 width: parent.width - 72
                 height: 36
                 horizontalAlignment: Text.AlignHCenter
@@ -129,6 +130,7 @@ Item {
                     }
 
                     Text {
+                        textFormat: Text.PlainText
                         anchors.centerIn: parent
                         visible: cell.date > 0
                         text: cell.date
@@ -168,6 +170,7 @@ Item {
         height: parent.height
 
         Text {
+            textFormat: Text.PlainText
             id: dayTitle
             height: 36
             verticalAlignment: Text.AlignVCenter
@@ -207,6 +210,7 @@ Item {
                 spacing: 6
 
                 Text {
+                    textFormat: Text.PlainText
                     visible: root.items.length === 0
                     topPadding: 12
                     text: "Nothing on this day yet."

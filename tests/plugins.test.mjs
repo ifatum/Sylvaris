@@ -28,6 +28,7 @@ test("parseScan reads the plugin folder listing", () => {
 
 test("skeleton makes a working starter plugin", () => {
     const files = skeleton("my-widget", "bar")
+    assert.match(files["Plugin.qml"], /textFormat: Text\.PlainText/)
     assert.equal(JSON.parse(files["plugin.json"]).id, "my-widget")
     assert.ok(files["Plugin.qml"].indexOf("property var api") >= 0)
     assert.equal(checkManifest(JSON.parse(files["plugin.json"]), "my-widget").ok, true)

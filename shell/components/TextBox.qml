@@ -47,6 +47,7 @@ Rectangle {
     }
 
     Text {
+        textFormat: Text.PlainText
         anchors.fill: input
         verticalAlignment: Text.AlignVCenter
         visible: input.text === ""
