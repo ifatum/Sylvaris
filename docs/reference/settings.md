@@ -242,7 +242,7 @@ Explained in [island](../parts/island.md).
 | `island.calls` | `true` |  |
 | `island.keepPaused` | `true` |  |
 | `island.hover` | `true` |  |
-| `island.seconds` | `3` |  |
+| `island.seconds` | `5` |  |
 | `island.position` | `"top-center"` | yes |
 | `island.idle` | `"pill"` | yes |
 | `island.reveal` | `"always"` | yes |
