@@ -477,6 +477,13 @@ ShellRoot {
             peers: root.parts
             live: root.live
             avoid: root.openPanel
+            onInsetChanged: {
+                for (const name of Object.keys(root.parts)) {
+                    const p = root.part(name);
+                    if (p !== null && p.fromInset !== undefined && p.from !== "")
+                        p.fromInset = islandPart.inset;
+                }
+            }
             onRequested: part => {
                 const p = root.part(part);
                 if (p !== null && p.toggleFrom !== undefined)

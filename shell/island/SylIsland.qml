@@ -40,7 +40,10 @@ Scope {
     readonly property var screenInfo: Compositor.screenFor(Compositor.focusedName())
     readonly property var capture: root.peers.capture === undefined ? null : root.peers.capture
     readonly property bool recording: root.capture !== null && root.capture.recording
-    readonly property int inset: 48
+    readonly property real inset: {
+        const h = I.cardHeight(root.items.map(a => a.kind), root.shortcutsOf(root.cfg.shortcuts).length > 0);
+        return (h > 0 ? h : 38) + 8;
+    }
     readonly property bool covered: root.avoid !== null && !root.avoid.docked && root.avoid.corner === root.cfg.position && root.screenInfo !== null && root.avoid.screen === root.screenInfo.name
     readonly property bool docked: root.avoid !== null && root.avoid.docked === true && root.screenInfo !== null && root.avoid.screen === root.screenInfo.name
     readonly property var call: {
@@ -602,7 +605,7 @@ Scope {
                 y: Math.round(win.place.top ? win.inset - (1 - win.reveal) * (height + win.inset + 4) : parent.height - height - win.inset + (1 - win.reveal) * (height + win.inset + 4))
                 items: root.items
                 shortcuts: root.shortcutsOf(win.wcfg.shortcuts)
-                expanded: !win.docked && (root.pinned === win.name || root.cfg.hover && root.hotScreen === win.name)
+                expanded: win.docked || root.pinned === win.name || root.cfg.hover && root.hotScreen === win.name
                 atTop: win.place.top
                 idle: win.wcfg.idle
                 time: root.time
