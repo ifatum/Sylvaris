@@ -1,7 +1,7 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
 import { readFileSync } from "node:fs"
-import { PART_PACKAGES, PACKAGE_BINS, CORE_BINS, allBins, missingTools, gpuName, problems, report, parseFacts } from "../shell/lib/doctor.mjs"
+import { PART_PACKAGES, PACKAGE_BINS, CORE_BINS, FONTS, allBins, missingTools, missingFonts, gpuName, problems, report, parseFacts } from "../shell/lib/doctor.mjs"
 import { PARTS } from "../shell/lib/settings.mjs"
 
 test("PART_PACKAGES matches partTools in nix/package.nix", () => {
@@ -99,4 +99,16 @@ test("the version in lib/version.mjs matches nix/package.nix", async () => {
     const { VERSION } = await import("../shell/lib/version.mjs")
     const nix = readFileSync(new URL("../nix/package.nix", import.meta.url), "utf8")
     assert.equal(/version = "([^"]+)";/.exec(nix)[1], VERSION)
+})
+
+test("missingFonts names the fonts Qt cannot find", () => {
+    assert.deepEqual(FONTS, ["Inter", "JetBrainsMono Nerd Font"])
+    assert.deepEqual(missingFonts(["DejaVu Sans", "Inter"]), ["JetBrainsMono Nerd Font"])
+    assert.deepEqual(missingFonts(["inter", "JetBrainsMono Nerd Font Mono", "JetBrainsMono Nerd Font"]), [])
+})
+
+test("report lists missing fonts only when the families are known", () => {
+    assert.match(report(Object.assign({}, facts, { fonts: ["Inter"] })), /^Missing fonts: JetBrainsMono Nerd Font \(icons show as empty boxes\)$/m)
+    assert.match(report(Object.assign({}, facts, { fonts: ["Inter", "JetBrainsMono Nerd Font"] })), /^Missing fonts: none$/m)
+    assert.doesNotMatch(report(facts), /Missing fonts/)
 })

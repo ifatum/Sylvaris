@@ -24,6 +24,7 @@ ShellRoot {
             return;
         const text = D.report(Object.assign({
             version: V.VERSION,
+            fonts: Qt.fontFamilies(),
             config: {
                 path: root.dir + "/config.json",
                 text: root.files.config

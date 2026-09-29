@@ -71,6 +71,13 @@ export function allBins() {
     return unique(out)
 }
 
+export const FONTS = ["Inter", "JetBrainsMono Nerd Font"]
+
+export function missingFonts(families) {
+    const have = new Set(Array.from(families || [], f => String(f).toLowerCase()))
+    return FONTS.filter(f => !have.has(f.toLowerCase()))
+}
+
 export function missingTools(parts, present) {
     const out = {}
     const core = CORE_BINS.filter(b => present.indexOf(b) < 0)
@@ -161,6 +168,10 @@ export function report(f) {
         lines.push("Missing tools:")
     for (const k of keys)
         lines.push("  " + k + ": " + missing[k].join(", "))
+    if (f.fonts) {
+        const fonts = missingFonts(f.fonts).map(n => n === "JetBrainsMono Nerd Font" ? n + " (icons show as empty boxes)" : n)
+        lines.push("Missing fonts: " + (fonts.length === 0 ? "none" : fonts.join(", ")))
+    }
     return lines.concat(fileLines("config.json", f.config, migrateConfig, v => problems(v, validateConfig(v))))
         .concat(fileLines("settings.json", f.settings, migrateSettings, v => problems(v, effectiveSettings({}, v))))
         .join("\n")

@@ -7,6 +7,7 @@ check grep -q '^Quickshell: Quickshell' "$OUT/doctor.txt"
 check grep -q '^Compositor: sway' "$OUT/doctor.txt"
 check grep -q '^Parts off: diver, island$' "$OUT/doctor.txt"
 check grep -q '^Missing tools' "$OUT/doctor.txt"
+check grep -q '^Missing fonts: none$' "$OUT/doctor.txt"
 check grep -q 'clock.corner: "nowhere" is not valid, using "top-center"' "$OUT/doctor.txt"
 check grep -q "^config.json .*: ok$" "$OUT/doctor.txt"
 check [ "$(cat "$HOME/.config/sylvaris/settings.json")" = '{"version":1,"parts":{"diver":false},"clock":{"corner":"nowhere"}}' ]
