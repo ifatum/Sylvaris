@@ -32,6 +32,9 @@ Singleton {
     property string focusTitle: ""
     property real focusEnd: 0
     property int focusMinutes: 0
+    property real focusLeft: 0
+    readonly property bool focusing: root.focusEnd > 0 || root.focusLeft > 0
+    property string energy: "all"
     readonly property bool plugged: Settings.values.plugins.enabled.diver === true
     readonly property bool active: root.plugged && root.cfg.enabled && (root.paired || Demo.enabled)
     readonly property string today: D.dayKey(root.now)
@@ -262,12 +265,13 @@ Singleton {
     }
 
     function startFocus(id: string, minutes: int): void {
-        const hit = D.find(root.data, id);
-        if (hit === null)
+        const hit = id === "" ? null : D.find(root.data, id);
+        if (id !== "" && hit === null)
             throw new Error("no task with id " + id);
-        root.focusMinutes = Math.max(1, Math.min(240, minutes || 25));
+        root.focusMinutes = Math.max(1, Math.min(240, minutes || P.focusLength(hit === null ? null : hit.task)));
         root.focusId = id;
-        root.focusTitle = D.plain(hit.task.text);
+        root.focusTitle = hit === null ? "free time" : D.plain(hit.task.text);
+        root.focusLeft = 0;
         root.focusEnd = Date.now() + root.focusMinutes * 60000;
     }
 
@@ -275,6 +279,37 @@ Singleton {
         root.focusId = "";
         root.focusTitle = "";
         root.focusEnd = 0;
+        root.focusLeft = 0;
+    }
+
+    function pauseFocus(): void {
+        if (root.focusEnd <= 0)
+            return;
+        root.focusLeft = Math.max(1000, root.focusEnd - Date.now());
+        root.focusEnd = 0;
+    }
+
+    function resumeFocus(): void {
+        if (root.focusLeft <= 0)
+            return;
+        root.focusEnd = Date.now() + root.focusLeft;
+        root.focusLeft = 0;
+    }
+
+    function extendFocus(minutes: int): void {
+        if (!root.focusing)
+            throw new Error("nothing to extend; start one with: sylvaris diver focus [id] [minutes]");
+        root.focusMinutes += minutes;
+        if (root.focusEnd > 0)
+            root.focusEnd += minutes * 60000;
+        else
+            root.focusLeft += minutes * 60000;
+    }
+
+    function moveOverdue(): int {
+        let n = 0;
+        root.mutate(d => n = P.moveOverdue(d, Date.now()));
+        return n;
     }
 
     function finishFocus(): void {
@@ -387,10 +422,11 @@ Singleton {
                 start: Qt.formatTime(new Date(root.next.start), "HH:mm")
             },
             alarm: root.alarm,
-            focus: root.focusEnd > 0 ? {
+            focus: root.focusing ? {
                 id: root.focusId,
                 title: root.focusTitle,
-                left: Math.max(0, Math.round((root.focusEnd - Date.now()) / 1000))
+                paused: root.focusEnd <= 0,
+                left: Math.max(0, Math.round((root.focusEnd > 0 ? root.focusEnd - Date.now() : root.focusLeft) / 1000))
             } : null
         };
     }

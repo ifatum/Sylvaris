@@ -153,3 +153,42 @@ test("reminderItems lists the next two weeks of reminders for upload", async () 
     assert.equal(items[0].alarm, true)
     assert.equal(items[0].at, new Date(2026, 8, 25, 9, 30).getTime())
 })
+
+test("chipsOf lists priority, energy, estimate, steps and streak like the web app", async () => {
+    const { chipsOf } = await import("../shell/lib/plan.mjs")
+    assert.equal(chipsOf({ priority: 2, energy: "med", estimate: 30, subtasks: [{ done: true }, { done: false }], streak: 4 }), "!!  ·  ◑ med  ·  ~30 min  ·  1/2 steps  ·  ✦ 4")
+    assert.equal(chipsOf({}), "")
+    assert.equal(chipsOf({ energy: "bogus", subtasks: [] }), "")
+})
+
+test("energyOk keeps tasks with no energy and matches the picked one", async () => {
+    const { energyOk } = await import("../shell/lib/plan.mjs")
+    assert.equal(energyOk({ energy: "high" }, "all"), true)
+    assert.equal(energyOk({}, "low"), true)
+    assert.equal(energyOk({ energy: "high" }, "low"), false)
+    assert.equal(energyOk({ energy: "low" }, "low"), true)
+})
+
+test("doneToday counts tasks finished today", async () => {
+    const { doneToday } = await import("../shell/lib/plan.mjs")
+    const data = sample()
+    data[0].groups[0].subs[1].dives = [{ id: "a", text: "a", done: true, doneAt: NOW - 3600000 }, { id: "b", text: "b", done: true, doneAt: NOW - 3 * 86400000 }]
+    assert.equal(doneToday(data, NOW), 1)
+})
+
+test("moveOverdue puts late one-off tasks on today and leaves the rest", async () => {
+    const { moveOverdue } = await import("../shell/lib/plan.mjs")
+    const data = sample()
+    data[0].groups[0].subs[1].dives = [{ id: "a", text: "a", done: false, due: "2026-09-20" }, { id: "b", text: "b", done: true, due: "2026-09-20" }, { id: "c", text: "c", done: false, due: "2026-09-30" }]
+    assert.equal(moveOverdue(data, NOW), 1)
+    const d = data[0].groups[0].subs[1].dives
+    assert.deepEqual([d[0].due, d[1].due, d[2].due], ["2026-09-24", "2026-09-20", "2026-09-30"])
+    assert.equal(d[0].updatedAt, NOW)
+})
+
+test("focusLength follows the estimate up to 90 minutes, else 25", async () => {
+    const { focusLength } = await import("../shell/lib/plan.mjs")
+    assert.equal(focusLength(null), 25)
+    assert.equal(focusLength({ estimate: 15 }), 15)
+    assert.equal(focusLength({ estimate: 240 }), 90)
+})

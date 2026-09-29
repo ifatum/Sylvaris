@@ -53,7 +53,7 @@ Popup {
 
     function focusTask(id: string): void {
         try {
-            Diver.startFocus(id, 25);
+            Diver.startFocus(id, 0);
         } catch (e) {
             root.fail(e.message);
         }
@@ -69,7 +69,7 @@ Popup {
 
     Timer {
         interval: 1000
-        running: root.shown && Diver.focusEnd > 0
+        running: root.shown && Diver.focusing
         repeat: true
         onTriggered: root.tick = Date.now()
     }
@@ -153,6 +153,14 @@ Popup {
                 glyph: Icons.GLYPHS.pencil
                 onClicked: root.create("", "", "")
             }
+
+            Chip {
+                anchors.verticalCenter: parent.verticalCenter
+                visible: !Diver.focusing
+                text: "Focus"
+                glyph: Icons.GLYPHS.target
+                onClicked: root.focusTask("")
+            }
         }
 
         Text {
@@ -187,11 +195,11 @@ Popup {
         Item {
             id: focusBar
             anchors.top: head.bottom
-            anchors.topMargin: Diver.focusEnd > 0 ? 18 : 0
+            anchors.topMargin: Diver.focusing ? 18 : 0
             width: parent.width
-            height: Diver.focusEnd > 0 ? 44 : 0
-            visible: Diver.focusEnd > 0
-            readonly property int secondsLeft: Math.max(0, Math.round((Diver.focusEnd - root.tick) / 1000))
+            height: Diver.focusing ? 44 : 0
+            visible: Diver.focusing
+            readonly property int secondsLeft: Math.max(0, Math.round((Diver.focusEnd > 0 ? Diver.focusEnd - root.tick : Diver.focusLeft) / 1000))
 
             Glass {
                 anchors.fill: parent
@@ -222,8 +230,8 @@ Popup {
                 textFormat: Text.PlainText
                 x: 44
                 anchors.verticalCenter: parent.verticalCenter
-                width: parent.width - 200
-                text: "Focusing on " + Diver.focusTitle
+                width: parent.width - 290
+                text: (Diver.focusEnd > 0 ? "Focusing on " : "Paused · ") + Diver.focusTitle
                 elide: Text.ElideRight
                 color: Theme.onAccent
                 font.family: Tokens.fontUi
@@ -233,13 +241,55 @@ Popup {
 
             Text {
                 textFormat: Text.PlainText
-                anchors.right: stopGlyph.left
+                anchors.right: moreText.left
                 anchors.rightMargin: 14
                 anchors.verticalCenter: parent.verticalCenter
                 text: Math.floor(focusBar.secondsLeft / 60) + ":" + String(focusBar.secondsLeft % 60).padStart(2, "0")
                 color: Theme.onAccent
                 font.family: Tokens.fontMono
                 font.pixelSize: Tokens.bodySize
+            }
+
+            Text {
+                id: moreText
+                textFormat: Text.PlainText
+                anchors.right: pauseGlyph.left
+                anchors.rightMargin: 14
+                anchors.verticalCenter: parent.verticalCenter
+                text: "+5"
+                color: Theme.onAccent
+                opacity: moreArea.containsMouse ? 1 : 0.75
+                font.family: Tokens.fontMono
+                font.pixelSize: Tokens.smallSize
+
+                MouseArea {
+                    id: moreArea
+                    anchors.fill: parent
+                    anchors.margins: -8
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: Diver.extendFocus(5)
+                }
+            }
+
+            Glyph {
+                id: pauseGlyph
+                anchors.right: stopGlyph.left
+                anchors.rightMargin: 14
+                anchors.verticalCenter: parent.verticalCenter
+                text: Diver.focusEnd > 0 ? Icons.GLYPHS.pause : Icons.GLYPHS.play
+                size: 16
+                color: Theme.onAccent
+                opacity: pauseArea.containsMouse ? 1 : 0.75
+
+                MouseArea {
+                    id: pauseArea
+                    anchors.fill: parent
+                    anchors.margins: -8
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: Diver.focusEnd > 0 ? Diver.pauseFocus() : Diver.resumeFocus()
+                }
             }
 
             Glyph {

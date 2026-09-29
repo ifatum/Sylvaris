@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell
 import qs
 import qs.services
 import qs.components
@@ -14,7 +15,7 @@ Item {
     property string path: ""
     property bool showPath: false
     readonly property var rule: D.ruleOf(JSON.parse(JSON.stringify(root.task)))
-    readonly property string meta: [root.when, root.rule ? "↻ " + P.ruleText(root.rule) : "", root.task.alarm ? "alarm" : "", root.showPath ? root.path : ""].filter(Boolean).join("  ·  ")
+    readonly property string meta: [root.when, root.rule ? "↻ " + P.ruleText(root.rule) : "", root.task.alarm ? "alarm" : "", P.chipsOf(root.task), root.showPath ? root.path : ""].filter(Boolean).join("  ·  ")
 
     signal open
     signal focusRequested
@@ -103,11 +104,27 @@ Item {
         anchors.rightMargin: 12
         anchors.verticalCenter: parent.verticalCenter
         spacing: 4
-        opacity: rowArea.containsMouse || focusArea.containsMouse ? 1 : 0
+        opacity: rowArea.containsMouse || focusArea.containsMouse || copyArea.containsMouse ? 1 : 0
 
         Behavior on opacity {
             NumberAnimation {
                 duration: Tokens.stateDuration
+            }
+        }
+
+        Glyph {
+            text: Icons.GLYPHS.copy
+            size: 16
+            color: copyArea.containsMouse ? Theme.accent : Theme.textDim
+            scale: copyArea.pressed ? 0.85 : 1
+
+            MouseArea {
+                id: copyArea
+                anchors.fill: parent
+                anchors.margins: -8
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: Quickshell.execDetached(["wl-copy", "--", root.task.text])
             }
         }
 

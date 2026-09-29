@@ -319,3 +319,43 @@ export function applyField(draft, field, raw, now) {
 export function reminderItems(data, now) {
     return D.reminders(data, now, now + 14 * D.DAY).map(r => ({ rid: r.rid, at: r.at, title: r.title, alarm: r.alarm }))
 }
+
+export function chipsOf(task) {
+    const t = task || {}
+    const bits = []
+    if ([1, 2, 3].indexOf(t.priority) >= 0)
+        bits.push("!".repeat(t.priority))
+    const glyph = { low: "◔", med: "◑", high: "●" }[t.energy]
+    if (glyph)
+        bits.push(glyph + " " + t.energy)
+    if (Number.isInteger(t.estimate) && t.estimate > 0)
+        bits.push("~" + t.estimate + " min")
+    if (Array.isArray(t.subtasks) && t.subtasks.length > 0)
+        bits.push(t.subtasks.filter(s => s && s.done).length + "/" + t.subtasks.length + " steps")
+    if (Number.isInteger(t.streak) && t.streak > 0)
+        bits.push("✦ " + t.streak)
+    return bits.join("  ·  ")
+}
+
+export function energyOk(task, energy) {
+    return energy === "all" || !task.energy || task.energy === energy
+}
+
+export function doneToday(data, now) {
+    const today = D.dayKey(now)
+    return D.tasks(data).filter(x => x.task.doneAt && D.dayKey(x.task.doneAt) === today).length
+}
+
+export function moveOverdue(data, now) {
+    const late = D.overdue(data, now)
+    const today = D.dayKey(now)
+    for (const x of late) {
+        const list = data[x.ci].groups[x.gi].subs[x.si].dives
+        list[x.ti] = Object.assign({}, list[x.ti], { due: today, updatedAt: now })
+    }
+    return late.length
+}
+
+export function focusLength(task) {
+    return task && Number.isInteger(task.estimate) && task.estimate > 0 ? Math.min(task.estimate, 90) : 25
+}

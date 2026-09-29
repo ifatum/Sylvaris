@@ -885,7 +885,7 @@ Item {
 
                     Chip {
                         visible: root.draft !== null && !root.draft.isNew
-                        text: "Focus 25 min"
+                        text: "Focus " + P.focusLength(root.draft) + " min"
                         glyph: Icons.GLYPHS.target
                         onClicked: {
                             const id = root.draft.id;
@@ -896,7 +896,7 @@ Item {
                             } else {
                                 root.finish();
                             }
-                            Diver.startFocus(id, 25);
+                            Diver.startFocus(id, 0);
                         }
                     }
                 }

@@ -16,9 +16,9 @@ Days with plans get dots in SylClock's and SylCenter's calendars. Clicking a day
 
 ## The planner
 
-`sylvaris diver` opens the planner with three views: Today (overdue, today and the next 7 days), Calendar (the month with busy days and a day agenda) and Lists (categories, sections and lists, each addable, renamable and removable).
+`sylvaris diver` opens the planner with three views: Today (what's next, how many you finished today, an energy filter, then overdue with a button that moves it all to today, today and the next 7 days), Calendar (the month with busy days and a day agenda) and Lists (categories, sections and lists, each addable, renamable and removable).
 
-Clicking a task opens its sheet with everything Diver stores: title, notes, date, start and end, repeats (presets, or every N days, weeks, months or years on chosen weekdays, ending never, on a date or after N times), reminders, alarm, list, priority, energy, estimate and steps. Unsaved changes are never dropped: Esc or Cancel asks first. Ctrl+Enter saves, Ctrl+1, 2 and 3 switch views, and Ctrl+N starts a new task. The target button on a task starts a focus session with a countdown and a notification at the end.
+Clicking a task opens its sheet with everything Diver stores: title, notes, date, start and end, repeats (presets, or every N days, weeks, months or years on chosen weekdays, ending never, on a date or after N times), reminders, alarm, list, priority, energy, estimate and steps. Unsaved changes are never dropped: Esc or Cancel asks first. Ctrl+Enter saves, Ctrl+1, 2 and 3 switch views, and Ctrl+N starts a new task. Rows show priority, energy, estimate, steps and streak, and have buttons to copy the task's text and to focus on it. A focus session lasts the task's estimate (up to 90 minutes, else 25), or start one without a task with **Focus**; it can be paused, resumed and stretched by 5 minutes, and ends with a notification.
 
 SylClock and SylCenter hand off to it. In a day's plan, clicking a task opens its sheet, the pencil beside "Add to this day" opens a new one for that day with what you typed, and **Diver ›** opens the calendar on that day.
 
@@ -29,7 +29,8 @@ sylvaris diver add "call Ana tomorrow 9:00"   # capture into the inbox
 sylvaris diver today                          # also: next
 sylvaris diver done <id>
 sylvaris diver snooze <id> <minutes>
-sylvaris diver focus <id> [minutes]           # also: unfocus
+sylvaris diver focus [id] [minutes]           # also: pause, resume, more [minutes], unfocus
+sylvaris diver late                           # move everything overdue to today
 sylvaris diver sync
 sylvaris diver test                           # ring a test alarm
 ```

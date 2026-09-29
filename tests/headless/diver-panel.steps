@@ -34,6 +34,21 @@ syl diver view today
 sleep 1.2
 shot diver-focus
 syl state diver
+syl diver pause
+sleep 1.2
+check sylvaris state diver | grep -q '"paused":true'
+syl diver more 5
+check sylvaris state diver | grep -Eq '"left":(119[0-9]|1200)'
+syl diver resume
+check sylvaris state diver | grep -q '"paused":false'
+sleep 0.5
+shot diver-focus-resumed
+syl diver unfocus
+syl diver set t1 due 2026-01-01
+syl diver late
+check ! sylvaris diver today | grep -q '2026-01-01'
+syl diver focus
+check sylvaris state diver | grep -q '"title":"free time"'
 syl diver unfocus
 syl diver delete t3
 syl diver list remove 2

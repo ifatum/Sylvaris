@@ -715,8 +715,12 @@ ShellRoot {
                 move: (id, where) => Diver.move(id || "", where || ""),
                 list: (verb, path, ...name) => Diver.listOp(verb || "", path === undefined ? "" : path, name.join(" ")),
                 lists: () => Diver.lists(),
-                focus: (id, minutes) => Diver.startFocus(id || "", Number(minutes || 25)),
+                focus: (id, minutes) => Diver.startFocus(id || "", Number(minutes || 0)),
                 unfocus: () => Diver.stopFocus(),
+                pause: () => Diver.pauseFocus(),
+                resume: () => Diver.resumeFocus(),
+                more: minutes => Diver.extendFocus(Number(minutes || 5)),
+                late: () => Diver.moveOverdue(),
                 pair: code => Diver.pair(code || ""),
                 unpair: () => Diver.unpair(),
                 add: (...words) => {
