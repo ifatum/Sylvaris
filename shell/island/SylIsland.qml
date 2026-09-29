@@ -93,7 +93,7 @@ Scope {
             text: f.body,
             art: picture !== "" ? picture : icon,
             reply: e.n.hasInlineReply === true,
-            placeholder: e.n.inlineReplyPlaceholder || "Reply",
+            placeholder: e.n.summary !== "" ? "Reply to " + e.n.summary : e.n.inlineReplyPlaceholder || "Reply",
             accept: acts.accept,
             decline: acts.decline,
             read: acts.read,
@@ -238,15 +238,15 @@ Scope {
     }
 
     function chat(a: var, what: string): void {
-        if (a === null || Notifications.entry(a.id) === null)
+        if (what === "cancel" || a === null || Notifications.entry(a.id) === null) {
+            root.replyTo = -1;
+            if (a !== null && root.flash !== null && root.flash.id === a.id && what !== "cancel")
+                root.flash = null;
             return;
+        }
         if (what === "reply") {
             root.replyTo = a.id;
             root.pinned = root.hotScreen !== "" ? root.hotScreen : root.focusedName;
-            return;
-        }
-        if (what === "cancel") {
-            root.replyTo = -1;
             return;
         }
         if (what.indexOf("send:") === 0) {
@@ -276,6 +276,7 @@ Scope {
         return {
             expanded: root.expanded,
             covered: root.covered,
+            replying: root.replyTo >= 0,
             position: root.cfg.position,
             screen: root.screenInfo ? root.screenInfo.name : "",
             screens: root.cfg.screens,
@@ -373,6 +374,8 @@ Scope {
         enabled: root.armed
 
         function onListChanged() {
+            if (root.flash !== null && (root.flash.kind === "message" || root.flash.kind === "notification") && Notifications.entry(root.flash.id) === null)
+                root.flash = null;
             const e = Notifications.list.length > 0 ? Notifications.list[0] : null;
             if (e === null || e.id === root.lastNote)
                 return;

@@ -59,6 +59,7 @@ Media from the sites in `island.hideSites` stays out of the island, so a YouTube
 sylvaris island show "Backup finished"   # a short alert with your text
 sylvaris island answer                   # also: decline
 sylvaris island reply "on my way"        # reply to the message on screen
+sylvaris island reply                    # open the reply box for it, handy on a key
 sylvaris island open                     # also: close, toggle, state
 ```
 

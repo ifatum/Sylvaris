@@ -1,0 +1,23 @@
+sleep 1.5
+syl set parts.island true
+syl set island.media false
+sleep 2.5
+bg gdbus call --session --dest org.freedesktop.Notifications --object-path /org/freedesktop/Notifications --method org.freedesktop.Notifications.Notify Telegram 0 "" Ana "see you at 8?" '["inline-reply","Reply"]' '{}' 0 | sed 's/.* \([0-9]*\),.*/\1/' > "$OUT/id.txt"
+sleep 1
+check sylvaris island | grep -q '"kind":"message","label":"Ana"'
+syl island reply
+sleep 0.8
+check sylvaris island state | grep -q '"replying":true'
+shot island-reply
+bg gdbus call --session --dest org.freedesktop.Notifications --object-path /org/freedesktop/Notifications --method org.freedesktop.Notifications.CloseNotification "$(cat "$OUT/id.txt")" >/dev/null
+sleep 0.8
+check sylvaris island state | grep -q '"replying":false'
+check ! sylvaris island | grep -q '"kind":"message"'
+bg gdbus call --session --dest org.freedesktop.Notifications --object-path /org/freedesktop/Notifications --method org.freedesktop.Notifications.Notify Telegram 0 "" Ola "hi" '["inline-reply","Reply"]' '{}' 0 >/dev/null
+sleep 1
+syl island reply
+sleep 0.8
+check sylvaris island state | grep -q '"replying":true'
+bg wtype -k Shift_L -k Escape
+sleep 0.8
+check sylvaris island state | grep -q '"replying":false'
