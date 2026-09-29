@@ -40,7 +40,9 @@ Scope {
     readonly property var screenInfo: Compositor.screenFor(Compositor.focusedName())
     readonly property var capture: root.peers.capture === undefined ? null : root.peers.capture
     readonly property bool recording: root.capture !== null && root.capture.recording
-    readonly property bool covered: root.avoid !== null && root.avoid.corner === root.cfg.position && root.screenInfo !== null && root.avoid.screen === root.screenInfo.name
+    readonly property int inset: 48
+    readonly property bool covered: root.avoid !== null && !root.avoid.docked && root.avoid.corner === root.cfg.position && root.screenInfo !== null && root.avoid.screen === root.screenInfo.name
+    readonly property bool docked: root.avoid !== null && root.avoid.docked === true && root.screenInfo !== null && root.avoid.screen === root.screenInfo.name
     readonly property var call: {
         if (!root.cfg.calls)
             return null;
@@ -324,6 +326,7 @@ Scope {
             expanded: root.expanded,
             reveal: root.cfg.reveal,
             covered: root.covered,
+            docked: root.docked,
             replying: root.replyTo >= 0,
             position: root.cfg.position,
             screen: root.screenInfo ? root.screenInfo.name : "",
@@ -491,14 +494,15 @@ Scope {
             readonly property string name: win.modelData.name
             readonly property var wcfg: Settings.at(win.name).island
             readonly property var place: I.placeOf(win.wcfg.position)
-            readonly property bool covered: root.avoid !== null && root.avoid.corner === win.wcfg.position && root.avoid.screen === win.name
+            readonly property bool covered: root.avoid !== null && !root.avoid.docked && root.avoid.corner === win.wcfg.position && root.avoid.screen === win.name
+            readonly property bool docked: root.avoid !== null && root.avoid.docked === true && root.avoid.corner === win.wcfg.position && root.avoid.screen === win.name
             readonly property bool edge: win.wcfg.reveal === "hover"
             readonly property real inset: win.edge ? Tokens.edgeMargin : 0
             readonly property bool hovering: bodyHover.hovered || stripArea.containsMouse
             readonly property bool tucked: I.tucked(win.wcfg.reveal, {
                 hot: root.hotScreen === win.name,
                 pinned: root.pinned === win.name,
-                alert: root.call !== null || root.flash !== null
+                alert: root.call !== null || root.flash !== null || win.docked
             })
             property real reveal: win.tucked ? 0 : 1
 
@@ -592,7 +596,7 @@ Scope {
                 y: Math.round(win.place.top ? win.inset - (1 - win.reveal) * (height + win.inset + 4) : parent.height - height - win.inset + (1 - win.reveal) * (height + win.inset + 4))
                 items: root.items
                 shortcuts: root.shortcutsOf(win.wcfg.shortcuts)
-                expanded: root.pinned === win.name || root.cfg.hover && root.hotScreen === win.name
+                expanded: !win.docked && (root.pinned === win.name || root.cfg.hover && root.hotScreen === win.name)
                 atTop: win.place.top
                 idle: win.wcfg.idle
                 time: root.time

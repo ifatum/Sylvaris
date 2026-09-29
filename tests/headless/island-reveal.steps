@@ -12,7 +12,7 @@ syl island run center
 sleep 0.15
 shot island-center-emerging
 sleep 0.8
-check sylvaris island | grep -q '"covered":true'
+check sylvaris island | grep -q '"covered":false,"docked":true'
 shot island-center
 syl island run center
 sleep 0.6
@@ -23,7 +23,7 @@ check sylvaris island | grep -q '"covered":false'
 syl center close
 syl island run clock
 sleep 0.8
-check sylvaris island | grep -q '"covered":true'
+check sylvaris island | grep -q '"covered":false,"docked":true'
 shot island-clock
 syl island run clock
 sleep 0.6

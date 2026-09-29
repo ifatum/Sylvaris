@@ -16,6 +16,7 @@ Scope {
     property string focusKey: ""
     property var screenInfo: null
     property string from: ""
+    property real fromInset: 0
     property real phase: 0
     property bool settled: true
     readonly property bool live: root.shown || root.phase > 0
@@ -65,6 +66,7 @@ Scope {
     function show(initial: string): void {
         root.wanted = true;
         root.from = "";
+        root.fromInset = 0;
         Compositor.refresh(() => {
             if (root.wanted)
                 root.showOn(Compositor.screenFor(Compositor.focusedName()), initial);
@@ -78,13 +80,16 @@ Scope {
         }
         root.wanted = true;
         root.from = "";
+        root.fromInset = 0;
         root.showOn(screen, initial === "" ? "compact" : initial);
     }
 
-    function toggleFrom(screen: var, from: string): void {
+    function toggleFrom(screen: var, from: string, inset: real): void {
         root.toggleOn(screen, "");
-        if (root.wanted)
+        if (root.wanted) {
             root.from = from;
+            root.fromInset = inset;
+        }
     }
 
     function open(): void {
@@ -263,8 +268,8 @@ Scope {
                 right: root.origin.h === 1
             }
             margins {
-                top: Tokens.edgeMargin
-                bottom: Tokens.edgeMargin
+                top: Tokens.edgeMargin + (root.origin.v === 0 ? root.fromInset : 0)
+                bottom: Tokens.edgeMargin + (root.origin.v === 1 ? root.fromInset : 0)
                 left: Tokens.edgeMargin
                 right: Tokens.edgeMargin
             }

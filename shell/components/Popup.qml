@@ -12,6 +12,7 @@ Scope {
     property string namespace: "sylpopup"
     property string corner: "top-center"
     property string from: ""
+    property real fromInset: 0
     readonly property var local: Settings.at(root.screenInfo ? root.screenInfo.name : Compositor.focusedName())
     readonly property string placed: root.from !== "" ? root.from : B.placeCorner(root.corner, root.local.parts.bar ? root.local.bar.position : "top")
     property int panelWidth: Tokens.centerCompactWidth
@@ -49,6 +50,7 @@ Scope {
             return;
         root.wanted = true;
         root.from = "";
+        root.fromInset = 0;
         Compositor.refresh(() => {
             if (!root.wanted)
                 return;
@@ -78,14 +80,17 @@ Scope {
         if (root.phase > 0 && root.screenInfo !== screen)
             root.phase = 0;
         root.from = "";
+        root.fromInset = 0;
         root.screenInfo = screen;
         root.reveal();
     }
 
-    function toggleFrom(screen: var, from: string): void {
+    function toggleFrom(screen: var, from: string, inset: real): void {
         root.toggleOn(screen);
-        if (root.wanted)
+        if (root.wanted) {
             root.from = from;
+            root.fromInset = inset;
+        }
     }
 
     function toggle(): void {
@@ -168,8 +173,8 @@ Scope {
                 right: root.placed.indexOf("right") > 0
             }
             margins {
-                top: Tokens.edgeMargin
-                bottom: Tokens.edgeMargin
+                top: Tokens.edgeMargin + (root.placed.indexOf("top") === 0 ? root.fromInset : 0)
+                bottom: Tokens.edgeMargin + (root.placed.indexOf("bottom") === 0 ? root.fromInset : 0)
                 left: Tokens.edgeMargin
                 right: Tokens.edgeMargin
             }

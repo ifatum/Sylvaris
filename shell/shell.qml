@@ -98,6 +98,7 @@ ShellRoot {
             if (p !== null && p.wanted && p.screenInfo && p.placed !== undefined)
                 return {
                     corner: p.placed,
+                    docked: p.from !== undefined && p.from !== "",
                     width: p.panelWidth,
                     height: p.panelHeight,
                     screen: p.screenInfo.name
@@ -479,7 +480,7 @@ ShellRoot {
             onRequested: part => {
                 const p = root.part(part);
                 if (p !== null && p.toggleFrom !== undefined)
-                    p.toggleFrom(islandPart.screenInfo, islandPart.cfg.position);
+                    p.toggleFrom(islandPart.screenInfo, islandPart.cfg.position, islandPart.inset);
                 else
                     root.openOn(part, "", islandPart.screenInfo);
             }
