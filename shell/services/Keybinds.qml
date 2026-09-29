@@ -41,7 +41,7 @@ Singleton {
     function save(): void {
         if (root.file === "")
             return;
-        writer.command = ["sh", "-c", "[ -d \"$(dirname \"$1\")\" ] && printf %s \"$2\" > \"$1\"", "sh", root.file, K.bindsFile(Compositor.name, Compositor.usingLua, root.wanted)];
+        writer.command = ["sh", "-c", "[ -d \"$(dirname \"$1\")\" ] && printf %s \"$2\" > \"$1.part\" && mv -f \"$1.part\" \"$1\"", "sh", root.file, K.bindsFile(Compositor.name, Compositor.usingLua, root.wanted)];
         writer.running = true;
     }
 
