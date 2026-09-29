@@ -505,6 +505,7 @@ Scope {
                 alert: root.call !== null || root.flash !== null || win.docked
             })
             property real reveal: win.tucked ? 0 : 1
+            readonly property bool onSurface: body.visible && body.y + body.height > 1 && body.y < win.height - 1
 
             Behavior on reveal {
                 NumberAnimation {
@@ -540,7 +541,7 @@ Scope {
                     item: win.edge ? body : null
                 }
             }
-            BackgroundEffect.blurRegion: Resin.enabled && win.reveal > 0.01 ? blur : null
+            BackgroundEffect.blurRegion: Resin.enabled && win.onSurface ? blur : null
 
             Region {
                 id: blur
