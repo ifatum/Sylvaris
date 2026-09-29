@@ -1,6 +1,6 @@
 # Getting started
 
-Sylvaris is a desktop shell for Hyprland, niri and sway: a bar, a control center, notifications, a launcher, a lock screen and about twenty other parts, all in one process and all drawn in the same warm glass. It runs on [Quickshell](https://quickshell.org) 0.3.1 or newer.
+Sylvaris is a desktop shell for Hyprland, niri and sway: a bar, a control center, notifications, a launcher, a lock screen and about twenty other parts, all in one process and all drawn in the same warm glass. It runs on [Quickshell](https://quickshell.org) 0.3.1 or newer, built with Qt 6.9 or newer.
 
 ## 1. Install it
 
@@ -10,7 +10,7 @@ With Nix, add the flake and turn it on in Home Manager. Everything is described 
 inputs.sylvaris.url = "github:ifatum/Sylvaris";
 ```
 
-On Arch, Fedora, Debian, Ubuntu, openSUSE, Void, Gentoo and others, follow [install.md](install.md). It lists the packages for each distribution and ends with `sudo make install`.
+On Arch, Fedora, Debian, Ubuntu, Linux Mint, openSUSE, Void, Gentoo and any other distribution, follow [install.md](install.md). It has the commands for each one, a Nix route for distributions whose Qt is too old, and `sylvaris doctor` to check the result.
 
 ## 2. Start it with your compositor
 
@@ -52,4 +52,4 @@ Then pick the parts you want. [Parts](parts/README.md) describes each one, and [
 
 ## When something is off
 
-`sylvaris doctor` prints what a bug report needs: versions, your GPUs, which parts are on, the programs a part needs but cannot find, and every setting that is not valid, with the value used instead. It only reads, and it works even when the shell is not running.
+`sylvaris doctor` prints what a bug report needs: versions, your GPUs, which parts are on, the programs a part needs but cannot find, fonts Qt cannot find, and every setting that is not valid, with the value used instead. It only reads, and it works even when the shell is not running.

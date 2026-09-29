@@ -102,15 +102,17 @@
   <section class="install" id="install" aria-labelledby="install-title">
     <div class="install-copy">
       <h2 id="install-title">Two ways in</h2>
-      <p>With Nix, every setting is a typed Home Manager option and the tools each part needs come along with it. Everywhere else, install the packages for your distribution and run <code>make install</code>.</p>
+      <p>With Nix, every setting is a typed Home Manager option and the tools each part needs come along with it. Everywhere else, install the packages for your distribution and run <code>make install</code>. Every route here was installed and started in a clean container before it went on this page.</p>
       <p>Then add <code>sylvaris</code> to your compositor's autostart and open the settings with <code>sylvaris settings</code>.</p>
-      <p class="install-links"><a href="docs/nix.html">Nix and Home Manager</a><a href="docs/install.html">Other distributions</a></p>
+      <p class="install-links"><a href="docs/nix.html">Nix and Home Manager</a><a href="docs/install.html">Every distribution</a></p>
     </div>
     <div class="tabs" data-tabs>
       <div class="tab-list" role="tablist" aria-label="Install with">
         <button type="button" role="tab" id="tab-nix" aria-controls="panel-nix" aria-selected="true">Nix</button>
         <button type="button" role="tab" id="tab-arch" aria-controls="panel-arch" aria-selected="false" tabindex="-1">Arch</button>
-        <button type="button" role="tab" id="tab-other" aria-controls="panel-other" aria-selected="false" tabindex="-1">From source</button>
+        <button type="button" role="tab" id="tab-fedora" aria-controls="panel-fedora" aria-selected="false" tabindex="-1">Fedora</button>
+        <button type="button" role="tab" id="tab-ubuntu" aria-controls="panel-ubuntu" aria-selected="false" tabindex="-1">Ubuntu 26.04</button>
+        <button type="button" role="tab" id="tab-other" aria-controls="panel-other" aria-selected="false" tabindex="-1">Mint and others</button>
       </div>
       <div class="tab-panel" role="tabpanel" id="panel-nix" aria-labelledby="tab-nix">
 <pre data-lang="nix"><code>inputs.sylvaris.url = "github:ifatum/Sylvaris";
@@ -131,12 +133,34 @@ programs.sylvaris = {
 git clone {{REPO}}
 cd Sylvaris &amp;&amp; sudo make install install-pam</code></pre>
       </div>
+      <div class="tab-panel" role="tabpanel" id="panel-fedora" aria-labelledby="tab-fedora">
+<pre data-lang="sh"><code>sudo dnf copr enable errornointernet/quickshell
+sudo dnf install quickshell qt6-qtsvg socat rsms-inter-fonts \
+  pipewire pipewire-pulseaudio pipewire-utils pulseaudio-utils \
+  python3-cryptography libnotify wlsunset curl NetworkManager \
+  wlr-randr wl-clipboard grim slurp wf-recorder ffmpeg glib2 \
+  procps-ng git make xz unzip
+git clone {{REPO}}
+cd Sylvaris &amp;&amp; sudo make install install-pam</code></pre>
+      </div>
+      <div class="tab-panel" role="tabpanel" id="panel-ubuntu" aria-labelledby="tab-ubuntu">
+<pre data-lang="sh"><code>sudo add-apt-repository ppa:avengemedia/danklinux
+sudo apt install quickshell qml6-module-qtquick-effects \
+  qml6-module-qtquick-shapes qml6-module-qt-labs-folderlistmodel \
+  socat fonts-inter pipewire pipewire-pulse pulseaudio-utils \
+  python3-cryptography libnotify-bin wlsunset curl network-manager \
+  wlr-randr wl-clipboard grim slurp wf-recorder ffmpeg \
+  libglib2.0-bin git make xz-utils unzip
+git clone {{REPO}}
+cd Sylvaris &amp;&amp; sudo make install install-pam</code></pre>
+      </div>
       <div class="tab-panel" role="tabpanel" id="panel-other" aria-labelledby="tab-other">
-<pre data-lang="sh"><code>git clone {{REPO}}
-cd Sylvaris
-sudo make install install-pam
-# or just try it from the clone
-bin/sylvaris</code></pre>
+<pre data-lang="sh"><code># Linux Mint 22, Ubuntu 24.04, Debian 13 and anything
+# whose Qt is older than 6.9: Nix brings its own
+sh &lt;(curl -L https://nixos.org/nix/install) --daemon
+nix --extra-experimental-features 'nix-command flakes' \
+  profile install github:ifatum/Sylvaris
+sylvaris doctor</code></pre>
       </div>
     </div>
   </section>

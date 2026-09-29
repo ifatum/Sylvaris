@@ -336,7 +336,7 @@ section { scroll-margin-top: 90px; }
 .install-copy p { color: var(--text-soft); max-width: 46ch; }
 .install-links { display: flex; gap: 20px; flex-wrap: wrap; font-weight: 700; }
 .tabs { border-radius: 24px; padding: 14px; background: var(--glass); border: 1px solid var(--line); box-shadow: var(--shadow); }
-.tab-list { display: flex; gap: 6px; margin-bottom: 12px; }
+.tab-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
 .tab-panel pre { margin: 0; }
 
 .weight { padding: 110px 0 40px; }

@@ -12,7 +12,7 @@ cd Sylvaris
 nix develop
 ```
 
-Without Nix, install `quickshell` (0.3.1 or newer), `nodejs`, `qt6-declarative` (for `qmllint`), `sway`, `grim`, `socat`, `jq`, `wtype`, `wlrctl`, `wayvnc`, `vncdotool`, `dbus`, `libnotify`, `wlr-randr` and `wlsunset` from your distribution.
+Without Nix, install `quickshell` (0.3.1 or newer, built with Qt 6.9 or newer), `nodejs`, `qt6-declarative` (for `qmllint`), `sway`, `grim`, `socat`, `jq`, `wtype`, `wlrctl`, `wayvnc`, `vncdotool`, `dbus`, `libnotify`, `wlr-randr` and `wlsunset` from your distribution.
 
 Run your working copy with `SYLVARIS_DIR=$PWD/shell bin/sylvaris`. Stop your normal Sylvaris first, or test in the headless harness below instead. If `SYLVARIS_DIR` is already set in your environment (the Nix package sets a default), it points the CLI and the harness at the installed copy; unset it or set it to your checkout.
 

@@ -5,7 +5,7 @@ Sylvaris is a glass desktop shell for Hyprland, niri and sway. These pages cover
 ## Start here
 
 - [Getting started](start.md): install, autostart, the first commands
-- [Installing without Nix](install.md): Arch, Fedora, Debian, Ubuntu, openSUSE, Void, Gentoo and others
+- [Installing without Nix](install.md): Arch, Fedora, Debian, Ubuntu, Linux Mint, openSUSE, Void, Gentoo and any other distribution
 - [Nix and Home Manager](nix.md): the flake, every option, the NixOS module
 
 ## Using it
