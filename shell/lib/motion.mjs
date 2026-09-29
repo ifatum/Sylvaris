@@ -12,6 +12,10 @@ export function scaledRect(x, y, w, h, corner, s, dy) {
     return { x: x + (w - nw) * o.h, y: y + (h - nh) * o.v + dy, w: nw, h: nh }
 }
 
+export function grow(phase, emerging) {
+    return emerging ? 0.3 + 0.7 * phase : 0.94 + 0.06 * phase
+}
+
 export function rise(corner) {
     return origin(corner).v === 1 ? 1 : -1
 }

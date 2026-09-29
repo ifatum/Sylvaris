@@ -11,8 +11,9 @@ Scope {
 
     property string namespace: "sylpopup"
     property string corner: "top-center"
+    property string from: ""
     readonly property var local: Settings.at(root.screenInfo ? root.screenInfo.name : Compositor.focusedName())
-    readonly property string placed: B.placeCorner(root.corner, root.local.parts.bar ? root.local.bar.position : "top")
+    readonly property string placed: root.from !== "" ? root.from : B.placeCorner(root.corner, root.local.parts.bar ? root.local.bar.position : "top")
     property int panelWidth: Tokens.centerCompactWidth
     property int panelHeight: Tokens.centerHeight
     property real radius: Tokens.radiusPanel
@@ -25,7 +26,7 @@ Scope {
     property var focusTarget: null
     default property alias content: body.data
     readonly property bool live: root.shown || root.phase > 0
-    readonly property real grow: 0.94 + 0.06 * root.phase
+    readonly property real grow: M.grow(root.phase, root.from !== "")
 
     signal opened
     signal closed
@@ -47,6 +48,7 @@ Scope {
         if (root.wanted)
             return;
         root.wanted = true;
+        root.from = "";
         Compositor.refresh(() => {
             if (!root.wanted)
                 return;
@@ -75,8 +77,15 @@ Scope {
         root.wanted = true;
         if (root.phase > 0 && root.screenInfo !== screen)
             root.phase = 0;
+        root.from = "";
         root.screenInfo = screen;
         root.reveal();
+    }
+
+    function toggleFrom(screen: var, from: string): void {
+        root.toggleOn(screen);
+        if (root.wanted)
+            root.from = from;
     }
 
     function toggle(): void {

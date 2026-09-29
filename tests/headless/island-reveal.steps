@@ -7,6 +7,26 @@ syl island open
 sleep 0.8
 shot island-card
 syl island close
+syl set center.corner top-right
+syl island run center
+sleep 0.15
+shot island-center-emerging
+sleep 0.8
+check sylvaris island | grep -q '"covered":true'
+shot island-center
+syl island run center
+sleep 0.6
+check sylvaris island | grep -q '"covered":false'
+syl center open
+sleep 0.8
+check sylvaris island | grep -q '"covered":false'
+syl center close
+syl island run clock
+sleep 0.8
+check sylvaris island | grep -q '"covered":true'
+shot island-clock
+syl island run clock
+sleep 0.6
 syl set island.reveal hover
 sleep 1
 check sylvaris island | grep -q '"reveal":"hover"'
@@ -17,8 +37,10 @@ syl audio set 55
 sleep 0.6
 shot island-alert
 sleep 4
+pointer move 1280 60
+sleep 0.3
 pointer move 1280 58
-sleep 1.2
+sleep 2
 check sylvaris island | grep -q '"expanded":true'
 shot island-revealed
 syl set island.reveal always

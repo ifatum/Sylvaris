@@ -463,7 +463,13 @@ ShellRoot {
             peers: root.parts
             live: root.live
             avoid: root.openPanel
-            onRequested: part => root.openOn(part, "", islandPart.screenInfo)
+            onRequested: part => {
+                const p = root.part(part);
+                if (p !== null && p.toggleFrom !== undefined)
+                    p.toggleFrom(islandPart.screenInfo, islandPart.cfg.position);
+                else
+                    root.openOn(part, "", islandPart.screenInfo);
+            }
         }
     }
 

@@ -15,6 +15,7 @@ Scope {
     property string view: "compact"
     property string focusKey: ""
     property var screenInfo: null
+    property string from: ""
     property real phase: 0
     property bool settled: true
     readonly property bool live: root.shown || root.phase > 0
@@ -22,9 +23,9 @@ Scope {
     readonly property string placed: root.corner
     readonly property int panelWidth: root.expanded ? Tokens.centerExpandedWidth : Tokens.centerCompactWidth
     readonly property int panelHeight: Tokens.centerHeight
-    readonly property real grow: 0.94 + 0.06 * root.phase
+    readonly property real grow: M.grow(root.phase, root.from !== "")
     readonly property var local: Settings.at(root.screenInfo ? root.screenInfo.name : Compositor.focusedName())
-    readonly property string corner: B.placeCorner(root.local.center.corner, root.local.parts.bar ? root.local.bar.position : "top")
+    readonly property string corner: root.from !== "" ? root.from : B.placeCorner(root.local.center.corner, root.local.parts.bar ? root.local.bar.position : "top")
     readonly property var origin: M.origin(root.corner)
     readonly property bool expanded: root.view !== "compact"
     signal partRequested(string name)
@@ -63,6 +64,7 @@ Scope {
 
     function show(initial: string): void {
         root.wanted = true;
+        root.from = "";
         Compositor.refresh(() => {
             if (root.wanted)
                 root.showOn(Compositor.screenFor(Compositor.focusedName()), initial);
@@ -75,7 +77,14 @@ Scope {
             return;
         }
         root.wanted = true;
+        root.from = "";
         root.showOn(screen, initial === "" ? "compact" : initial);
+    }
+
+    function toggleFrom(screen: var, from: string): void {
+        root.toggleOn(screen, "");
+        if (root.wanted)
+            root.from = from;
     }
 
     function open(): void {

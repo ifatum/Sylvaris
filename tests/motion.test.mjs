@@ -1,6 +1,6 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
-import { origin, scaledRect, rise, stagger } from "../shell/lib/motion.mjs"
+import { origin, scaledRect, rise, stagger, grow } from "../shell/lib/motion.mjs"
 
 test("panels grow out of the corner they are anchored to", () => {
     assert.deepEqual(origin("top-right"), { h: 1, v: 0 })
@@ -17,4 +17,12 @@ test("stagger delays later items and still ends at one", () => {
     assert.equal(stagger(1, 3, 4), 1)
     assert.ok(stagger(0.3, 0, 4) > stagger(0.3, 3, 4))
     assert.equal(stagger(0.1, 3, 4, 0.35), 0)
+})
+
+test("a panel opened from the island grows out of it from far smaller", () => {
+    assert.equal(grow(0, false), 0.94)
+    assert.equal(grow(1, false), 1)
+    assert.equal(grow(0, true), 0.3)
+    assert.equal(grow(1, true), 1)
+    assert.ok(grow(0.5, true) < grow(0.5, false))
 })

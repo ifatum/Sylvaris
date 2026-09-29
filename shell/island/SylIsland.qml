@@ -189,6 +189,11 @@ Scope {
         if (s.needs.toLowerCase() === s.needs) {
             root.close();
             root.hotScreen = "";
+            const p = root.peers[s.run[0]];
+            if (p !== undefined && p.toggleFrom !== undefined && ["toggle", "open"].indexOf(s.run[1]) >= 0) {
+                root.requested(s.run[0]);
+                return;
+            }
         }
         const words = id === "record" && root.recording ? ["capture", "stop"] : s.run;
         const out = Ipc.run(words);

@@ -21,7 +21,7 @@ One thing at a time in the pill, with a second one as a small bubble beside it. 
 
 Paused music stays in the island with a play button until its player closes, so you can pick up where you left off without opening the player. `island.keepPaused = false` hides it again.
 
-Click a row to open the matching panel. Scroll anywhere on the island to change the volume. Right-click the pill to open the panel for what it shows.
+Click a row to open the matching panel. Panels opened from the island, by a row or a shortcut, grow out of the island in its spot instead of opening in their usual corner. Scroll anywhere on the island to change the volume. Right-click the pill to open the panel for what it shows.
 
 ## Messages and calls
 
