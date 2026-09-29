@@ -48,9 +48,11 @@ sylvaris island run dnd
 
 ## Where it sits
 
-`island.position` takes `top-left`, `top-center`, `top-right`, `bottom-left`, `bottom-center` or `bottom-right`. `island.screens` shows it on the `focused` screen only or on `all` screens, each with its own island that expands on its own. Position, idle look and shortcuts can differ per screen.
+`island.position` takes `top-left`, `top-center`, `top-right`, `bottom-left`, `bottom-center` or `bottom-right`. `island.screens` shows it on the `focused` screen only or on `all` screens, each with its own island that expands on its own. Position, visibility, idle look and shortcuts can differ per screen.
 
-When nothing is going on, `island.idle` decides: `hide` it, keep a small `pill` so your shortcuts are one hover away, or show a `clock`. The island hides while a panel opens in the same spot, and it sits under fullscreen windows.
+`island.reveal` is `always` to keep the island on screen, or `hover` to tuck it into the edge like SylDeck: a short line marks where it is, and pushing the pointer against the edge slides it out. Incoming calls and short alerts still slide out on their own while it is tucked.
+
+When nothing is going on, `island.idle` decides: `hide` it, keep a small `pill` so your shortcuts are one hover away, or show a `clock`. The pill and the clock also show your unread notification count and whether do not disturb is on. The island hides while a panel opens in the same spot, and it sits under fullscreen windows.
 
 ## Sites it ignores
 
@@ -78,6 +80,7 @@ sylvaris island open                     # also: close, toggle, state
 | `seconds` | `3` | how long short alerts stay, 1 to 10 (messages stay 3 seconds longer) |
 | `position` | `top-center` | see above |
 | `screens` | `focused` | `focused` or `all` |
+| `reveal` | `always` | `always`, or `hover` to tuck it into the edge until you point at it |
 | `idle` | `pill` | `hide`, `pill` or `clock` |
 | `shortcuts` | `["notify","center","media","screenshot","record","dnd"]` | up to 8 |
 | `hideSites` | `["youtube.com","youtu.be"]` | up to 20 sites |

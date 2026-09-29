@@ -1,6 +1,6 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
-import { DEFAULT_ISLAND, validateIsland, activities, label, joined, custom, SHORTCUTS, shortcutsFor, placeOf, cardHeight, CHAT_APPS, chatOf, isCall, pickActions, takes, hiddenSite, voiceOf } from "../shell/lib/island.mjs"
+import { DEFAULT_ISLAND, validateIsland, activities, label, joined, custom, SHORTCUTS, shortcutsFor, placeOf, cardHeight, CHAT_APPS, chatOf, isCall, pickActions, takes, hiddenSite, voiceOf, tucked } from "../shell/lib/island.mjs"
 
 const idle = { flash: null, recording: { on: false }, alarm: null, focus: null, next: null, media: { title: "", playing: false } }
 
@@ -104,6 +104,9 @@ test("validateIsland checks position, idle and shortcuts", () => {
     assert.equal(validateIsland({ position: "middle" }).position, "top-center")
     assert.equal(validateIsland({ idle: "x" }).idle, "pill")
     assert.deepEqual(validateIsland({ shortcuts: "wifi" }).shortcuts, d.shortcuts)
+    assert.equal(d.reveal, "always")
+    assert.equal(validateIsland({ reveal: "hover" }).reveal, "hover")
+    assert.equal(validateIsland({ reveal: "peek" }).reveal, "always")
     assert.deepEqual(validateIsland({ shortcuts: [] }).shortcuts, [])
     assert.equal(validateIsland({ shortcuts: Object.keys(SHORTCUTS) }).shortcuts.length, 8)
 })
@@ -130,9 +133,9 @@ test("placeOf splits a position into edge and side", () => {
 
 test("cardHeight stacks one row per activity and the shortcut row", () => {
     assert.equal(cardHeight([], false), 0)
-    assert.equal(cardHeight([], true), 12 + 44 + 12)
-    assert.equal(cardHeight(["recording"], false), 12 + 60 + 12)
-    assert.equal(cardHeight(["recording", "media"], true), 12 + 60 + 6 + 84 + 6 + 44 + 12)
+    assert.equal(cardHeight([], true), 12 + 52 + 12)
+    assert.equal(cardHeight(["recording"], false), 12 + 64 + 12)
+    assert.equal(cardHeight(["recording", "media"], true), 12 + 64 + 6 + 108 + 6 + 52 + 12)
 })
 
 test("chatOf recognises messaging apps by name, desktop entry or website", () => {
@@ -236,4 +239,13 @@ test("an ongoing voice chat comes right after an incoming call and follows the c
     assert.deepEqual(activities(s, Object.assign({}, DEFAULT_ISLAND, { calls: false })).map(a => a.kind), ["media"])
     assert.equal(label(Object.assign({ kind: "voice" }, voice)), "Discord · 1:05")
     assert.equal(label(Object.assign({ kind: "voice" }, voice, { muted: true })), "Discord · muted")
+})
+
+test("tucked hides the island at the edge only in hover mode and while nothing needs it", () => {
+    const calm = { hot: false, pinned: false, alert: false }
+    assert.equal(tucked("always", calm), false)
+    assert.equal(tucked("hover", calm), true)
+    assert.equal(tucked("hover", Object.assign({}, calm, { hot: true })), false)
+    assert.equal(tucked("hover", Object.assign({}, calm, { pinned: true })), false)
+    assert.equal(tucked("hover", Object.assign({}, calm, { alert: true })), false)
 })

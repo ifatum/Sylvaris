@@ -179,6 +179,7 @@
     "seconds": 3,
     "position": "top-center",
     "idle": "pill",
+    "reveal": "always",
     "shortcuts": [
       "notify",
       "center",

@@ -71,6 +71,8 @@ Column {
                 idle: root.cfg.idle
                 time: Qt.formatTime(new Date(), "HH:mm")
                 progress: 0.42
+                position: 89
+                length: 212
                 opacity: root.on ? 1 : 0.5
 
                 HoverHandler {
@@ -152,6 +154,27 @@ Column {
                 ]
                 current: I.placeOf(root.cfg.position).side
                 onPicked: key => Settings.put("island.position", (I.placeOf(root.cfg.position).top ? "top-" : "bottom-") + key)
+            }
+        }
+
+        SettingRow {
+            title: "Visibility"
+            subtitle: "Reveal on hover tucks it into the edge like the deck; calls and alerts still slide out"
+
+            Segmented {
+                width: 300
+                options: [
+                    {
+                        key: "always",
+                        label: "Always visible"
+                    },
+                    {
+                        key: "hover",
+                        label: "Reveal on hover"
+                    }
+                ]
+                current: root.cfg.reveal
+                onPicked: key => Settings.put("island.reveal", key)
             }
         }
 

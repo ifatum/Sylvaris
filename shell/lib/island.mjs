@@ -2,7 +2,7 @@ import { elapsed } from "./capture.mjs"
 
 export const DEFAULT_ISLAND = {
     media: true, recording: true, diver: true, volume: true, devices: true, notifications: false, messages: true, calls: true, keepPaused: true, hover: true, seconds: 3,
-    position: "top-center", idle: "pill", shortcuts: ["notify", "center", "media", "screenshot", "record", "dnd"],
+    position: "top-center", idle: "pill", reveal: "always", shortcuts: ["notify", "center", "media", "screenshot", "record", "dnd"],
     screens: "focused", hideSites: ["youtube.com", "youtu.be"]
 }
 
@@ -10,6 +10,7 @@ export const SCREENS = ["focused", "all"]
 
 export const POSITIONS = ["top-left", "top-center", "top-right", "bottom-left", "bottom-center", "bottom-right"]
 export const IDLE = ["hide", "pill", "clock"]
+export const REVEAL = ["always", "hover"]
 export const MAX_SHORTCUTS = 8
 
 export const SHORTCUTS = {
@@ -70,6 +71,7 @@ export function validateIsland(raw) {
     out.seconds = Number.isInteger(v.seconds) && v.seconds >= 1 && v.seconds <= 10 ? v.seconds : DEFAULT_ISLAND.seconds
     out.position = POSITIONS.includes(v.position) ? v.position : DEFAULT_ISLAND.position
     out.idle = IDLE.includes(v.idle) ? v.idle : DEFAULT_ISLAND.idle
+    out.reveal = REVEAL.includes(v.reveal) ? v.reveal : DEFAULT_ISLAND.reveal
     out.screens = SCREENS.includes(v.screens) ? v.screens : DEFAULT_ISLAND.screens
     out.hideSites = Array.isArray(v.hideSites) ? [...new Set(v.hideSites.map(siteOf).filter(s => s !== ""))].slice(0, 20) : DEFAULT_ISLAND.hideSites.slice()
     out.shortcuts = Array.isArray(v.shortcuts) ? [...new Set(v.shortcuts.filter(id => Object.prototype.hasOwnProperty.call(SHORTCUTS, id)))].slice(0, MAX_SHORTCUTS) : DEFAULT_ISLAND.shortcuts.slice()
@@ -185,12 +187,16 @@ export function placeOf(position) {
 }
 
 export function rowHeight(kind) {
-    return kind === "media" || kind === "volume" ? 84 : 60
+    return kind === "media" ? 108 : kind === "volume" ? 84 : 64
 }
 
 export function cardHeight(kinds, shortcuts) {
-    const parts = kinds.map(rowHeight).concat(shortcuts ? [44] : [])
+    const parts = kinds.map(rowHeight).concat(shortcuts ? [52] : [])
     return parts.length === 0 ? 0 : 24 + parts.reduce((a, b) => a + b, 0) + 6 * (parts.length - 1)
+}
+
+export function tucked(reveal, s) {
+    return reveal === "hover" && !s.hot && !s.pinned && !s.alert
 }
 
 export function takes(n, cfg, critical) {

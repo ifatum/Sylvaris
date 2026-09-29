@@ -245,6 +245,7 @@ Explained in [island](../parts/island.md).
 | `island.seconds` | `3` |  |
 | `island.position` | `"top-center"` | yes |
 | `island.idle` | `"pill"` | yes |
+| `island.reveal` | `"always"` | yes |
 | `island.shortcuts` | `["notify","center","media","screenshot","record","dnd"]` | yes |
 | `island.screens` | `"focused"` |  |
 | `island.hideSites` | `["youtube.com","youtu.be"]` |  |

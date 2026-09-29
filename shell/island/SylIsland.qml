@@ -317,6 +317,7 @@ Scope {
     function state(): var {
         return {
             expanded: root.expanded,
+            reveal: root.cfg.reveal,
             covered: root.covered,
             replying: root.replyTo >= 0,
             position: root.cfg.position,
@@ -401,7 +402,7 @@ Scope {
     Timer {
         interval: 1000
         repeat: true
-        running: root.expanded && Media.playing
+        running: Media.playing && (root.expanded || root.items.some(a => a.kind === "media"))
         onTriggered: Media.tick()
     }
 
@@ -486,6 +487,24 @@ Scope {
             readonly property var wcfg: Settings.at(win.name).island
             readonly property var place: I.placeOf(win.wcfg.position)
             readonly property bool covered: root.avoid !== null && root.avoid.corner === win.wcfg.position && root.avoid.screen === win.name
+            readonly property bool edge: win.wcfg.reveal === "hover"
+            readonly property real inset: win.edge ? Tokens.edgeMargin : 0
+            readonly property bool hovering: bodyHover.hovered || stripArea.containsMouse
+            readonly property bool tucked: I.tucked(win.wcfg.reveal, {
+                hot: root.hotScreen === win.name,
+                pinned: root.pinned === win.name,
+                alert: root.call !== null || root.flash !== null
+            })
+            property real reveal: win.tucked ? 0 : 1
+
+            Behavior on reveal {
+                NumberAnimation {
+                    duration: Math.round((win.tucked ? 300 : 460) * Tokens.pace)
+                    easing.type: win.tucked ? Easing.InOutCubic : Easing.OutQuint
+                }
+            }
+
+            onHoveringChanged: root.hover(win.name, win.hovering)
 
             visible: body.shown && !win.covered
             screen: win.modelData
@@ -493,8 +512,8 @@ Scope {
             anchors.bottom: !win.place.top
             anchors.left: win.place.side === "left"
             anchors.right: win.place.side === "right"
-            margins.top: Tokens.edgeMargin
-            margins.bottom: Tokens.edgeMargin
+            margins.top: win.edge ? 0 : Tokens.edgeMargin
+            margins.bottom: win.edge ? 0 : Tokens.edgeMargin
             margins.left: Tokens.edgeMargin
             margins.right: Tokens.edgeMargin
             implicitWidth: body.cardWidth + body.pillHeight + 16
@@ -506,9 +525,13 @@ Scope {
             WlrLayershell.namespace: "sylisland"
             WlrLayershell.keyboardFocus: root.replyTo >= 0 && root.pinned === win.name ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
             mask: Region {
-                item: body
+                item: win.edge ? strip : body
+
+                Region {
+                    item: win.edge ? body : null
+                }
             }
-            BackgroundEffect.blurRegion: Resin.enabled ? blur : null
+            BackgroundEffect.blurRegion: Resin.enabled && win.reveal > 0.01 ? blur : null
 
             Region {
                 id: blur
@@ -524,10 +547,44 @@ Scope {
                 }
             }
 
+            Item {
+                id: strip
+                z: 1
+                visible: win.edge
+                x: Math.max(0, Math.min(parent.width - width, body.x + (body.pill.width - width) / 2))
+                y: win.place.top ? 0 : parent.height - height
+                width: Math.max(body.pill.width, 120)
+                height: win.inset + 2
+
+                MouseArea {
+                    id: stripArea
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    acceptedButtons: Qt.NoButton
+                }
+
+                Rectangle {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    y: win.place.top ? 2 : parent.height - height - 2
+                    width: stripArea.containsMouse ? 72 : 48
+                    height: 4
+                    radius: 2
+                    color: root.items.length > 0 ? Theme.accent : Qt.alpha(Theme.text, 0.5)
+                    opacity: (1 - win.reveal) * 0.85
+
+                    Behavior on width {
+                        NumberAnimation {
+                            duration: Tokens.stateDuration
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                }
+            }
+
             IslandBody {
                 id: body
                 x: win.place.side === "left" ? 0 : win.place.side === "right" ? parent.width - width : (parent.width - body.pill.width) / 2
-                y: win.place.top ? 0 : parent.height - height
+                y: Math.round(win.place.top ? win.inset - (1 - win.reveal) * (height + win.inset + 4) : parent.height - height - win.inset + (1 - win.reveal) * (height + win.inset + 4))
                 items: root.items
                 shortcuts: root.shortcutsOf(win.wcfg.shortcuts)
                 expanded: root.pinned === win.name || root.cfg.hover && root.hotScreen === win.name
@@ -536,13 +593,17 @@ Scope {
                 time: root.time
                 replying: root.pinned === win.name ? root.replyTo : -1
                 progress: Media.length > 0 ? Media.position / Media.length : 0
+                position: Media.position
+                length: Media.length
+                unread: Notifications.count
+                quiet: Notifications.dnd
                 onAct: (kind, what) => root.act(kind, what)
                 onRun: id => root.runShortcut(id)
                 onPin: root.pin(win.name)
                 onWheel: steps => Audio.setVolume(Audio.volume + steps * 0.05)
 
                 HoverHandler {
-                    onHoveredChanged: root.hover(win.name, hovered)
+                    id: bodyHover
                 }
             }
         }

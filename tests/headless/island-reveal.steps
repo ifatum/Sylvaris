@@ -1,0 +1,27 @@
+sleep 1.5
+syl set parts.island true
+syl set island.idle pill
+sleep 2
+shot island-pill
+syl island open
+sleep 0.8
+shot island-card
+syl island close
+syl set island.reveal hover
+sleep 1
+check sylvaris island | grep -q '"reveal":"hover"'
+syl media toggle
+sleep 1.2
+shot island-tucked
+syl audio set 55
+sleep 0.6
+shot island-alert
+sleep 4
+pointer move 1280 58
+sleep 1.2
+check sylvaris island | grep -q '"expanded":true'
+shot island-revealed
+syl set island.reveal always
+sleep 0.6
+check sylvaris island | grep -q '"reveal":"always"'
+syl set parts.island false

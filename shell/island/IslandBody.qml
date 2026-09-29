@@ -4,6 +4,7 @@ import qs.services
 import qs.components
 import "../lib/island.mjs" as I
 import "../lib/icons.mjs" as Icons
+import "../lib/capture.mjs" as C
 
 Item {
     id: root
@@ -16,6 +17,10 @@ Item {
     property string time: ""
     property int replying: -1
     property real progress: 0
+    property real position: 0
+    property real length: 0
+    property int unread: 0
+    property bool quiet: false
     readonly property string kindKey: root.items.map(a => a.kind).join(",")
     readonly property var kinds: root.kindKey === "" ? [] : root.kindKey.split(",")
     readonly property string shortcutKey: root.shortcuts.map(s => s.id).join(",")
@@ -27,7 +32,7 @@ Item {
     readonly property real cardWidth: 380
     readonly property real cardHeight: I.cardHeight(root.kinds, root.shortcutIds.length > 0)
     readonly property bool open: root.expanded && root.cardHeight > 0
-    readonly property real compactWidth: root.main !== null ? Math.min(340, compactRow.implicitWidth + 28) : root.idle === "clock" ? clockText.implicitWidth + 32 : 104
+    readonly property real compactWidth: root.main !== null ? Math.min(360, compactRow.implicitWidth + 28) : Math.max(root.idle === "clock" ? 0 : 104, idleRow.implicitWidth + 32)
     readonly property real bodyWidth: root.open ? root.cardWidth : root.compactWidth
     readonly property real bodyHeight: root.open ? root.cardHeight : root.pillHeight
     readonly property bool bubble: root.second !== null && !root.open
@@ -210,12 +215,21 @@ Item {
         width: lead.size
         height: lead.size
 
+        Rectangle {
+            anchors.fill: parent
+            visible: !artImage.visible
+            radius: lead.size >= 40 ? 14 : lead.size / 2
+            color: Qt.alpha(root.tintOf(lead.a), 0.16)
+            border.width: 1
+            border.color: Qt.alpha(root.tintOf(lead.a), 0.22)
+        }
+
         RoundImage {
             id: artImage
             anchors.fill: parent
             visible: lead.a !== null && lead.a.art !== undefined && lead.a.art !== ""
             source: visible ? lead.a.art : ""
-            radius: lead.size >= 40 ? 12 : lead.size / 2
+            radius: lead.size >= 40 ? 14 : lead.size / 2
             fallbackColor: Theme.accentDeep
         }
 
@@ -245,7 +259,7 @@ Item {
             anchors.centerIn: parent
             visible: !artImage.visible && lead.a !== null && lead.a.kind !== "recording"
             text: root.glyphOf(lead.a)
-            size: lead.size * 0.62
+            size: lead.size * (lead.size >= 40 ? 0.5 : 0.62)
             color: root.tintOf(lead.a)
         }
     }
@@ -300,10 +314,11 @@ Item {
         property bool danger: false
         property int badge: 0
         property string tip: ""
+        property bool square: false
 
         signal clicked
 
-        width: 34
+        width: press.square ? 40 : 34
         height: 34
         opacity: press.enabled ? 1 : 0.4
         scale: area.pressed ? 0.9 : 1
@@ -320,8 +335,8 @@ Item {
 
         Rectangle {
             anchors.fill: parent
-            radius: width / 2
-            color: press.danger ? (area.pressed ? Qt.darker(Theme.danger, 1.2) : Theme.danger) : press.strong ? Theme.accent : press.lit ? Qt.alpha(Theme.accent, area.pressed ? 0.45 : area.containsMouse ? 0.35 : 0.26) : area.pressed ? Qt.alpha(Theme.text, 0.18) : area.containsMouse || press.activeFocus ? Qt.alpha(Theme.text, 0.1) : "transparent"
+            radius: press.square ? 12 : width / 2
+            color: press.danger ? (area.pressed ? Qt.darker(Theme.danger, 1.2) : Theme.danger) : press.strong ? (area.pressed ? Qt.darker(Theme.accent, 1.15) : area.containsMouse ? Theme.accentHi : Theme.accent) : press.lit ? Qt.alpha(Theme.accent, area.pressed ? 0.45 : area.containsMouse ? 0.35 : 0.26) : area.pressed ? Qt.alpha(Theme.text, 0.18) : area.containsMouse || press.activeFocus ? Qt.alpha(Theme.text, 0.1) : press.square ? Qt.alpha(Theme.text, 0.05) : "transparent"
             border.width: press.activeFocus ? 1 : 0
             border.color: Theme.accent
 
@@ -343,6 +358,8 @@ Item {
             visible: press.badge > 0
             anchors.right: parent.right
             anchors.top: parent.top
+            anchors.rightMargin: press.square ? -3 : 0
+            anchors.topMargin: press.square ? -3 : 0
             width: Math.max(16, badgeText.implicitWidth + 8)
             height: 16
             radius: 8
@@ -380,6 +397,7 @@ Item {
         readonly property bool bar: row.modelData === "media" || row.modelData === "volume"
         readonly property string actionKey: root.actionsOf(row.modelData, row.a).join(",")
         readonly property bool typing: row.a !== null && row.a.id === root.replying && row.modelData === "message"
+        readonly property bool big: row.modelData === "media"
 
         width: root.cardWidth - 24
         height: I.rowHeight(row.modelData)
@@ -387,7 +405,9 @@ Item {
         Rectangle {
             anchors.fill: parent
             radius: Tokens.radiusRow
-            color: rowArea.pressed ? Qt.alpha(Theme.text, 0.1) : rowArea.containsMouse ? Qt.alpha(Theme.text, 0.06) : "transparent"
+            color: rowArea.pressed ? Qt.alpha(Theme.text, 0.12) : rowArea.containsMouse ? Qt.alpha(Theme.text, 0.08) : Qt.alpha(Theme.text, 0.04)
+            border.width: 1
+            border.color: Qt.alpha(Theme.text, rowArea.containsMouse ? 0.08 : 0.04)
 
             Behavior on color {
                 ColorAnimation {
@@ -406,10 +426,10 @@ Item {
 
         Lead {
             id: rowLead
-            x: 8
-            y: 8
+            x: 10
+            y: 10
             a: row.a
-            size: 44
+            size: row.big ? 56 : 44
         }
 
         TextBox {
@@ -438,7 +458,7 @@ Item {
             anchors.right: rowActions.left
             anchors.rightMargin: 6
             y: rowLead.y + (rowLead.height - height) / 2
-            spacing: 2
+            spacing: 3
 
             Text {
                 textFormat: Text.PlainText
@@ -466,9 +486,9 @@ Item {
             id: rowActions
             visible: !row.typing
             anchors.right: parent.right
-            anchors.rightMargin: 6
+            anchors.rightMargin: 8
             y: rowLead.y + (rowLead.height - height) / 2
-            spacing: 2
+            spacing: 4
 
             Repeater {
                 model: row.actionKey === "" ? [] : row.actionKey.split(",")
@@ -477,19 +497,44 @@ Item {
                     required property string modelData
                     glyph: root.actionGlyph(modelData, row.a)
                     tip: modelData
-                    danger: modelData === "decline"
+                    danger: modelData === "decline" || modelData === "stop"
                     strong: modelData === "toggle" || modelData === "done" || modelData === "stop" || modelData === "accept"
                     onClicked: root.act(row.modelData, modelData)
                 }
             }
         }
 
+        Text {
+            textFormat: Text.PlainText
+            visible: row.big && root.length > 0
+            x: 10
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 8
+            text: C.elapsed(root.position * 1000)
+            color: Theme.textDim
+            font.family: Tokens.fontMono
+            font.pixelSize: Tokens.tinySize - 1
+        }
+
+        Text {
+            textFormat: Text.PlainText
+            visible: row.big && root.length > 0
+            anchors.right: parent.right
+            anchors.rightMargin: 10
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 8
+            text: "-" + C.elapsed(Math.max(0, root.length - root.position) * 1000)
+            color: Theme.textDim
+            font.family: Tokens.fontMono
+            font.pixelSize: Tokens.tinySize - 1
+        }
+
         Rectangle {
             visible: row.bar
-            x: 8
-            width: parent.width - 16
+            x: row.big && root.length > 0 ? 52 : 10
+            width: parent.width - 2 * x
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 10
+            anchors.bottomMargin: row.big ? 13 : 12
             height: 4
             radius: 2
             color: Qt.alpha(Theme.text, 0.14)
@@ -589,13 +634,25 @@ Item {
                 Text {
                     textFormat: Text.PlainText
                     anchors.verticalCenter: parent.verticalCenter
-                    width: Math.min(implicitWidth, 220)
+                    width: Math.min(implicitWidth, 200)
                     text: root.main !== null ? I.label(root.main) : ""
                     elide: Text.ElideRight
                     color: Theme.text
                     font.family: root.main !== null && ["recording", "focus", "volume"].indexOf(root.main.kind) >= 0 ? Tokens.fontMono : Tokens.fontUi
                     font.pixelSize: Tokens.smallSize
                     font.weight: Font.DemiBold
+                }
+
+                Text {
+                    textFormat: Text.PlainText
+                    anchors.verticalCenter: parent.verticalCenter
+                    visible: text !== ""
+                    width: Math.min(implicitWidth, 110)
+                    text: root.main !== null && root.main.kind === "media" && root.main.title && root.main.artist ? root.main.artist : ""
+                    elide: Text.ElideRight
+                    color: Theme.textDim
+                    font.family: Tokens.fontUi
+                    font.pixelSize: Tokens.smallSize
                 }
 
                 Bars {
@@ -605,16 +662,79 @@ Item {
                 }
             }
 
-            Text {
-                textFormat: Text.PlainText
-                id: clockText
+            Rectangle {
+                visible: root.main !== null && root.main.kind === "media" && root.length > 0
+                x: 24
+                y: root.atTop ? parent.height - 4 : 2
+                width: parent.width - 48
+                height: 2
+                radius: 1
+                color: Qt.alpha(Theme.text, 0.12)
+
+                Rectangle {
+                    width: parent.width * Math.max(0, Math.min(1, root.progress))
+                    height: parent.height
+                    radius: 1
+                    color: Theme.accent
+                }
+            }
+
+            Row {
+                id: idleRow
                 anchors.centerIn: parent
-                visible: root.main === null && root.idle === "clock"
-                text: root.time
-                color: Theme.text
-                font.family: Tokens.fontMono
-                font.pixelSize: Tokens.smallSize
-                font.weight: Font.DemiBold
+                visible: root.main === null
+                spacing: 10
+
+                Text {
+                    textFormat: Text.PlainText
+                    anchors.verticalCenter: parent.verticalCenter
+                    visible: root.idle === "clock"
+                    text: root.time
+                    color: Theme.text
+                    font.family: Tokens.fontMono
+                    font.pixelSize: Tokens.smallSize
+                    font.weight: Font.DemiBold
+                }
+
+                Glyph {
+                    anchors.verticalCenter: parent.verticalCenter
+                    visible: root.quiet
+                    text: Icons.GLYPHS.dnd
+                    size: 15
+                    color: Theme.textDim
+                }
+
+                Row {
+                    anchors.verticalCenter: parent.verticalCenter
+                    visible: root.unread > 0
+                    spacing: 4
+
+                    Glyph {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: Icons.GLYPHS.bell
+                        size: 15
+                        color: Theme.accent
+                    }
+
+                    Text {
+                        textFormat: Text.PlainText
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: root.unread > 99 ? "99+" : String(root.unread)
+                        color: Theme.text
+                        font.family: Tokens.fontMono
+                        font.pixelSize: Tokens.tinySize
+                        font.weight: Font.DemiBold
+                    }
+                }
+
+                Rectangle {
+                    anchors.verticalCenter: parent.verticalCenter
+                    visible: root.idle !== "clock" && !root.quiet && root.unread === 0
+                    width: 28
+                    height: 4
+                    radius: 2
+                    color: Qt.alpha(Theme.text, 0.35)
+                }
             }
         }
 
@@ -638,13 +758,22 @@ Item {
                 ActivityRow {}
             }
 
+            Rectangle {
+                visible: root.shortcutIds.length > 0 && root.kinds.length > 0
+                x: 6
+                width: parent.width - 12
+                height: 1
+                color: Qt.alpha(Theme.text, 0.08)
+            }
+
             Row {
                 visible: root.shortcutIds.length > 0
                 width: parent.width
-                height: 44
+                height: root.kinds.length > 0 ? 45 : 52
+                topPadding: root.kinds.length > 0 ? 5 : 9
                 readonly property int count: root.shortcutIds.length
-                spacing: Math.min(22, Math.max(0, (width - count * 34) / Math.max(1, count - 1)))
-                leftPadding: Math.max(0, (width - count * 34 - (count - 1) * spacing) / 2)
+                spacing: Math.min(10, Math.max(0, (width - count * 40) / Math.max(1, count - 1)))
+                leftPadding: Math.max(0, (width - count * 40 - (count - 1) * spacing) / 2)
 
                 Repeater {
                     model: root.shortcutIds
@@ -652,7 +781,7 @@ Item {
                     Press {
                         required property string modelData
                         readonly property var s: root.shortcuts.find(x => x.id === modelData) || null
-                        anchors.verticalCenter: parent.verticalCenter
+                        square: true
                         glyph: s !== null ? Icons.GLYPHS[s.glyph] : ""
                         tip: s !== null ? s.label : ""
                         lit: s !== null && s.lit === true
