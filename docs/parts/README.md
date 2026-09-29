@@ -17,6 +17,7 @@ Sylvaris is made of parts. Each one can be turned off, and a part that is off is
 - [SylSwitch](switcher.md), Alt+Tab
 - [SylClip](clip.md), clipboard history
 - [SylCapture](capture.md), screenshots, recordings and an image editor
+- [SylViewer](viewer.md), images and videos
 - [SylMedia](media.md), the player, an equalizer and device batteries
 - [SylPower](power.md), the power menu
 - [SylPaper](paper.md), wallpapers

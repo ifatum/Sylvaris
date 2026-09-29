@@ -40,6 +40,15 @@ let
     else
       v;
   typed = prune (lib.getAttrs (builtins.attrNames schema) cfg);
+  viewerMimes = lib.filter (m: m != "") (
+    lib.splitString ";" (
+      lib.removePrefix "MimeType=" (
+        lib.findFirst (lib.hasPrefix "MimeType=") "" (
+          lib.splitString "\n" (builtins.readFile ../share/applications/sylvaris-viewer.desktop)
+        )
+      )
+    )
+  );
 in
 {
   options.programs.sylvaris = lib.mapAttrs (k: optionsFor [ k ]) schema // {
@@ -68,6 +77,12 @@ in
       description = "Parts to exclude (false) or keep (true), written to the parts key of config.json. Tools only excluded parts need are left off the package's PATH.";
     };
 
+    defaultViewer = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Make SylViewer the default app for the images and videos it opens, through xdg.mimeApps.";
+    };
+
     themes = lib.mkOption {
       type = lib.types.attrsOf json.type;
       default = { };
@@ -84,6 +99,10 @@ in
     ];
 
     home.packages = [ (cfg.package.override { sylvarisParts = parts; }) ];
+
+    xdg.mimeApps.defaultApplications = lib.mkIf (cfg.defaultViewer && (parts.viewer or true)) (
+      lib.genAttrs viewerMimes (_: [ "sylvaris-viewer.desktop" ])
+    );
 
     xdg.configFile = lib.mkMerge [
       {

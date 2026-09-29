@@ -1,0 +1,37 @@
+sleep 1.5
+check mkdir -p "$HOME/Pictures/v" && cp "$SYLVARIS_DIR/../tests/fixtures/viewer/"* "$HOME/Pictures/v/"
+check ! sylvaris viewer open relative.png
+check ! sylvaris viewer open "$HOME/Pictures/v/notes.txt"
+check sylvaris viewer open "$HOME/Pictures/v/shot 1.png"
+sleep 1.2
+check sylvaris viewer state | grep -q '"open":true.*"kind":"image","index":0,"count":3'
+shot viewer-image
+syl viewer next
+sleep 1.5
+check sylvaris viewer state | grep -q '"kind":"video","index":1'
+check sylvaris viewer state | grep -q '"playing":true'
+shot viewer-video
+syl viewer play
+sleep 0.4
+check sylvaris viewer state | grep -q '"playing":false'
+syl viewer next
+sleep 0.8
+check sylvaris viewer state | grep -q 'shot10.jpg","kind":"image","index":2'
+syl viewer next
+sleep 0.5
+check sylvaris viewer state | grep -q '"index":0'
+syl viewer prev
+sleep 0.5
+syl viewer trash
+check sylvaris viewer state | grep -q '"note":"Press again'
+shot viewer-trash-arm
+syl viewer trash
+sleep 1.5
+check test ! -e "$HOME/Pictures/v/shot10.jpg"
+check sylvaris viewer state | grep -q '"count":2'
+syl viewer close
+sleep 0.8
+check sylvaris viewer state | grep -q '"open":false'
+syl set parts.viewer false
+sleep 0.5
+check ! sylvaris viewer state

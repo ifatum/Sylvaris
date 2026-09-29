@@ -21,6 +21,7 @@ import qs.switcher
 import qs.lock
 import qs.polkit
 import qs.clip
+import qs.viewer
 import qs.island
 import qs.capture
 import qs.access
@@ -55,6 +56,7 @@ ShellRoot {
             clip: clipLoader,
             island: islandLoader,
             capture: captureLoader,
+            viewer: viewerLoader,
             access: accessLoader,
             plugins: pluginsLoader,
             sync: syncLoader
@@ -237,6 +239,7 @@ ShellRoot {
             clip: root.part("clip") !== null ? root.part("clip").state() : undefined,
             island: root.part("island") !== null ? root.part("island").state() : undefined,
             capture: root.part("capture") !== null ? root.part("capture").state() : undefined,
+            viewer: root.part("viewer") !== null ? root.part("viewer").state() : undefined,
             access: root.part("access") !== null ? root.part("access").state() : undefined,
             fatest: root.part("fatest") !== null ? root.part("fatest").state() : undefined,
             rgb: root.part("rgb") !== null ? root.part("rgb").state() : undefined,
@@ -451,6 +454,16 @@ ShellRoot {
         SylCapture {
             id: capturePart
             onOpened: root.solo(capturePart)
+        }
+    }
+
+    LazyLoader {
+        id: viewerLoader
+        active: root.on("viewer")
+
+        SylViewer {
+            id: viewerPart
+            onOpened: root.solo(viewerPart)
         }
     }
 
@@ -846,6 +859,19 @@ ShellRoot {
                 decline: () => root.need("island").act("call", "decline"),
                 reply: (...words) => root.need("island").act("message", words.length === 0 ? "reply" : "send:" + words.join(" ")),
                 state: () => root.need("island").state()
+            },
+            viewer: {
+                default: "state",
+                open: (...p) => root.need("viewer").open(p.join(" ")),
+                toggle: () => root.need("viewer").toggle(),
+                close: () => root.need("viewer").close(),
+                next: () => root.need("viewer").step(1),
+                prev: () => root.need("viewer").step(-1),
+                play: () => root.need("viewer").play(),
+                copy: () => root.need("viewer").copy(),
+                wallpaper: () => root.need("viewer").wallpaper(),
+                trash: () => root.need("viewer").trash(),
+                state: () => root.need("viewer").state()
             },
             clip: {
                 toggle: () => root.need("clip").toggle(),

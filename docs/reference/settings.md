@@ -250,6 +250,14 @@ Explained in [island](../parts/island.md).
 | `island.screens` | `"focused"` |  |
 | `island.hideSites` | `["youtube.com","youtu.be"]` |  |
 
+## viewer
+
+| Key | Default | Per screen |
+|---|---|:---:|
+| `viewer.autoplay` | `true` |  |
+| `viewer.loop` | `true` |  |
+| `viewer.muted` | `false` |  |
+
 ## rgb
 
 Explained in [plugins/rgb](../plugins/rgb.md).
@@ -399,6 +407,7 @@ Explained in [configuration](../configuration.md#turning-parts-off).
 | `parts.clip` | `true` |  |
 | `parts.island` | `false` |  |
 | `parts.capture` | `true` |  |
+| `parts.viewer` | `true` |  |
 | `parts.access` | `true` |  |
 | `parts.plugins` | `true` |  |
 | `parts.sync` | `true` |  |

@@ -194,6 +194,11 @@
       "youtu.be"
     ]
   },
+  "viewer": {
+    "autoplay": true,
+    "loop": true,
+    "muted": false
+  },
   "rgb": {
     "on": true,
     "color": "",

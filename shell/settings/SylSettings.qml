@@ -169,6 +169,12 @@ Scope {
             group: "apps"
         },
         {
+            key: "viewer",
+            label: "Viewer",
+            glyph: Icons.GLYPHS.image,
+            group: "apps"
+        },
+        {
             key: "access",
             label: "Accessibility",
             glyph: Icons.GLYPHS.accessibility,
@@ -1031,6 +1037,7 @@ Scope {
                                 lock: lockPage,
                                 polkit: polkitPage,
                                 clip: clipPage,
+                                viewer: viewerPage,
                                 island: islandPage,
                                 capture: capturePage,
                                 access: accessPage,
@@ -1079,6 +1086,12 @@ Scope {
         id: clipPage
 
         ClipPage {}
+    }
+
+    Component {
+        id: viewerPage
+
+        ViewerPage {}
     }
 
     Component {

@@ -45,7 +45,7 @@
               cd ${./.}
               node --test tests/*.test.mjs
               python3 -m unittest discover -s tests -p '*_test.py'
-              find shell -name '*.qml' -print0 | xargs -0 qmllint -I ${pkgs.qt6.qtdeclarative}/lib/qt-6/qml -I ${pkgs.quickshell}/lib/qt-6/qml
+              find shell -name '*.qml' -print0 | xargs -0 qmllint -I ${pkgs.qt6.qtdeclarative}/lib/qt-6/qml -I ${pkgs.quickshell}/lib/qt-6/qml -I ${pkgs.qt6.qtmultimedia}/lib/qt-6/qml
               touch $out
             '';
 
@@ -104,6 +104,10 @@
                       type = lib.types.attrsOf lib.types.anything;
                       default = { };
                     };
+                    xdg.mimeApps.defaultApplications = lib.mkOption {
+                      type = lib.types.attrsOf (lib.types.listOf lib.types.str);
+                      default = { };
+                    };
                     assertions = lib.mkOption {
                       type = lib.types.listOf lib.types.anything;
                       default = [ ];
@@ -117,6 +121,7 @@
                       motion.scale = 1.5;
                       deck.hide = "windows";
                       settings.clock.corner = "top-left";
+                      defaultViewer = true;
                     };
                   };
                 }
@@ -130,6 +135,8 @@
             test "$(jq -r .deck.hide $f)" = windows
             test "$(jq -r .clock.corner $f)" = top-left
             test "$(jq -r '.pad // "unset"' $f)" = unset
+            test ${lib.head eval.config.xdg.mimeApps.defaultApplications."image/png"} = sylvaris-viewer.desktop
+            test ${lib.head eval.config.xdg.mimeApps.defaultApplications."video/x-matroska"} = sylvaris-viewer.desktop
             touch $out
           '';
 
@@ -142,6 +149,7 @@
                 media = false;
                 clip = false;
                 capture = false;
+                viewer = false;
               };
             };
           in
@@ -152,7 +160,7 @@
             grep -q wlsunset ${lean}/bin/sylvaris
             for tool in wlr-randr networkmanager wl-clipboard; do
               if grep -q "$tool" ${lean}/bin/sylvaris; then
-                echo "$tool is still wrapped with center, media, clip and capture excluded"
+                echo "$tool is still wrapped with center, media, clip, capture and viewer excluded"
                 exit 1
               fi
             done
@@ -182,6 +190,8 @@
             ]))
             pkgs.dbus
           ];
+          QML_IMPORT_PATH = "${pkgs.qt6.qtmultimedia}/lib/qt-6/qml";
+          QT_PLUGIN_PATH = "${pkgs.qt6.qtmultimedia}/lib/qt-6/plugins:${pkgs.qt6.qtimageformats}/lib/qt-6/plugins";
         };
       });
     };

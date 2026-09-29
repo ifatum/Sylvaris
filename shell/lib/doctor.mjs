@@ -17,6 +17,7 @@ export const PART_PACKAGES = {
     polkit: [],
     clip: ["wl-clipboard"],
     island: [],
+    viewer: ["wl-clipboard", "glib"],
     access: [],
     plugins: ["git"],
     sync: ["python", "procps"],

@@ -21,6 +21,7 @@
   wf-recorder,
   ffmpeg,
   git,
+  qt6,
   sylvarisParts ? { },
   commit ? "unknown",
 }:
@@ -69,6 +70,10 @@ let
     polkit = [ ];
     clip = [ wl-clipboard ];
     island = [ ];
+    viewer = [
+      wl-clipboard
+      glib
+    ];
     access = [ ];
     fatest = [ ];
     rgb = [ python ];
@@ -115,6 +120,7 @@ stdenvNoCC.mkDerivation {
     fileset = lib.fileset.unions [
       ../shell
       ../bin
+      ../share
     ];
   };
 
@@ -126,9 +132,12 @@ stdenvNoCC.mkDerivation {
     cp -r shell/. $out/share/sylvaris/
     printf '%s\n' ${lib.escapeShellArg commit} > $out/share/sylvaris/COMMIT
     install -Dm755 bin/sylvaris $out/bin/sylvaris
+    install -Dm644 share/applications/sylvaris-viewer.desktop $out/share/applications/sylvaris-viewer.desktop
     wrapProgram $out/bin/sylvaris \
       --set-default SYLVARIS_DIR $out/share/sylvaris \
-      --prefix PATH : ${lib.makeBinPath tools}
+      --prefix PATH : ${lib.makeBinPath tools} \
+      --prefix QML_IMPORT_PATH : ${qt6.qtmultimedia}/lib/qt-6/qml \
+      --prefix QT_PLUGIN_PATH : ${qt6.qtmultimedia}/lib/qt-6/plugins:${qt6.qtimageformats}/lib/qt-6/plugins
     runHook postInstall
   '';
 

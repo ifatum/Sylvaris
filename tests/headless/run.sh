@@ -73,7 +73,7 @@ hl_env=(env -i DBUS_SESSION_BUS_ADDRESS="$dbus_addr" HOME="$home" PATH="${HL_QS_
     USER="${USER:-user}" LANG="${LANG:-C.UTF-8}")
 while IFS= read -r var; do
     hl_env+=("$var")
-done < <(env | grep -E '^(SYLVARIS_GREET_[A-Z]+|GREETD_SOCK)=' || true)
+done < <(env | grep -E '^(SYLVARIS_GREET_[A-Z]+|GREETD_SOCK|QML_IMPORT_PATH|QT_PLUGIN_PATH)=' || true)
 hl_env+=("${gpu_env[@]}")
 if [ -n "${HL_NIRI_SOCKET:-}" ]; then
     hl_env+=(NIRI_SOCKET="$HL_NIRI_SOCKET")

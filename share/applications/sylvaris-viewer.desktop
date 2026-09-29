@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=SylViewer
+GenericName=Image and video viewer
+Comment=View images and videos in Sylvaris
+Exec=sylvaris viewer open %f
+Icon=image-x-generic
+Terminal=false
+NoDisplay=false
+Categories=Graphics;Viewer;AudioVideo;Video;Player;
+MimeType=image/png;image/jpeg;image/gif;image/bmp;image/webp;image/svg+xml;image/tiff;image/x-tga;image/vnd.microsoft.icon;video/mp4;video/x-m4v;video/x-matroska;video/webm;video/quicktime;video/x-msvideo;video/ogg;video/mpeg;video/x-ms-wmv;video/x-flv;
