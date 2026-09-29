@@ -23,10 +23,9 @@ Column {
             Flow {
                 width: 420
                 spacing: 6
-                layoutDirection: Qt.RightToLeft
 
                 Repeater {
-                    model: Object.keys(Pw.ACTIONS).reverse()
+                    model: Object.keys(Pw.ACTIONS)
 
                     delegate: Chip {
                         required property string modelData
