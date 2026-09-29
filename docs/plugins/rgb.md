@@ -18,9 +18,10 @@ SylRGB needs `python3` (already there for other parts) and nothing else; it spea
 
 ## What it does
 
-- **One colour for everything**, from the swatches, a hex code or your theme: with "Follow the theme" on, every device takes the theme's accent colour and changes with it.
+- **One colour for everything**, from the swatches or a hex code, just for the lights. Or turn on "Follow the theme": every device takes the theme's colour and changes with it. Theme accents are chosen for screens and often look dull on LEDs, so SylRGB sends them at full strength ("Vivid theme colours", on by default; greys become white). A theme can also name its own LED colour with `colors.rgb`, which wins over the accent.
 - **Brightness** scales every colour it sends.
 - **Each device on its own**: tap a device for its own colour or one of its effects (breathing, spectrum and whatever else the device offers), or switch it off with its toggle.
+- **A flash when you click**: tap a mouse and pick a colour under "When a button is pressed". The mouse shows that colour for as long as any button is held and goes back to its own colour when you let go. See [clicks and privacy](#clicks-and-privacy).
 - **Lights off** turns every device dark and back with one switch, also from SylCenter and `sylvaris rgb off`.
 - **OpenRGB profiles** you saved in OpenRGB load with one tap. Loading one clears the colours picked in SylRGB, so the two never fight.
 - **Colours come back** when Sylvaris starts and whenever a device reconnects, for example a wireless mouse waking up. Turn this off in SylSettings › Lighting if you would rather keep whatever the device shows.
@@ -37,7 +38,10 @@ sylvaris rgb color ff8800                      # every device
 sylvaris rgb color 00c7be "Krux Atax Pro RGB"  # one device
 sylvaris rgb mode Breathing                    # every device that has it
 sylvaris rgb mode "Spectrum Cycle" "Krux Atax Pro RGB"
-sylvaris rgb follow on                         # use the theme's accent colour
+sylvaris rgb follow on                         # use the theme's colour
+sylvaris rgb vivid off                         # send the theme's accent as it is
+sylvaris rgb press ffffff                      # every mouse flashes white while clicked
+sylvaris rgb press off "SteelSeries Aerox 3 Wireless"
 sylvaris rgb brightness 40
 sylvaris rgb off                               # also: on
 sylvaris rgb profile Evening                   # load an OpenRGB profile
@@ -47,7 +51,21 @@ Names with spaces go in quotes. `sylvaris watch rgb` streams changes.
 
 ## Settings
 
-Everything lives under `rgb` in `settings.json`: `on`, `color`, `follow`, `brightness`, `restore`, `devices` (per-device `off`, `color` and `mode`, keyed by the name OpenRGB shows), `host` and `port` (the SDK server, `127.0.0.1:6742` by default; another computer's address works too). `placement.rgb` sets where the panel opens, and `center.extra` can hold the `rgb` tile.
+Everything lives under `rgb` in `settings.json`: `on`, `color`, `follow`, `vivid`, `brightness`, `restore`, `devices` (per-device `off`, `color`, `mode` and `press`, keyed by the name OpenRGB shows), `host` and `port` (the SDK server, `127.0.0.1:6742` by default; another computer's address works too). `placement.rgb` sets where the panel opens, and `center.extra` can hold the `rgb` tile.
+
+## Clicks and privacy
+
+Wayland does not tell other programs about your clicks, so for the click flash SylRGB reads the mouse's own input device (`/dev/input/event…`), found through the USB device OpenRGB uses for that mouse. It opens only that mouse's devices, acts only on mouse-button events, and never stores or sends anything it reads. Nothing is read while no device has a press colour.
+
+Your user needs read access to those device files. On most systems the logged-in user already has it; if the panel says it cannot read `/dev/input/event…`, add a udev rule for that mouse only (not the `input` group, which would expose your keyboard too). On NixOS, for example:
+
+```nix
+services.udev.extraRules = ''
+  SUBSYSTEM=="input", KERNEL=="event*", ATTRS{idVendor}=="1038", ATTRS{idProduct}=="1838", TAG+="uaccess", RUN{builtin}+="uaccess"
+'';
+```
+
+The flash needs the mouse in plain-colour mode; with an effect or with the mouse switched off it stays out of the way.
 
 ## Devices that need a hand
 
@@ -64,6 +82,6 @@ services.hardware.openrgb.package = pkgs.openrgb.overrideAttrs (old: {
 });
 ```
 
-On other distributions, add the same line to that file and build OpenRGB from source. Whole-keyboard colours and effects work this way; if single keys light up in the wrong places, the key layout differs from the generic one and is worth reporting to OpenRGB.
+On other distributions, add the same line to that file and build OpenRGB from source. OpenRGB then finds the keyboard with its logo and edge lights as separate devices. If single keys light up in the wrong places, the key layout differs from the generic one and is worth reporting to OpenRGB.
 
 **A device OpenRGB does not see.** Check OpenRGB's own window first: if it is not listed there, SylRGB cannot see it either. [OpenRGB's supported devices](https://openrgb.org/devices.html) lists what works, and its issue tracker is where new devices get added.

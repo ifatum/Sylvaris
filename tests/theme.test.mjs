@@ -195,3 +195,10 @@ test("a theme can name a workspace icon", async () => {
     assert.equal(validateTheme({ id: "dog", name: "Dog", workspaceIcon: "../x" }).theme.workspaceIcon, "")
     assert.equal(validateTheme({ id: "dog", name: "Dog" }).theme.workspaceIcon, "")
 })
+
+test("a theme can carry its own colour for RGB lighting", () => {
+    const base = { id: "noir", name: "Noir", colors: { accent: "#e8e8e8" } }
+    assert.equal(validateTheme(Object.assign({}, base, { colors: { accent: "#e8e8e8", rgb: "#FFFFFF" } })).theme.colors.rgb, "#ffffff")
+    assert.equal(validateTheme(base).theme.colors.rgb, undefined)
+    assert.deepEqual(validateTheme(Object.assign({}, base, { colors: { rgb: "white" } })).errors, ["invalid color rgb"])
+})

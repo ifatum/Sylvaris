@@ -258,6 +258,7 @@ Explained in [plugins/rgb](../plugins/rgb.md).
 | `rgb.on` | `true` |  |
 | `rgb.color` | `""` |  |
 | `rgb.follow` | `false` |  |
+| `rgb.vivid` | `true` |  |
 | `rgb.brightness` | `100` |  |
 | `rgb.restore` | `true` |  |
 | `rgb.devices` | `{}` |  |

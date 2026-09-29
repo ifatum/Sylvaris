@@ -1,6 +1,8 @@
 import os
 import socket
+import struct
 import sys
+import tempfile
 import threading
 import unittest
 
@@ -124,6 +126,56 @@ class RGBTest(unittest.TestCase):
         srv.notify()
         self.assertTrue(done.wait(3))
         self.assertEqual(seen[0], "ready")
+
+    def test_list_carries_the_device_location(self):
+        srv = self.serve()
+        self.assertEqual(rgb.listing("127.0.0.1", srv.port)["devices"][0]["location"], "HID: fake")
+
+    def test_event_nodes_follow_hidraw_to_the_usb_device(self):
+        with tempfile.TemporaryDirectory() as root:
+            usb = os.path.join(root, "devices", "usb7", "7-1")
+            hid = os.path.join(usb, "7-1:1.1", "0003:1038:1838.0002")
+            os.makedirs(os.path.join(hid, "hidraw", "hidraw5"))
+            for iface, ev in (("7-1:1.0", "event8"), ("7-1:1.2", "event10")):
+                os.makedirs(os.path.join(usb, iface, "0003:1038:1838.000" + ev[-1], "input", "input2" + ev[-1], ev))
+            open(os.path.join(usb, "idVendor"), "w").write("1038\n")
+            os.symlink(usb, os.path.join(usb, "7-1:1.0", "loop"))
+            os.makedirs(os.path.join(root, "class", "hidraw", "hidraw5"))
+            os.symlink(hid, os.path.join(root, "class", "hidraw", "hidraw5", "device"))
+            self.assertEqual(rgb.event_nodes("HID: /dev/hidraw5", root), ["/dev/input/event10", "/dev/input/event8"])
+            self.assertEqual(rgb.event_nodes("I2C: /dev/i2c-3", root), [])
+
+    def test_a_button_press_flashes_the_press_colour(self):
+        srv = self.serve()
+        with tempfile.TemporaryDirectory() as tmp:
+            fifo = os.path.join(tmp, "event0")
+            os.mkfifo(fifo)
+            stop = threading.Event()
+            target = {"id": 0, "name": "SteelSeries Rival 3 Wireless", "base": "#112233", "press": "#ffffff", "events": [fifo]}
+            t = threading.Thread(target=rgb.react, args=("127.0.0.1", srv.port, [target], lambda line: None, stop.is_set), daemon=True)
+            t.start()
+            w = os.open(fifo, os.O_WRONLY)
+            self.addCleanup(os.close, w)
+            self.assertEqual(self.ops(srv, "leds", 1)[-1]["colors"], ["#112233"])
+
+            def ev(kind, code, value):
+                os.write(w, struct.pack("<qqHHi", 0, 0, kind, code, value))
+
+            ev(4, 4, 589825)
+            ev(1, 0x110, 1)
+            ev(0, 0, 0)
+            self.assertEqual(self.ops(srv, "leds", 2)[-1]["colors"], ["#ffffff"])
+            ev(1, 0x111, 1)
+            ev(1, 0x110, 0)
+            ev(1, 30, 1)
+            ev(1, 30, 0)
+            threading.Event().wait(0.2)
+            self.assertEqual(len(self.ops(srv, "leds")), 2)
+            ev(1, 0x111, 0)
+            self.assertEqual(self.ops(srv, "leds", 3)[-1]["colors"], ["#112233"])
+            stop.set()
+            t.join(3)
+            self.assertFalse(t.is_alive())
 
 
 if __name__ == "__main__":

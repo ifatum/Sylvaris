@@ -1,6 +1,6 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
-import { DEFAULT_RGB, validateRgb, hex, dim, plan, glyphOf, PRESETS, summary } from "../shell/lib/rgb.mjs"
+import { DEFAULT_RGB, validateRgb, hex, dim, plan, glyphOf, PRESETS, summary, vivid, reactTargets } from "../shell/lib/rgb.mjs"
 
 const devices = [
     { id: 0, name: "SteelSeries Rival 3 Wireless", type: "mouse", mode: "Direct", modes: [{ name: "Direct", color: true }, { name: "Breathing", color: true }, { name: "Off", color: false }], color: "#ff0000" },
@@ -36,7 +36,10 @@ test("validateRgb keeps good values and repairs the rest", () => {
     assert.equal(v.host, "127.0.0.1")
     assert.equal(v.port, 6742)
     assert.deepEqual(Object.keys(v.devices), ["Krux Atax Pro RGB"])
-    assert.deepEqual(v.devices["Krux Atax Pro RGB"], { off: true, color: "#aabbcc", mode: "Static" })
+    assert.deepEqual(v.devices["Krux Atax Pro RGB"], { off: true, color: "#aabbcc", mode: "Static", press: "" })
+    assert.equal(validateRgb({ devices: { m: { press: "#FFF" } } }).devices.m.press, "#ffffff")
+    assert.equal(v.vivid, true)
+    assert.equal(validateRgb({ vivid: false }).vivid, false)
     assert.equal(validateRgb({ brightness: -5 }).brightness, 0)
     assert.equal(validateRgb({ port: 16742, host: "10.0.0.2" }).port, 16742)
 })
@@ -52,8 +55,10 @@ test("plan paints every device, dimmed, and follows the theme when asked", () =>
         [1, "Krux Atax Pro RGB", "color", "#804020"],
         [2, "Gigabyte RGB", "color", "#804020"]
     ])
-    const follow = validateRgb({ color: "#ff8040", follow: true })
+    const follow = validateRgb({ color: "#ff8040", follow: true, vivid: false })
     assert.equal(plan(devices, follow, "#c9702f")[0].color, "#c9702f")
+    assert.equal(plan(devices, validateRgb({ follow: true }), "#c9702f")[0].color, "#ff7a19")
+    assert.equal(plan(devices, validateRgb({ follow: true }), "#c9702f", "#00ff00")[0].color, "#00ff00")
 })
 
 test("per-device choices win over the shared colour", () => {
@@ -81,4 +86,20 @@ test("glyphs, presets and the one-line summary", () => {
     assert.equal(summary(validateRgb({ on: false }), 3, ""), "Off")
     assert.equal(summary(validateRgb({}), 1, ""), "1 device")
     assert.equal(summary(validateRgb({}), 0, "OpenRGB is not reachable"), "OpenRGB not running")
+})
+
+test("vivid pushes a theme colour to full strength and keeps greys white", () => {
+    assert.equal(vivid("#c9702f"), "#ff7a19")
+    assert.equal(vivid("#86d1bf"), "#19ffc8")
+    assert.equal(vivid("#e8e8e8"), "#ffffff")
+    assert.equal(vivid("#ff0000"), "#ff0000")
+    assert.equal(vivid("nope"), "")
+})
+
+test("reactTargets lists mice with a press colour that show a plain colour", () => {
+    const withLoc = devices.map(d => Object.assign({ location: "HID: /dev/hidraw" + d.id }, d))
+    const cfg = validateRgb({ color: "#ff8040", brightness: 50, devices: { "SteelSeries Rival 3 Wireless": { press: "#ffffff" }, "Krux Atax Pro RGB": { press: "#00ff00", mode: "Spectrum Cycle" } } })
+    assert.deepEqual(reactTargets(withLoc, cfg, ""), [{ id: 0, name: "SteelSeries Rival 3 Wireless", location: "HID: /dev/hidraw0", base: "#804020", press: "#808080" }])
+    assert.deepEqual(reactTargets(withLoc, validateRgb({ on: false, devices: { "SteelSeries Rival 3 Wireless": { press: "#ffffff" } } }), ""), [])
+    assert.deepEqual(reactTargets(withLoc, validateRgb({ devices: { "SteelSeries Rival 3 Wireless": { press: "#ffffff" } } }), "")[0].base, "#000000")
 })

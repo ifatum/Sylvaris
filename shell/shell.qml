@@ -811,6 +811,8 @@ ShellRoot {
                 mode: (name, ...device) => root.need("rgb").setMode(String(name || ""), device),
                 follow: v => root.need("rgb").setFollow(v !== "off" && v !== "false"),
                 brightness: v => root.need("rgb").setBrightness(Number(v)),
+                press: (value, ...device) => root.need("rgb").setPress(String(value || ""), device),
+                vivid: v => Settings.set("rgb.vivid", v !== "off" && v !== "false"),
                 profile: (...name) => root.need("rgb").loadProfile(name.join(" ")),
                 refresh: () => root.need("rgb").refresh(),
                 list: () => root.need("rgb").state().devices.map(d => d.name + " (" + d.type + "): " + d.modes.join(", ")).join("\n"),

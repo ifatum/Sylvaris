@@ -78,6 +78,10 @@ export function validateTheme(raw) {
             errors.push("invalid color " + key)
         colors[key] = key === "textSoft" && parseHex(rc.text) !== null ? rc.text.toLowerCase() : DEFAULT_THEME.colors[key]
     }
+    if (parseHex(rc.rgb) !== null)
+        colors.rgb = rc.rgb.toLowerCase()
+    else if (rc.rgb !== undefined)
+        errors.push("invalid color rgb")
 
     const links = {}
     if (raw.links !== undefined && !isObject(raw.links))

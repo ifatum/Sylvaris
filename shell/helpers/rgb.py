@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import json
+import os
 import re
+import select
 import socket
 import struct
 import sys
@@ -71,8 +73,9 @@ def read_device(data, proto):
     kind = r.take("<i")
     d = {"type": TYPES[kind] if 0 <= kind < len(TYPES) else "other", "name": r.text()}
     d["vendor"] = r.text() if proto >= 1 else ""
-    for _ in range(4):
+    for _ in range(3):
         r.text()
+    d["location"] = r.text()
     count = r.take("<H")
     d["active"] = r.take("<i")
     d["modes"] = [read_mode(r, proto) for _ in range(count)]
@@ -188,6 +191,7 @@ def public(i, d):
         "modes": [{"name": m["name"], "color": m["color_mode"] in (PER_LED, MODE_SPECIFIC), "speed": m["speed_max"] != m["speed_min"]} for m in d["modes"]],
         "leds": d["leds"],
         "zones": d["zones"],
+        "location": d["location"],
         "color": hexof(shown) if shown is not None else "",
     }
 
@@ -308,6 +312,93 @@ def load(host, port, name):
         c.close()
 
 
+EVENT = struct.Struct("<qqHHi")
+BUTTONS = range(0x110, 0x120)
+
+
+def event_nodes(location, sys_root="/sys"):
+    m = re.search(r"hidraw\d+", location or "")
+    if not m:
+        return []
+    path = os.path.realpath(os.path.join(sys_root, "class", "hidraw", m.group(0), "device"))
+    top = os.path.realpath(sys_root)
+    while path.startswith(top) and path != top and not os.path.exists(os.path.join(path, "idVendor")):
+        path = os.path.dirname(path)
+    if not os.path.exists(os.path.join(path, "idVendor")):
+        return []
+    names = set()
+    for _, dirs, _ in os.walk(path):
+        names.update(n for n in dirs if re.fullmatch(r"event\d+", n))
+    return ["/dev/input/" + n for n in sorted(names)]
+
+
+def react(host, port, targets, out, stopped=lambda: False):
+    c, err = connect(host, port)
+    if err:
+        out(json.dumps(err))
+        return 1
+    watched = {}
+    try:
+        devices = c.devices()
+        for t in targets if isinstance(targets, list) else []:
+            if not isinstance(t, dict) or not HEX.match(str(t.get("base", ""))) or not HEX.match(str(t.get("press", ""))):
+                continue
+            i = find(devices, t)
+            if i < 0:
+                continue
+            d = devices[i]
+            direct = next((idx for idx, m in enumerate(d["modes"]) if m["color_mode"] == PER_LED and m["name"].lower() in ("direct", "custom", "static")), -1)
+            state = {"i": i, "d": d, "direct": direct, "base": rgbof(t["base"]), "press": rgbof(t["press"]), "held": set()}
+            run(c, devices, {"id": i, "name": d["name"], "do": "color", "color": t["base"]})
+            for path in t.get("events") or event_nodes(d["location"]):
+                try:
+                    watched[os.open(path, os.O_RDONLY | os.O_NONBLOCK)] = (state, bytearray())
+                except OSError as e:
+                    out(json.dumps({"ok": False, "error": "cannot read " + path + " for " + d["name"] + ": " + e.strerror}))
+        if not watched:
+            out(json.dumps({"ok": False, "error": "no mouse buttons to watch"}))
+            return 1
+        out("ready")
+
+        def show(s, color):
+            if s["direct"] >= 0:
+                c.update_leds(s["i"], [color] * s["d"]["leds"])
+            else:
+                run(c, devices, {"id": s["i"], "name": s["d"]["name"], "do": "color", "color": hexof(color)})
+
+        while not stopped():
+            ready = select.select(list(watched), [], [], 0.3)[0]
+            for fd in ready:
+                s, buf = watched[fd]
+                try:
+                    chunk = os.read(fd, EVENT.size * 32)
+                except BlockingIOError:
+                    continue
+                if not chunk:
+                    select.select([], [], [], 0.05)
+                    continue
+                buf += chunk
+                while len(buf) >= EVENT.size:
+                    _, _, kind, code, value = EVENT.unpack_from(buf)
+                    del buf[:EVENT.size]
+                    if kind != 1 or code not in BUTTONS:
+                        continue
+                    before = bool(s["held"])
+                    if value:
+                        s["held"].add(code)
+                    else:
+                        s["held"].discard(code)
+                    if bool(s["held"]) != before:
+                        show(s, s["press"] if s["held"] else s["base"])
+        return 0
+    except (OSError, ConnectionError, struct.error, IndexError):
+        return 1
+    finally:
+        for fd in watched:
+            os.close(fd)
+        c.close()
+
+
 def watch(host, port, out):
     c, err = connect(host, port)
     if err:
@@ -328,14 +419,20 @@ def watch(host, port, out):
 def main():
     args = sys.argv[1:]
     if len(args) < 3:
-        sys.stderr.write("usage: rgb.py HOST PORT list|apply|load NAME|watch\n")
+        sys.stderr.write("usage: rgb.py HOST PORT list|apply|load NAME|watch|react\n")
         return 2
     host, port, cmd = args[0], args[1], args[2]
+    def line(s):
+        sys.stdout.write(s + "\n")
+        sys.stdout.flush()
     if cmd == "watch":
-        def line(s):
-            sys.stdout.write(s + "\n")
-            sys.stdout.flush()
         return watch(host, port, line)
+    if cmd == "react":
+        try:
+            targets = json.loads(sys.stdin.readline() or "[]")
+        except ValueError:
+            targets = []
+        return react(host, port, targets, line)
     if cmd == "list":
         got = listing(host, port)
     elif cmd == "apply":

@@ -197,6 +197,7 @@
     "on": true,
     "color": "",
     "follow": false,
+    "vivid": true,
     "brightness": 100,
     "restore": true,
     "devices": {},

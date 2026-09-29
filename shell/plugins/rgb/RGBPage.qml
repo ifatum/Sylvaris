@@ -80,6 +80,7 @@ Column {
 
     Card {
         title: "Colour"
+        note: "Want a colour just for the lights? Turn Follow the theme off and pick one in the Lighting panel, or run sylvaris rgb color ff2d55."
 
         SettingRow {
             title: "Follow the theme"
@@ -88,6 +89,16 @@ Column {
             Toggle {
                 checked: page.cfg.follow
                 onToggled: v => Settings.set("rgb.follow", v)
+            }
+        }
+
+        SettingRow {
+            title: "Vivid theme colours"
+            subtitle: "Theme accents are soft on screen but look dull on LEDs, so SylRGB sends them at full strength. A theme can name its own LED colour with colors.rgb"
+
+            Toggle {
+                checked: page.cfg.vivid
+                onToggled: v => Settings.set("rgb.vivid", v)
             }
         }
 

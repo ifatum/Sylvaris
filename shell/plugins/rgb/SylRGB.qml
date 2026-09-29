@@ -14,6 +14,11 @@ Popup {
     readonly property var cfg: Settings.values.rgb
     readonly property string helper: Quickshell.shellDir + "/helpers/rgb.py"
     readonly property string accent: R.hex(Theme.accent.toString())
+    readonly property string themeRgb: Theme.theme.colors.rgb || ""
+    readonly property string shown: R.shared(root.cfg, root.accent, root.themeRgb)
+    readonly property string reactTargets: root.armed && root.error === "" ? JSON.stringify(R.reactTargets(root.devices, root.cfg, root.accent, root.themeRgb)) : "[]"
+    property bool reactUp: true
+    property int reactRetries: 0
     property var devices: []
     property var profiles: []
     property string error: ""
@@ -38,7 +43,7 @@ Popup {
     }
 
     function apply(): void {
-        const ops = R.plan(root.devices, root.cfg, root.accent);
+        const ops = R.plan(root.devices, root.cfg, root.accent, root.themeRgb);
         if (ops.length === 0)
             return;
         applier.ops = JSON.stringify(ops);
@@ -52,14 +57,15 @@ Popup {
         return root.cfg.devices[name] || {
             off: false,
             color: "",
-            mode: ""
+            mode: "",
+            press: ""
         };
     }
 
     function patch(name: string, change: var): void {
         const next = Object.assign({}, root.cfg.devices);
         const entry = Object.assign({}, root.own(name), change);
-        if (!entry.off && entry.color === "" && entry.mode === "")
+        if (!entry.off && entry.color === "" && entry.mode === "" && entry.press === "")
             delete next[name];
         else
             next[name] = entry;
@@ -137,8 +143,9 @@ Popup {
         return {
             open: root.shown,
             on: root.cfg.on,
-            color: root.cfg.follow ? root.accent : root.cfg.color,
+            color: root.shown,
             follow: root.cfg.follow,
+            vivid: root.cfg.vivid,
             brightness: root.cfg.brightness,
             error: root.error,
             profiles: root.profiles,
@@ -161,6 +168,29 @@ Popup {
     onAccentChanged: {
         if (root.armed && root.cfg.follow)
             later.restart();
+    }
+    onThemeRgbChanged: {
+        if (root.armed && root.cfg.follow)
+            later.restart();
+    }
+    onReactTargetsChanged: {
+        if (reactor.running)
+            reactor.signal(15);
+    }
+
+    function setPress(value: string, words: var): string {
+        const name = root.named(words || []);
+        const mice = name === "" ? root.devices.filter(d => d.type === "mouse") : root.devices.filter(d => d.name === name);
+        if (mice.length === 0)
+            throw new Error("no mouse found; name the device: sylvaris rgb press ffffff \"Device name\"");
+        const c = value === "off" ? "" : R.hex(value);
+        if (value !== "off" && c === "")
+            throw new Error("give a colour like ffffff, or off");
+        for (const d of mice)
+            root.patch(d.name, {
+                press: c
+            });
+        return mice.map(d => d.name).join(", ") + (c === "" ? " press flash off" : " flashes " + c);
     }
 
     Timer {
@@ -258,6 +288,49 @@ Popup {
         }
     }
 
+    Timer {
+        id: reactAgain
+        interval: Math.min(60000, 2000 * Math.pow(2, root.reactRetries))
+        onTriggered: {
+            root.reactRetries++;
+            root.reactUp = true;
+        }
+    }
+
+    Process {
+        id: reactor
+        property string sent: "[]"
+        running: root.reactUp && root.reactTargets !== "[]"
+        command: ["python3", root.helper, root.cfg.host, String(root.cfg.port), "react"]
+        stdinEnabled: true
+        onStarted: {
+            reactor.sent = root.reactTargets;
+            write(root.reactTargets + "\n");
+        }
+        onExited: {
+            root.reactUp = false;
+            if (root.reactTargets === "[]")
+                return;
+            if (reactor.sent !== root.reactTargets)
+                Qt.callLater(() => root.reactUp = true);
+            else
+                reactAgain.restart();
+        }
+        stdout: SplitParser {
+            onRead: line => {
+                if (line === "ready") {
+                    root.reactRetries = 0;
+                    return;
+                }
+                try {
+                    const r = JSON.parse(line);
+                    if (!r.ok)
+                        root.notice = r.error;
+                } catch (e) {}
+            }
+        }
+    }
+
     Process {
         running: root.watchUp
         command: ["python3", root.helper, root.cfg.host, String(root.cfg.port), "watch"]
@@ -299,7 +372,7 @@ Popup {
                     anchors.verticalCenter: parent.verticalCenter
                     text: Icons.GLYPHS.rgb
                     size: 20
-                    color: root.cfg.on ? (root.cfg.follow ? root.accent : root.cfg.color !== "" ? root.cfg.color : Theme.accent) : Theme.textDim
+                    color: root.cfg.on ? (root.shown !== "" ? root.shown : Theme.accent) : Theme.textDim
                 }
 
                 Column {
@@ -422,6 +495,7 @@ Popup {
         property string current: ""
         property bool offerTheme: true
         property bool offerShared: false
+        property string sharedLabel: "Same as all"
 
         signal picked(string c)
 
@@ -433,7 +507,7 @@ Popup {
 
         Chip {
             visible: sw.offerShared
-            text: "Same as all"
+            text: sw.sharedLabel
             lit: sw.current === ""
             onClicked: sw.picked("")
         }
@@ -616,6 +690,27 @@ Popup {
                 onPicked: c => root.patch(row.device.name, {
                         color: c,
                         off: false
+                    })
+            }
+
+            Text {
+                textFormat: Text.PlainText
+                x: 16
+                visible: row.device.type === "mouse"
+                text: "When a button is pressed"
+                color: Theme.textDim
+                font.family: Tokens.fontUi
+                font.pixelSize: Tokens.tinySize
+            }
+
+            Swatches {
+                visible: row.device.type === "mouse"
+                offerTheme: false
+                offerShared: true
+                sharedLabel: "No flash"
+                current: row.mine.press
+                onPicked: c => root.patch(row.device.name, {
+                        press: c
                     })
             }
 
