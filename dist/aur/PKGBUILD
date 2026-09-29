@@ -3,7 +3,7 @@ pkgver=r0.0000000
 pkgrel=1
 pkgdesc="Modular Quickshell desktop shell for Hyprland, niri and sway"
 arch=('any')
-url="https://github.com/naxce/Sylvaris"
+url="https://github.com/ifatum/Sylvaris"
 license=('MIT')
 depends=('quickshell' 'qt6-svg' 'socat' 'inter-font' 'ttf-jetbrains-mono-nerd' 'bash' 'coreutils' 'procps-ng')
 makedepends=('git' 'make')
@@ -21,13 +21,14 @@ optdepends=(
   'grim: screenshots'
   'slurp: choosing an area or window to capture'
   'wf-recorder: screen recording'
+  'ffmpeg: recordings that upload everywhere'
   'glib2: locking when logind asks (gdbus)'
   'git: installing plugins from git'
 )
 provides=('sylvaris')
 conflicts=('sylvaris')
 backup=('etc/pam.d/sylvaris')
-source=("sylvaris::git+https://github.com/naxce/Sylvaris.git")
+source=("sylvaris::git+https://github.com/ifatum/Sylvaris.git")
 sha256sums=('SKIP')
 
 pkgver() {

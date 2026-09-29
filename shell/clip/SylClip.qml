@@ -113,7 +113,7 @@ Popup {
                 {
                     id: "d2",
                     kind: "text",
-                    text: "https://github.com/naxce/Sylvaris",
+                    text: "https://github.com/ifatum/Sylvaris",
                     pinned: false,
                     at: 0
                 },

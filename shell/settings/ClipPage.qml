@@ -37,7 +37,7 @@ Column {
                             pinned: true
                         },
                         {
-                            text: "https://github.com/naxce/Sylvaris",
+                            text: "https://github.com/ifatum/Sylvaris",
                             pinned: false
                         },
                         {
