@@ -2,57 +2,19 @@
 
 Last changed: {{updated}}. The Polish version of this policy is the binding one; this is a translation.
 
-In short: the Site has no forms, accounts, comments, analytics, ads or social media buttons. It stores nothing on your device and loads nothing from other people's servers. The only data it produces is the web server's technical logs, which are deleted after {{logDays}} days.
+In short: the Site collects and keeps no data about you. It has no forms, accounts, comments, analytics, ads or social media buttons, stores nothing on your device, loads nothing from other people's servers, and the server keeps no visitor logs.
 
-## Controller
+## What happens when you open the Site
 
-The controller of your personal data is {{name}}, {{address}}. For anything about personal data, write to {{email}}.
+Your browser sends a request to the server and, as with every site on the internet, the IP address of your device or network comes with it. The server uses it only to send the page back and does not write it down anywhere. The server keeps no access logs and no error logs, so nothing of your visit remains once the page is sent.
 
-## What we process and why
+We do not count visits, do not profile anyone and make no automated decisions about you.
 
-When you open the Site, your browser sends a request to the server. The server writes to its log:
+## Your rights and contact
 
-- the IP address of your device or network,
-- the date and time of the request,
-- the address of the page you opened,
-- the server's response code and size,
-- your browser's name and version (the User-Agent header),
-- the page you came from (the Referer header), if your browser sends it.
+Since we keep nothing about you, there is no data we could show you, correct or delete. If you have a question about privacy on this Site, write to {{email}}.
 
-We do this to keep the Site working and safe: to find errors, attacks and abuse. The legal basis is our legitimate interest in running the Site securely (Article 6(1)(f) GDPR).
-
-We do not use the logs for visitor statistics, we do not build profiles from them, and we do not combine them with other data.
-
-## How long we keep data
-
-Logs are deleted automatically after {{logDays}} days. We keep individual entries longer only when they are needed to investigate a specific attack or abuse, and only until that is settled.
-
-## Who can see the data
-
-The controller and the server provider, {{host}}, which stores the data on the controller's behalf as a processor (Article 28 GDPR). The server is located in: {{hostCountry}}.
-
-We do not sell data and do not pass it to anyone else, unless the law requires it, for example at the request of a court or prosecutor.
-
-## Your rights
-
-You have the right to:
-
-- access your data and get a copy (Article 15 GDPR),
-- have it corrected (Article 16 GDPR),
-- have it erased (Article 17 GDPR),
-- restrict its processing (Article 18 GDPR),
-- object to processing on grounds relating to your particular situation (Article 21 GDPR),
-- lodge a complaint with the Polish supervisory authority, the President of the Personal Data Protection Office (Prezes UODO), ul. Stawki 2, 00-193 Warszawa, [uodo.gov.pl](https://uodo.gov.pl), or with the authority in your own EU country.
-
-The logs contain no names or email addresses, so we cannot tell on our own which entry is yours. To use these rights, give us your IP address and the approximate time of your visit so we can find the right entries (Article 11 GDPR).
-
-## Do you have to give data
-
-No. Without an IP address your browser cannot load the Site, though, so it cannot be shown without one.
-
-## Automated decisions
-
-We make no automated decisions about you and do not profile you.
+You can always complain to the Polish data protection authority, Prezes Urzędu Ochrony Danych Osobowych, ul. Stawki 2, 00-193 Warszawa, [uodo.gov.pl](https://uodo.gov.pl).
 
 ## Cookies and similar technologies
 

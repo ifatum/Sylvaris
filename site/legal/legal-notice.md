@@ -1,16 +1,14 @@
 # Legal notice
 
-This site describes Sylvaris, free software under the MIT licence, and holds its documentation. Nothing is sold here, there are no ads, and no data about visitors is collected beyond the web server's technical logs.
+This site describes Sylvaris, free software under the MIT licence, and holds its documentation. Nothing is sold here, there are no ads, and no data about visitors is collected.
 
 The Polish version of this notice is the binding one; this is a translation.
 
 ## Who runs this site
 
-The service provider under the Polish Act of 18 July 2002 on providing services by electronic means, and the controller of personal data, is:
+The author of Sylvaris, naxce, runs this site privately. It is a hobby project: it is not run as part of any business or professional activity and earns nothing, so it is not a service within the meaning of Article 2(6) of the Polish Act of 18 July 2002 on providing services by electronic means.
 
-- {{name}}
-- {{address}}
-- e-mail: {{email}}
+Contact: {{email}}
 
 You can write in English or Polish. Bugs in the software itself are easiest to report publicly on [GitHub](https://github.com/ifatum/Sylvaris/issues).
 

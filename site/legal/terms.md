@@ -4,9 +4,8 @@ In force from {{updated}}. The Polish version of these terms is the binding one;
 
 ## 1. General
 
-1. These terms set out how you may use the Sylvaris website (the Site). They are issued under Article 8 of the Polish Act of 18 July 2002 on providing services by electronic means.
-2. The service provider is {{name}}, {{address}}, e-mail {{email}}.
-3. The terms are available free of charge at this address. You can save or print them.
+1. These terms set out how you may use the Sylvaris website (the Site). The author of Sylvaris, naxce, runs the Site privately and without any commercial purpose; contact: {{email}}.
+2. The terms are available free of charge at this address. You can save or print them.
 
 ## 2. What the Site offers
 
@@ -36,18 +35,18 @@ In force from {{updated}}. The Polish version of these terms is the binding one;
 2. Download Sylvaris only from the official repository: https://github.com/ifatum/Sylvaris.
 3. Third-party plugins run with your account's full permissions: they can read and change your files and run programs. Install only plugins you trust, and read their code.
 
-## 7. Complaints
+## 7. Reporting problems
 
-1. Send complaints about the Site to {{email}}. Describe what does not work and how we can reach you.
-2. We reply within 14 days of receiving a complaint.
+1. Report problems with the Site to {{email}}. Describe what does not work and how we can reach you.
+2. We try to reply within 14 days.
 3. You can also report bugs in the software itself publicly on GitHub. Keep in mind that everyone can read such reports.
 
 ## 8. Personal data
 
-How data is processed is described in [privacy and cookies](privacy.html).
+The Site collects no personal data. Details are in [privacy and cookies](privacy.html).
 
 ## 9. Changes and final provisions
 
 1. These terms may change, for example when the Site or the law changes. A new version applies from its publication on the Site and does not apply retroactively.
 2. Polish law applies to matters these terms do not cover.
-3. If you are a consumer, these terms do not limit the rights mandatory law gives you.
+3. These terms do not limit the rights mandatory law gives you.

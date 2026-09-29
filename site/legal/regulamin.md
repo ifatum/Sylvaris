@@ -1,12 +1,11 @@
-# Regulamin strony
+# Zasady korzystania ze strony
 
 Obowiązuje od {{updated}}.
 
 ## § 1. Informacje ogólne
 
-1. Ten regulamin określa zasady korzystania ze strony internetowej Sylvaris (dalej: Strona). Wydajemy go na podstawie art. 8 ustawy z dnia 18 lipca 2002 r. o świadczeniu usług drogą elektroniczną.
-2. Usługodawcą jest {{name}}, {{address}}, e-mail {{email}}.
-3. Regulamin jest dostępny bezpłatnie pod tym adresem. Możesz go zapisać lub wydrukować.
+1. Te zasady opisują korzystanie ze strony internetowej Sylvaris (dalej: Strona). Stronę prowadzi prywatnie i niekomercyjnie autor Sylvaris, naxce, kontakt: {{email}}.
+2. Zasady są dostępne bezpłatnie pod tym adresem. Możesz je zapisać lub wydrukować.
 
 ## § 2. Co udostępnia Strona
 
@@ -36,18 +35,18 @@ Obowiązuje od {{updated}}.
 2. Pobieraj Sylvaris tylko z oficjalnego repozytorium: https://github.com/ifatum/Sylvaris.
 3. Wtyczki od osób trzecich działają z pełnymi uprawnieniami Twojego konta: mogą czytać i zmieniać Twoje pliki oraz uruchamiać programy. Instaluj tylko te, którym ufasz, i przeczytaj ich kod.
 
-## § 7. Reklamacje
+## § 7. Zgłaszanie problemów
 
-1. Reklamacje dotyczące działania Strony wysyłaj na adres {{email}}. Opisz, co nie działa i jak możemy się z Tobą skontaktować.
-2. Odpowiemy w ciągu 14 dni od otrzymania reklamacji.
+1. Problemy z działaniem Strony zgłaszaj na adres {{email}}. Opisz, co nie działa i jak możemy się z Tobą skontaktować.
+2. Postaramy się odpowiedzieć w ciągu 14 dni.
 3. Błędy w samym oprogramowaniu możesz też zgłosić publicznie na GitHubie. Pamiętaj, że takie zgłoszenie widzi każdy.
 
 ## § 8. Dane osobowe
 
-Zasady przetwarzania danych opisuje [polityka prywatności i cookies](polityka-prywatnosci.html).
+Strona nie zbiera danych osobowych. Szczegóły opisuje [polityka prywatności i cookies](polityka-prywatnosci.html).
 
-## § 9. Zmiany regulaminu i postanowienia końcowe
+## § 9. Zmiany i postanowienia końcowe
 
-1. Regulamin może się zmienić, na przykład gdy zmieni się Strona albo prawo. Nowa wersja obowiązuje od publikacji na Stronie i nie działa wstecz.
-2. W sprawach, których regulamin nie opisuje, stosuje się prawo polskie.
-3. Jeśli jesteś konsumentem, regulamin nie ogranicza praw, które przysługują Ci na mocy bezwzględnie obowiązujących przepisów.
+1. Te zasady mogą się zmienić, na przykład gdy zmieni się Strona albo prawo. Nowa wersja obowiązuje od publikacji na Stronie i nie działa wstecz.
+2. W sprawach, których te zasady nie opisują, stosuje się prawo polskie.
+3. Te zasady nie ograniczają praw, które przysługują Ci na mocy bezwzględnie obowiązujących przepisów.

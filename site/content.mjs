@@ -53,7 +53,7 @@ export const PARTS = [
 export const LEGAL = [
     { slug: "nota-prawna", lang: "pl", pair: "notice", title: "Nota prawna", short: "Nota prawna" },
     { slug: "polityka-prywatnosci", lang: "pl", pair: "privacy", title: "Polityka prywatności i cookies", short: "Prywatność" },
-    { slug: "regulamin", lang: "pl", pair: "terms", title: "Regulamin strony", short: "Regulamin" },
+    { slug: "regulamin", lang: "pl", pair: "terms", title: "Zasady korzystania ze strony", short: "Zasady" },
     { slug: "legal-notice", lang: "en", pair: "notice", title: "Legal notice", short: "legal notice" },
     { slug: "privacy", lang: "en", pair: "privacy", title: "Privacy and cookies", short: "privacy" },
     { slug: "terms", lang: "en", pair: "terms", title: "Terms of use", short: "terms" }

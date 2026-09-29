@@ -2,57 +2,19 @@
 
 Ostatnia zmiana: {{updated}}.
 
-W skrócie: Strona nie ma formularzy, kont, komentarzy, analityki, reklam ani przycisków serwisów społecznościowych. Nie zapisuje niczego na Twoim urządzeniu i nie pobiera niczego z cudzych serwerów. Jedyne dane, jakie powstają, to techniczne logi serwera, które są usuwane po {{logDays}} dniach.
+W skrócie: Strona nie zbiera i nie przechowuje żadnych danych o Tobie. Nie ma formularzy, kont, komentarzy, analityki, reklam ani przycisków serwisów społecznościowych, nie zapisuje niczego na Twoim urządzeniu, nie pobiera niczego z cudzych serwerów, a serwer nie prowadzi logów odwiedzin.
 
-## Administrator danych
+## Co dzieje się, gdy otwierasz Stronę
 
-Administratorem Twoich danych osobowych jest {{name}}, {{address}}. W sprawach danych osobowych pisz na {{email}}.
+Twoja przeglądarka wysyła zapytanie do serwera, a razem z nim, jak przy każdej stronie w internecie, adres IP Twojego urządzenia lub sieci. Serwer używa go tylko po to, żeby odesłać Ci odpowiedź, i nigdzie go nie zapisuje. Serwer nie prowadzi logów dostępu ani logów błędów, więc po wysłaniu strony nie zostaje po Twojej wizycie żaden ślad.
 
-## Jakie dane przetwarzamy i dlaczego
+Nie tworzymy statystyk odwiedzin, nie profilujemy i nie podejmujemy wobec Ciebie żadnych zautomatyzowanych decyzji.
 
-Gdy otwierasz Stronę, Twoja przeglądarka wysyła zapytanie do serwera. Serwer zapisuje wtedy w logu:
+## Twoje prawa i kontakt
 
-- adres IP Twojego urządzenia lub sieci,
-- datę i godzinę zapytania,
-- adres otwieranej podstrony,
-- kod i rozmiar odpowiedzi serwera,
-- nazwę i wersję przeglądarki (nagłówek User-Agent),
-- adres strony, z której przyszedłeś (nagłówek Referer), jeśli przeglądarka go wysyła.
+Ponieważ niczego o Tobie nie przechowujemy, nie mamy danych, które moglibyśmy Ci udostępnić, poprawić czy usunąć. Jeśli masz pytania o prywatność na tej Stronie, napisz na {{email}}.
 
-Robimy to, żeby Strona działała i była bezpieczna: żeby wykrywać błędy, ataki i nadużycia. Podstawą prawną jest nasz prawnie uzasadniony interes (art. 6 ust. 1 lit. f RODO), czyli zapewnienie działania i bezpieczeństwa Strony.
-
-Nie używamy logów do statystyk odwiedzin, nie tworzymy na ich podstawie profili i nie łączymy ich z innymi danymi.
-
-## Jak długo przechowujemy dane
-
-Logi są usuwane automatycznie po {{logDays}} dniach. Dłużej przechowujemy tylko te wpisy, które są potrzebne do wyjaśnienia konkretnego ataku lub nadużycia, i tylko do czasu jego wyjaśnienia.
-
-## Kto ma dostęp do danych
-
-Dostęp do logów ma administrator oraz dostawca serwera, {{host}}. Dostawca przechowuje dane w imieniu administratora, jako podmiot przetwarzający (art. 28 RODO). Serwer znajduje się w: {{hostCountry}}.
-
-Nie sprzedajemy danych i nie przekazujemy ich nikomu innemu, chyba że wymaga tego prawo, na przykład na żądanie sądu lub prokuratury.
-
-## Twoje prawa
-
-Masz prawo:
-
-- dostępu do swoich danych i otrzymania ich kopii (art. 15 RODO),
-- sprostowania danych (art. 16 RODO),
-- usunięcia danych (art. 17 RODO),
-- ograniczenia przetwarzania (art. 18 RODO),
-- sprzeciwu wobec przetwarzania z przyczyn związanych z Twoją szczególną sytuacją (art. 21 RODO),
-- wniesienia skargi do Prezesa Urzędu Ochrony Danych Osobowych, ul. Stawki 2, 00-193 Warszawa, [uodo.gov.pl](https://uodo.gov.pl).
-
-Logi nie zawierają imion ani adresów e-mail, więc sami nie wiemy, który wpis dotyczy Ciebie. Jeśli chcesz skorzystać z tych praw, podaj swój adres IP i przybliżony czas wizyty, żebyśmy mogli znaleźć właściwe wpisy (art. 11 RODO).
-
-## Czy musisz podać dane
-
-Nie masz takiego obowiązku. Bez adresu IP przeglądarka nie może jednak pobrać Strony, więc bez niego nie da się jej wyświetlić.
-
-## Zautomatyzowane decyzje
-
-Nie podejmujemy wobec Ciebie decyzji w sposób zautomatyzowany i nie profilujemy Cię.
+Zawsze możesz też złożyć skargę do Prezesa Urzędu Ochrony Danych Osobowych, ul. Stawki 2, 00-193 Warszawa, [uodo.gov.pl](https://uodo.gov.pl).
 
 ## Pliki cookies i podobne technologie
 

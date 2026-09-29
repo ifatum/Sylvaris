@@ -15,7 +15,7 @@ const VERSION = /VERSION = "([^"]+)"/.exec(readFileSync(join(root, "shell/lib/ve
 function operator() {
     const file = existsSync(join(here, "operator.json")) ? join(here, "operator.json") : join(here, "operator.example.json")
     const data = JSON.parse(readFileSync(file, "utf8"))
-    const missing = ["name", "address", "email", "host", "hostCountry"].filter(k => typeof data[k] !== "string" || data[k].trim() === "")
+    const missing = ["email"].filter(k => typeof data[k] !== "string" || data[k].trim() === "")
     return { data: data, missing: missing, file: relative(root, file) }
 }
 

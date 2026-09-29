@@ -1,14 +1,12 @@
 # Nota prawna
 
-Ta strona opisuje Sylvaris, bezpłatne oprogramowanie na licencji MIT, i zawiera jego dokumentację. Nic tu nie sprzedajemy, nie wyświetlamy reklam i nie zbieramy danych o odwiedzających poza technicznymi logami serwera.
+Ta strona opisuje Sylvaris, bezpłatne oprogramowanie na licencji MIT, i zawiera jego dokumentację. Nic tu nie sprzedajemy, nie wyświetlamy reklam i nie zbieramy żadnych danych o odwiedzających.
 
 ## Kto prowadzi stronę
 
-Usługodawcą w rozumieniu ustawy z dnia 18 lipca 2002 r. o świadczeniu usług drogą elektroniczną i administratorem danych osobowych jest:
+Stronę prowadzi prywatnie autor Sylvaris, naxce. To projekt hobbystyczny: strona nie jest prowadzona w ramach działalności gospodarczej ani zawodowej i nie przynosi żadnego dochodu, więc nie jest usługą w rozumieniu art. 2 pkt 6 ustawy z dnia 18 lipca 2002 r. o świadczeniu usług drogą elektroniczną.
 
-- {{name}}
-- {{address}}
-- e-mail: {{email}}
+Kontakt: {{email}}
 
 Możesz pisać po polsku lub po angielsku. Błędy w samym oprogramowaniu najłatwiej zgłosić publicznie na [GitHubie](https://github.com/ifatum/Sylvaris/issues).
 
@@ -23,5 +21,5 @@ Nazwy Hyprland, niri, sway, NixOS, Quickshell oraz nazwy aplikacji i usług wymi
 
 ## Pozostałe dokumenty
 
-- [Regulamin strony](regulamin.html)
+- [Zasady korzystania ze strony](regulamin.html)
 - [Polityka prywatności i cookies](polityka-prywatnosci.html)
