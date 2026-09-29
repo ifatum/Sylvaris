@@ -169,7 +169,7 @@ export function deepMerge(base, over) {
         return clone(over === undefined ? base : over)
     const out = clone(base)
     for (const key of Object.keys(over)) {
-        if (over[key] === undefined)
+        if (over[key] === undefined || key === "__proto__" || key === "constructor" || key === "prototype")
             continue
         out[key] = isObject(base[key]) && isObject(over[key]) ? deepMerge(base[key], over[key]) : clone(over[key])
     }

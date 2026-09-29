@@ -350,3 +350,12 @@ test("screenKey tells which settings can differ per screen", () => {
     assert.equal(screenKey("notifications.dnd"), false)
     assert.equal(screenKey("parts.bar"), false)
 })
+
+test("deepMerge ignores __proto__, constructor and prototype keys", () => {
+    const r = deepMerge({ bar: { position: "top" } }, JSON.parse("{\"__proto__\":{\"polluted\":1},\"bar\":{\"__proto__\":{\"x\":2},\"constructor\":{\"y\":3}}}"))
+    assert.equal(Object.getPrototypeOf(r), Object.prototype)
+    assert.equal(Object.getPrototypeOf(r.bar), Object.prototype)
+    assert.equal(r.bar.x, undefined)
+    assert.equal(Object.prototype.hasOwnProperty.call(r.bar, "constructor"), false)
+    assert.deepEqual(r, { bar: { position: "top" } })
+})
