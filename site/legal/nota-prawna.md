@@ -1,0 +1,27 @@
+# Nota prawna
+
+Ta strona opisuje Sylvaris, bezpłatne oprogramowanie na licencji MIT, i zawiera jego dokumentację. Nic tu nie sprzedajemy, nie wyświetlamy reklam i nie zbieramy danych o odwiedzających poza technicznymi logami serwera.
+
+## Kto prowadzi stronę
+
+Usługodawcą w rozumieniu ustawy z dnia 18 lipca 2002 r. o świadczeniu usług drogą elektroniczną i administratorem danych osobowych jest:
+
+- {{name}}
+- {{address}}
+- e-mail: {{email}}
+
+Możesz pisać po polsku lub po angielsku. Błędy w samym oprogramowaniu najłatwiej zgłosić publicznie na [GitHubie](https://github.com/ifatum/Sylvaris/issues).
+
+## Licencje
+
+- Kod Sylvaris i ta dokumentacja są dostępne na [licencji MIT](https://github.com/ifatum/Sylvaris/blob/main/LICENSE). Prawa autorskie: naxce, 2026.
+- Czcionki Fraunces, Atkinson Hyperlegible Next i JetBrains Mono są udostępnione na licencji SIL Open Font License 1.1. Pełny tekst licencji i informacje o autorach są w pliku [OFL.txt](../assets/fonts/OFL.txt).
+
+## Znaki towarowe
+
+Nazwy Hyprland, niri, sway, NixOS, Quickshell oraz nazwy aplikacji i usług wymienionych w dokumentacji, takich jak Apple, AirPods, FaceTime, Discord, Signal, Telegram, WhatsApp, Messenger, Instagram, Slack, Microsoft Teams, Zoom, YouTube, Spotify czy Firefox, należą do ich właścicieli. Używamy ich tylko po to, żeby opisać, z czym Sylvaris współpracuje. Sylvaris nie jest powiązany z tymi firmami ani przez nie wspierany.
+
+## Pozostałe dokumenty
+
+- [Regulamin strony](regulamin.html)
+- [Polityka prywatności i cookies](polityka-prywatnosci.html)

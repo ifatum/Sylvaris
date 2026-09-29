@@ -1,0 +1,176 @@
+<main id="content" class="landing">
+  <section class="hero">
+    <div class="hero-copy">
+      <p class="hero-for">for Hyprland, niri and sway</p>
+      <h1 class="wordmark">Sylvaris</h1>
+      <p class="hero-line">A desktop shell drawn in warm, living glass.</p>
+      <p class="hero-text">The bar, a control center, notifications, a launcher, a lock screen and about twenty other parts, all in one process. Keep the ones you like and switch off the rest: a part that is off never loads, and the tools it needs can stay uninstalled.</p>
+      <div class="hero-actions">
+        <a class="btn" href="docs/start.html">Get started</a>
+        <a class="btn ghost" href="#parts">See the parts</a>
+      </div>
+      <p class="hero-meta">Version {{VERSION}} · MIT licence · Nix flake or <code>make install</code></p>
+    </div>
+
+    <div class="stage" role="group" aria-label="A small working model of the Sylvaris desktop. Hover the island, click the tiles.">
+      <div class="stage-wall" aria-hidden="true"><span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span></div>
+      <div class="mini-bar" aria-hidden="true">
+        <span class="mb-group"><i class="mb-apps"></i><span class="mb-ws on">1<b></b><b></b></span><span class="mb-ws">2</span><span class="mb-ws">3</span></span>
+        <span class="mb-group mb-clock" data-clock>18:37</span>
+        <span class="mb-group mb-right"><i class="mb-i"></i><i class="mb-i"></i><i class="mb-i"></i><i class="mb-bell"></i></span>
+      </div>
+
+      <div class="island" data-island tabindex="0" aria-label="SylIsland. Hover or focus to expand.">
+        <div class="island-pill">
+          <span class="isl-lead" data-isl-lead></span>
+          <span class="isl-label" data-isl-label>Night Drive</span>
+          <span class="isl-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        </div>
+        <div class="island-card">
+          <div class="isl-row isl-rec" data-row="rec">
+            <span class="isl-dot" aria-hidden="true"></span>
+            <span class="isl-text"><b>Recording</b><small data-rec-time>0:41</small></span>
+            <button type="button" class="isl-btn strong" data-act="stop" aria-label="Stop recording"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2"/></svg></button>
+          </div>
+          <div class="isl-row">
+            <span class="isl-art" aria-hidden="true"></span>
+            <span class="isl-text"><b>Night Drive</b><small>Hollow Coast</small></span>
+            <button type="button" class="isl-btn" aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 6v12M18 6l-8 6 8 6z"/></svg></button>
+            <button type="button" class="isl-btn strong" data-act="play" aria-label="Pause"><svg viewBox="0 0 24 24" aria-hidden="true" data-play-icon><path d="M9 6v12M15 6v12"/></svg></button>
+            <button type="button" class="isl-btn" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 6v12M6 6l8 6-8 6z"/></svg></button>
+          </div>
+          <div class="isl-seek" aria-hidden="true"><i data-seek></i></div>
+        </div>
+      </div>
+
+      <div class="mini-toast" aria-hidden="true"><span class="tt-ic"></span><span><b>Diver</b><small>Stand-up in 10 minutes</small></span></div>
+      <div class="mini-deck" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+      <div class="mini-center" aria-label="SylCenter">
+        <div class="mc-head"><span class="mc-time" data-clock>18:37</span><span class="mc-date" data-date>Wed, 23 Sep</span></div>
+        <div class="mc-tiles">
+          <button type="button" class="tile" aria-pressed="true"><span class="tile-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 9a13 13 0 0 1 18 0M6 12.5a8.5 8.5 0 0 1 12 0M9.2 15.8a4 4 0 0 1 5.6 0"/><circle cx="12" cy="19" r="1"/></svg></span><span><b>Wi-Fi</b><small>Home 5G</small></span></button>
+          <button type="button" class="tile" aria-pressed="true"><span class="tile-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m7 7 10 10-5 4V3l5 4L7 17"/></svg></span><span><b>Bluetooth</b><small>2 connected</small></span></button>
+          <button type="button" class="tile" aria-pressed="false"><span class="tile-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg></span><span><b>Night light</b><small>4000 K</small></span></button>
+          <button type="button" class="tile" aria-pressed="false"><span class="tile-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"/><path d="M4 4l16 16"/></svg></span><span><b>Do not disturb</b><small>Off</small></span></button>
+        </div>
+        <label class="mc-vol"><span class="sr">Volume</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5v14l-4.5-4.5H4zM15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg><input type="range" min="0" max="100" value="62" data-vol><output data-vol-out>62%</output></label>
+      </div>
+    </div>
+  </section>
+
+  <section class="parts" id="parts" aria-labelledby="parts-title">
+    <div class="sect-head">
+      <h2 id="parts-title">Pick what you need</h2>
+      <p>These are the parts. Choose one to see what it does. Each is a single setting away from gone: <code>sylvaris set parts.clock false</code>.</p>
+    </div>
+    <div class="part-filter" role="group" aria-label="Show parts for">
+      <button type="button" data-filter="all" aria-pressed="true">All</button>
+      <button type="button" data-filter="every day" aria-pressed="false">Every day</button>
+      <button type="button" data-filter="tools" aria-pressed="false">Tools</button>
+      <button type="button" data-filter="system" aria-pressed="false">System</button>
+    </div>
+    <div class="sky" data-sky>
+      <div class="sky-stage" data-stage>
+      <svg class="sky-ring" viewBox="0 0 1000 560" preserveAspectRatio="none" aria-hidden="true"><ellipse cx="500" cy="280" rx="440" ry="230"/></svg>
+      <div class="halo" aria-hidden="true"><img src="assets/logo.svg" alt="" width="120" height="120"></div>
+      <ul class="nodes" data-nodes>{{PARTS}}</ul>
+      </div>
+      <div class="part-card" id="part-card" aria-live="polite" data-card>
+        <h3 data-card-name>SylIsland</h3>
+        <p data-card-text>A pill that shows what is going on and turns into controls: music, recordings, calls, messages, timers, all side by side.</p>
+        <a data-card-link href="docs/parts/island.html">Read about SylIsland</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="reel" aria-labelledby="reel-title">
+    <div class="sect-head narrow">
+      <h2 id="reel-title">See it move</h2>
+      <p>Recordings of the shell itself, not drawings of it.</p>
+    </div>
+    <ul class="reel-track">
+      <li><figure><video muted loop playsinline preload="none" poster="media/theme.jpg" src="media/theme.mp4" aria-label="SylTheme previewing themes"></video><figcaption><b>SylTheme</b> previews the whole desktop before you pick a theme.</figcaption></figure></li>
+      <li><figure><video muted loop playsinline preload="none" poster="media/center.jpg" src="media/center.mp4" aria-label="SylCenter and SylClock"></video><figcaption><b>SylCenter</b> with Bluetooth as an orbit, and <b>SylClock</b>.</figcaption></figure></li>
+      <li><figure><video muted loop playsinline preload="none" poster="media/settings.jpg" src="media/settings.mp4" aria-label="SylSettings"></video><figcaption><b>SylSettings</b>, with a live preview for every look.</figcaption></figure></li>
+      <li><figure><video muted loop playsinline preload="none" poster="media/pad.jpg" src="media/pad.mp4" aria-label="SylPad and SylSwitch"></video><figcaption><b>SylPad</b> and <b>SylSwitch</b>.</figcaption></figure></li>
+      <li><figure><video muted loop playsinline preload="none" poster="media/tools.jpg" src="media/tools.mp4" aria-label="SylDiver, SylClip, SylCapture and SylPower"></video><figcaption><b>SylDiver</b>, <b>SylClip</b>, <b>SylCapture</b> and <b>SylPower</b>.</figcaption></figure></li>
+      <li><figure><video muted loop playsinline preload="none" poster="media/lock.jpg" src="media/lock.mp4" aria-label="SylLock"></video><figcaption><b>SylLock</b>. SylGreet looks the same at login.</figcaption></figure></li>
+    </ul>
+  </section>
+
+  <section class="install" id="install" aria-labelledby="install-title">
+    <div class="install-copy">
+      <h2 id="install-title">Two ways in</h2>
+      <p>With Nix, every setting is a typed Home Manager option and the tools each part needs come along with it. Everywhere else, install the packages for your distribution and run <code>make install</code>.</p>
+      <p>Then add <code>sylvaris</code> to your compositor's autostart and open the settings with <code>sylvaris settings</code>.</p>
+      <p class="install-links"><a href="docs/nix.html">Nix and Home Manager</a><a href="docs/install.html">Other distributions</a></p>
+    </div>
+    <div class="tabs" data-tabs>
+      <div class="tab-list" role="tablist" aria-label="Install with">
+        <button type="button" role="tab" id="tab-nix" aria-controls="panel-nix" aria-selected="true">Nix</button>
+        <button type="button" role="tab" id="tab-arch" aria-controls="panel-arch" aria-selected="false" tabindex="-1">Arch</button>
+        <button type="button" role="tab" id="tab-other" aria-controls="panel-other" aria-selected="false" tabindex="-1">From source</button>
+      </div>
+      <div class="tab-panel" role="tabpanel" id="panel-nix" aria-labelledby="tab-nix">
+<pre data-lang="nix"><code>inputs.sylvaris.url = "github:ifatum/Sylvaris";
+
+# in your Home Manager modules
+imports = [ inputs.sylvaris.homeManagerModules.sylvaris ];
+programs.sylvaris = {
+  enable = true;
+  bar.position = "top";
+  parts.island = true;
+};</code></pre>
+      </div>
+      <div class="tab-panel" role="tabpanel" id="panel-arch" aria-labelledby="tab-arch">
+<pre data-lang="sh"><code>sudo pacman -S --needed quickshell qt6-svg socat inter-font \
+  ttf-jetbrains-mono-nerd pipewire pipewire-pulse libpulse \
+  python-cryptography libnotify wlsunset curl networkmanager \
+  wlr-randr wl-clipboard grim slurp wf-recorder ffmpeg glib2 git make
+git clone {{REPO}}
+cd Sylvaris &amp;&amp; sudo make install install-pam</code></pre>
+      </div>
+      <div class="tab-panel" role="tabpanel" id="panel-other" aria-labelledby="tab-other">
+<pre data-lang="sh"><code>git clone {{REPO}}
+cd Sylvaris
+sudo make install install-pam
+# or just try it from the clone
+bin/sylvaris</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="weight" aria-labelledby="weight-title">
+    <div class="sect-head narrow">
+      <h2 id="weight-title">How heavy is it?</h2>
+      <p>Measured in the headless test harness with demo data on one 2560×1440 screen. Memory is the whole Sylvaris process, including Quickshell, Qt and, with a GPU, the driver's mappings. CPU is a share of one core over 20 idle seconds.</p>
+    </div>
+    <div class="weigh"><div class="table"><table>
+      <thead><tr><th>Situation</th><th class="r">Software rendering</th><th class="r">GPU (NVIDIA)</th></tr></thead>
+      <tbody>
+        <tr><td>Idle, every part on</td><td class="r">170 MB · 1.0 % CPU</td><td class="r">293 MB · 0.8 % CPU</td></tr>
+        <tr><td>After opening every panel once, 25 s later</td><td class="r">192 MB</td><td class="r">368 MB</td></tr>
+        <tr><td>Idle, only the bar and notifications</td><td class="r">110 MB · 0.8 % CPU</td><td class="r">251 MB · 2.6 % CPU</td></tr>
+      </tbody>
+    </table></div></div>
+    <p class="weight-note">Panels are built when you open them and freed 20 seconds after they close. <code>tests/bench/bench.sh</code> measures your own machine the same way.</p>
+  </section>
+
+  <section class="make" aria-labelledby="make-title">
+    <div class="make-copy">
+      <h2 id="make-title">Make your own pieces</h2>
+      <p>A plugin is a folder with a small JSON file and some QML. It can be a bar widget, a panel or a background helper, and it gets the same theme, glass and commands the built-in parts use.</p>
+      <p><code>sylvaris plugins new weather-plus bar</code> writes a working starter to edit.</p>
+      <p><a href="docs/plugins/index.html">Writing plugins</a></p>
+    </div>
+<pre data-lang="json" class="make-code"><code>{
+  "id": "uptime",
+  "name": "Uptime",
+  "version": "1.0.0",
+  "kind": "bar",
+  "entry": "Plugin.qml",
+  "description": "How long this computer has been on"
+}</code></pre>
+  </section>
+</main>

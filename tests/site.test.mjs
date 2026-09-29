@@ -52,3 +52,31 @@ test("pipes inside code spans do not split table cells", () => {
 test("blockquotes and rules", () => {
     assert.equal(render("> **Experimental.** Careful.\n\n---\n").html, "<blockquote><p><strong>Experimental.</strong> Careful.</p>\n</blockquote>\n<hr>\n")
 })
+
+test("the built site loads nothing from other servers and every page links to the legal pages", async () => {
+    const { execFileSync } = await import("node:child_process")
+    const { mkdtempSync, readdirSync, readFileSync, rmSync } = await import("node:fs")
+    const { tmpdir } = await import("node:os")
+    const { join } = await import("node:path")
+    const out = mkdtempSync(join(tmpdir(), "sylsite-"))
+    try {
+        execFileSync("node", [new URL("../site/build.mjs", import.meta.url).pathname], { env: Object.assign({}, process.env, { SITE_OUT: out, SITE_NO_MEDIA: "1" }), stdio: "ignore" })
+        const files = readdirSync(out, { recursive: true }).map(String)
+        const pages = files.filter(f => f.endsWith(".html"))
+        assert.ok(pages.length > 40)
+        for (const f of files.filter(f => /\.(html|css|js)$/.test(f))) {
+            const text = readFileSync(join(out, f), "utf8")
+            assert.equal(/(src|srcset|poster)=["']https?:/i.test(text), false, f + " loads something from another server")
+            assert.equal(/<link[^>]+href=["']https?:/i.test(text), false, f + " links a stylesheet or font from another server")
+            assert.equal(/url\(["']?https?:/i.test(text), false, f + " pulls a url() from another server")
+            if (f.endsWith(".js"))
+                assert.equal(/localStorage|sessionStorage|indexedDB|document\.cookie/.test(text), false, f + " stores something in the browser")
+            if (f.endsWith(".html"))
+                assert.equal(/<script(?![^>]*\ssrc=)[^>]*>|\sstyle=|\son[a-z]+=/i.test(text), false, f + " has inline script or style, which the Content-Security-Policy blocks")
+        }
+        for (const f of pages.filter(p => !p.startsWith("legal/")))
+            assert.match(readFileSync(join(out, f), "utf8"), /polityka-prywatnosci\.html/, f)
+    } finally {
+        rmSync(out, { recursive: true, force: true })
+    }
+})
