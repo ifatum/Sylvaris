@@ -21,3 +21,17 @@ check sylvaris island state | grep -q '"replying":true'
 bg wtype -k Shift_L -k Escape
 sleep 0.8
 check sylvaris island state | grep -q '"replying":false'
+bg foot -e sh -c 'head -n1 > "$OUT/typed.txt"'
+sleep 1.5
+bg notify-send -a firefox -A default=Open "Messenger" "messenger.com: Ana: lunch?" > "$OUT/web-action.txt"
+sleep 1
+check sylvaris island | grep -q '"kind":"message"'
+syl island reply
+sleep 0.8
+check sylvaris island state | grep -q '"replying":true'
+shot island-reply-web
+syl island reply on my way
+sleep 2.5
+check grep -qx default "$OUT/web-action.txt"
+check grep -qx 'on my way' "$OUT/typed.txt"
+check ! sylvaris island | grep -q '"kind":"message"'

@@ -20,6 +20,7 @@
   slurp,
   wf-recorder,
   ffmpeg,
+  wtype,
   git,
   qt6,
   sylvarisParts ? { },
@@ -69,7 +70,7 @@ let
     lock = [ glib ];
     polkit = [ ];
     clip = [ wl-clipboard ];
-    island = [ ];
+    island = [ wtype ];
     viewer = [
       wl-clipboard
       glib

@@ -77,7 +77,7 @@ sylvaris island open                     # also: close, toggle, state
 | `notifications` | `false` | show every notification in the island instead of as a toast |
 | `keepPaused` | `true` | keep paused music |
 | `hover` | `true` | expand on hover; otherwise click |
-| `seconds` | `3` | how long short alerts stay, 1 to 10 (messages stay 3 seconds longer) |
+| `seconds` | `5` | how long short alerts stay, 1 to 10 (messages stay 5 seconds longer); hovering the island holds them |
 | `position` | `top-center` | see above |
 | `screens` | `focused` | `focused` or `all` |
 | `reveal` | `always` | `always`, or `hover` to tuck it into the edge until you point at it |

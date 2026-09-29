@@ -106,7 +106,8 @@ Scope {
             sender: e.n.summary,
             text: f.body,
             art: picture !== "" ? picture : icon,
-            reply: e.n.hasInlineReply === true,
+            reply: e.n.hasInlineReply === true || e.n.actions.some(x => x.identifier === "default"),
+            inline: e.n.hasInlineReply === true,
             placeholder: e.n.summary !== "" ? "Reply to " + e.n.summary : e.n.inlineReplyPlaceholder || "Reply",
             accept: acts.accept,
             decline: acts.decline,
@@ -300,8 +301,12 @@ Scope {
         }
         if (what.indexOf("send:") === 0) {
             const text = what.slice(5).trim();
-            if (text !== "")
+            if (text !== "" && a.inline)
                 Notifications.entry(a.id).n.sendInlineReply(text);
+            else if (text !== "") {
+                Notifications.invoke(a.id, "default");
+                Quickshell.execDetached(["sh", "-c", "printf %s \"$1\" | wtype -s 700 -k Shift_L - -k Return", "sh", text]);
+            }
             root.replyTo = -1;
             root.flash = null;
             root.pinned = "";
@@ -383,7 +388,7 @@ Scope {
 
     Timer {
         id: flashTimer
-        interval: (root.cfg.seconds + (root.flash !== null && root.flash.kind === "message" ? 3 : 0)) * 1000
+        interval: (root.cfg.seconds + (root.flash !== null && root.flash.kind === "message" ? 5 : 0)) * 1000
         onTriggered: {
             if (root.hovered || root.replyTo >= 0)
                 flashTimer.restart();

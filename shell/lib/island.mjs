@@ -1,7 +1,7 @@
 import { elapsed } from "./capture.mjs"
 
 export const DEFAULT_ISLAND = {
-    media: true, recording: true, diver: true, volume: true, devices: true, notifications: false, messages: true, calls: true, keepPaused: true, hover: true, seconds: 3,
+    media: true, recording: true, diver: true, volume: true, devices: true, notifications: false, messages: true, calls: true, keepPaused: true, hover: true, seconds: 5,
     position: "top-center", idle: "pill", reveal: "always", shortcuts: ["notify", "center", "media", "screenshot", "record", "dnd"],
     screens: "focused", hideSites: ["youtube.com", "youtu.be"]
 }
