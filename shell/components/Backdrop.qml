@@ -92,15 +92,6 @@ Item {
                 }
             }
         }
-
-        Image {
-            visible: Resin.enabled && Resin.grain > 0 && !Tokens.lite
-            opacity: Resin.grain
-            anchors.fill: parent
-            source: Qt.resolvedUrl("../assets/grain.png")
-            fillMode: Image.Tile
-        }
-
     }
 
     Item {

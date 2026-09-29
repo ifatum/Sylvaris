@@ -144,7 +144,7 @@ test("resolveGlass returns the defaults without input", () => {
     const r = resolveGlass(undefined, undefined)
     assert.deepEqual(r.values, DEFAULT_GLASS)
     assert.deepEqual(r.errors, [])
-    assert.deepEqual(DEFAULT_GLASS, { enabled: true, opacity: 0.55, layerOpacity: 0.35, tint: 0.14, sheen: 0.35, flow: 1, rim: 0.5, grain: 0.035 })
+    assert.deepEqual(DEFAULT_GLASS, { enabled: true, opacity: 0.55, layerOpacity: 0.35, tint: 0.14, sheen: 0.35, flow: 1, rim: 0.5 })
 })
 
 test("resolveGlass lets settings.json override config.json", () => {
@@ -155,16 +155,20 @@ test("resolveGlass lets settings.json override config.json", () => {
     assert.deepEqual(r.errors, [])
 })
 
+test("resolveGlass quietly drops the retired grain key", () => {
+    const r = resolveGlass({ grain: 0.035 }, { grain: 0.028 })
+    assert.deepEqual(r.values, DEFAULT_GLASS)
+    assert.deepEqual(r.errors, [])
+})
+
 test("resolveGlass keeps the lower layer for invalid values and reports them", () => {
-    const r = resolveGlass({ opacity: 0.4 }, { opacity: 55, flow: "fast", grain: 0.5, enabled: "no", shine: 1 })
+    const r = resolveGlass({ opacity: 0.4 }, { opacity: 55, flow: "fast", enabled: "no", shine: 1 })
     assert.equal(r.values.opacity, 0.4)
     assert.equal(r.values.flow, 1)
-    assert.equal(r.values.grain, 0.035)
     assert.equal(r.values.enabled, true)
     assert.deepEqual(r.errors, [
         "settings.json glass.opacity must be a number from 0 to 1",
         "settings.json glass.flow must be a number from 0 to 3",
-        "settings.json glass.grain must be a number from 0 to 0.2",
         "settings.json glass.enabled must be true or false",
         "settings.json glass.shine is not a glass key"
     ])

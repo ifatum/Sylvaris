@@ -260,11 +260,6 @@ Scope {
             key: "rim",
             label: "Rim light",
             max: 1
-        },
-        {
-            key: "grain",
-            label: "Grain",
-            max: 0.2
         }
     ]
     readonly property var binds: [

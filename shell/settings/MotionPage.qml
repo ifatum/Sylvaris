@@ -69,7 +69,7 @@ Column {
 
         SettingRow {
             title: "Performance mode"
-            subtitle: "Drops blur, grain, sheen and ambient movement and shortens animations; turns off compositor animations, blur, shadows and gaps until you turn it off"
+            subtitle: "Drops blur, sheen and ambient movement and shortens animations; turns off compositor animations, blur, shadows and gaps until you turn it off"
             last: true
 
             Toggle {

@@ -21,8 +21,6 @@ Item {
     readonly property bool on: Resin.enabled
     readonly property bool panel: !root.inner
     readonly property bool shiny: root.on && root.panel && Resin.sheen > 0 && !Tokens.lite
-    readonly property bool grainy: root.on && root.panel && Resin.grain > 0 && !Tokens.lite
-    readonly property bool round: root.radius * 2 >= Math.min(root.width, root.height) - 1
     readonly property real bodyAlpha: root.inner ? Resin.layerOpacity : root.raised ? Math.max(Resin.opacity, 0.88) : Resin.opacity
     readonly property real rimAlpha: Resin.rim * (root.inner ? 0.22 : 0.3)
     readonly property point rest: Qt.point(root.width * (0.5 + 0.32 * Math.sin(root.drift * 0.35)), root.height * (0.14 + 0.05 * Math.sin(root.drift * 0.23 + 1.3)))
@@ -146,33 +144,6 @@ Item {
                 width: root.width
                 height: root.height
                 radius: root.radius
-            }
-        }
-    }
-
-    Image {
-        visible: root.grainy && !root.round
-        anchors.fill: parent
-        anchors.margins: root.radius * 0.3
-        source: Qt.resolvedUrl("../assets/grain.png")
-        fillMode: Image.Tile
-        opacity: Resin.grain
-        smooth: true
-    }
-
-    Loader {
-        active: root.grainy && root.round
-        anchors.fill: parent
-
-        sourceComponent: RoundClip {
-            radius: root.radius
-            opacity: Resin.grain
-
-            Image {
-                anchors.fill: parent
-                source: Qt.resolvedUrl("../assets/grain.png")
-                fillMode: Image.Tile
-                smooth: true
             }
         }
     }

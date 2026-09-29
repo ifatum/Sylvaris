@@ -376,15 +376,6 @@ Scope {
                     }
                 }
 
-                Image {
-                    opacity: Resin.grain * root.phase(0.12, 0.45)
-                    visible: Resin.enabled && Resin.grain > 0
-                    anchors.fill: parent
-                    source: Qt.resolvedUrl("../assets/grain.png")
-                    fillMode: Image.Tile
-                    smooth: false
-                }
-
                 MouseArea {
                     anchors.fill: parent
                     enabled: root.shown

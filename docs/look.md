@@ -2,7 +2,7 @@
 
 ## Resin Glass
 
-Every Sylvaris surface is drawn in Resin Glass: a translucent body the compositor blurs, the theme's accent suspended in it, a soft light that drifts like liquid and leans toward the pointer, a lit rim and a fine grain. Tune it with a `glass` block in `config.json` (or from Nix) and in `settings.json`; `settings.json` wins, and changes apply live.
+Every Sylvaris surface is drawn in Resin Glass: a translucent body the compositor blurs, the theme's accent suspended in it, a soft light that drifts like liquid and leans toward the pointer and a lit rim. Tune it with a `glass` block in `config.json` (or from Nix) and in `settings.json`; `settings.json` wins, and changes apply live.
 
 | Key | Default | Range | What it does |
 |---|---|---|---|
@@ -13,7 +13,6 @@ Every Sylvaris surface is drawn in Resin Glass: a translucent body the composito
 | `sheen` | `0.35` | 0 to 1 | the drifting light |
 | `flow` | `1` | 0 to 3 | how fast the light drifts; `0` stops it |
 | `rim` | `0.5` | 0 to 1 | brightness of the lit edge |
-| `grain` | `0.035` | 0 to 0.2 | noise that keeps gradients smooth |
 
 ```nix
 programs.sylvaris.settings.glass = { opacity = 0.5; sheen = 0.45; flow = 0.6; };
@@ -59,6 +58,6 @@ Every panel opens, moves and closes with one set of curves.
 | `motion.scale` | `1` | stretches or shortens every animation; `0.5` is twice as fast |
 | `motion.reduced` | `false` | panels appear without moving |
 | `iconTint` | `true` | app icons in the bar, deck, launcher, switcher and notifications take the accent colour |
-| `performance` | `false` | drops blurred backdrops, grain, sheen and ambient movement, and shortens every animation |
+| `performance` | `false` | drops blurred backdrops, sheen and ambient movement, and shortens every animation |
 
 On Hyprland and sway, `performance` also turns off the compositor's animations, blur, shadows and gaps, and turning it off reloads the compositor config to bring them back. The Performance tile in SylCenter switches it.

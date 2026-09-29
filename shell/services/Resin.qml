@@ -18,7 +18,6 @@ Singleton {
     readonly property real sheen: root.values.sheen
     readonly property real flow: root.values.flow
     readonly property real rim: root.values.rim
-    readonly property real grain: root.values.grain
     readonly property real litAlpha: root.enabled ? 0.85 : 1
 
     onNoticeChanged: {
