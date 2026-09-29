@@ -24,7 +24,7 @@ Singleton {
         }
         if (!root.enabled || fetcher.running)
             return;
-        fetcher.command = ["sh", "-c", "mkdir -p \"$(dirname \"$2\")\" && curl -fsS --max-time 15 \"$1\" -o \"$2.part\" && mv \"$2.part\" \"$2\"", "sylvaris-weather", W.url(Sky.latitude, Sky.longitude, root.cfg.units), root.cachePath];
+        fetcher.command = ["sh", "-c", "umask 077; d=$(dirname \"$2\"); mkdir -p \"$d\" && chmod 700 \"$d\" && curl -fsS --max-time 15 \"$1\" -o \"$2.part\" && mv \"$2.part\" \"$2\"", "sylvaris-weather", W.url(Sky.latitude, Sky.longitude, root.cfg.units), root.cachePath];
         fetcher.running = true;
     }
 

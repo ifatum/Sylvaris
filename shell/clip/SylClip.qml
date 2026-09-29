@@ -127,6 +127,11 @@ Popup {
             ];
     }
 
+    Process {
+        running: !Demo.enabled
+        command: ["sh", "-c", "umask 077; for d in \"$(dirname \"$0\")\" \"$0\" \"$(dirname \"$1\")\"; do mkdir -p \"$d\" && chmod 700 \"$d\"; done; find \"$0\" -maxdepth 1 -type f -exec chmod 600 {} +; if [ \"$2\" = true ]; then [ -e \"$1\" ] || : > \"$1\"; chmod 600 \"$1\"; fi; exit 0", root.cacheDir, root.storePath, String(root.cfg.persist)]
+    }
+
     FileView {
         path: root.cfg.persist && !Demo.enabled ? root.storePath : ""
         printErrors: false
