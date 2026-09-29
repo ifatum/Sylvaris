@@ -834,6 +834,7 @@ ShellRoot {
                 show: (...words) => root.need("island").say(words.join(" ")),
                 run: id => root.need("island").runShortcut(String(id || "")),
                 answer: () => root.need("island").act("call", "accept"),
+                mute: () => root.need("island").act("voice", "mute"),
                 decline: () => root.need("island").act("call", "decline"),
                 reply: (...words) => root.need("island").act("message", words.length === 0 ? "reply" : "send:" + words.join(" ")),
                 state: () => root.need("island").state()

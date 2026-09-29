@@ -13,6 +13,7 @@ One thing at a time in the pill, with a second one as a small bubble beside it. 
 | Activity | Row | Buttons |
 |---|---|---|
 | Calls | caller and app, pinned on top until the app ends the call | decline, answer |
+| Voice chats | the app and how long you have been talking, while a chat app or a browser uses your microphone | mute your microphone, open the app |
 | Short alerts | volume changes, a Bluetooth device connecting (with its battery), messages, notifications if you want them, text from your scripts | depends on the alert |
 | Screen recording | elapsed time | stop |
 | Diver | alarms, focus timers, and tasks starting within 15 minutes | snooze, done, end focus |
@@ -31,6 +32,8 @@ A message row shows the sender, the text and their picture (or the app's icon), 
 FaceTime has no Linux app. Only FaceTime calls opened at facetime.apple.com in a browser can show up.
 
 Messages and calls taken by the island skip the usual toasts.
+
+A voice chat you are already in sends no notification, so the island watches for a chat app (or a browser, for Meet and the web versions) using your microphone instead. The mute button mutes that app's microphone stream in PipeWire, so it works the same in every app; the app's own mute button may not show it. `calls` turns voice chats off along with incoming calls.
 
 ## Shortcuts
 
@@ -58,6 +61,7 @@ Media from the sites in `island.hideSites` stays out of the island, so a YouTube
 ```sh
 sylvaris island show "Backup finished"   # a short alert with your text
 sylvaris island answer                   # also: decline
+sylvaris island mute                     # mute or unmute your mic in the voice chat
 sylvaris island reply "on my way"        # reply to the message on screen
 sylvaris island reply                    # open the reply box for it, handy on a key
 sylvaris island open                     # also: close, toggle, state

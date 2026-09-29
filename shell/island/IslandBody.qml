@@ -72,6 +72,8 @@ Item {
             return Icons.GLYPHS.speech;
         case "call":
             return Icons.GLYPHS.voice;
+        case "voice":
+            return a.muted ? Icons.GLYPHS.micOff : Icons.GLYPHS.mic;
         case "device":
             return a.audio ? Icons.GLYPHS.headphones : Icons.GLYPHS.bluetooth;
         case "recording":
@@ -90,7 +92,7 @@ Item {
     }
 
     function tintOf(a: var): color {
-        return a !== null && (a.kind === "recording" || a.kind === "alarm") ? Theme.danger : Theme.accent;
+        return a !== null && (a.kind === "recording" || a.kind === "alarm" || a.kind === "voice" && a.muted) ? Theme.danger : Theme.accent;
     }
 
     function headOf(a: var): string {
@@ -104,6 +106,8 @@ Item {
         case "message":
         case "call":
             return a.sender || a.app;
+        case "voice":
+            return a.app;
         case "device":
             return a.name;
         case "recording":
@@ -132,6 +136,8 @@ Item {
             return a.app + (a.more > 0 ? " · +" + a.more : "") + (a.text ? " · " + a.text : "");
         case "call":
             return a.app + " · incoming call";
+        case "voice":
+            return a.muted ? "Voice chat · microphone muted" : "Voice chat · " + I.label(a).split(" · ")[1];
         case "device":
             return a.battery >= 0 ? "Connected · " + a.battery + "% battery" : "Connected";
         case "alarm":
@@ -152,6 +158,8 @@ Item {
             return (a !== null && a.reply ? ["reply"] : []).concat(a !== null && a.read !== "" ? ["read"] : [], ["openapp", "dismiss"]);
         if (kind === "call")
             return ["decline", "accept"];
+        if (kind === "voice")
+            return ["mute", "openapp"];
         return ({
                 media: ["previous", "toggle", "next"],
                 recording: ["stop"],
@@ -177,6 +185,8 @@ Item {
         case "done":
             return Icons.GLYPHS.check;
         case "mute":
+            if (a !== null && a.kind === "voice")
+                return a.muted ? Icons.GLYPHS.micOff : Icons.GLYPHS.mic;
             return a !== null && a.muted ? Icons.GLYPHS.volumeMute : Icons.GLYPHS.volume;
         case "reply":
             return Icons.GLYPHS.pencil;
@@ -410,7 +420,7 @@ Item {
             anchors.right: parent.right
             anchors.rightMargin: 8
             anchors.verticalCenter: rowLead.verticalCenter
-            placeholder: row.a !== null ? row.a.placeholder : ""
+            placeholder: row.a !== null && row.a.placeholder ? row.a.placeholder : ""
             onAccepted: root.act("message", "send:" + replyBox.text)
             onVisibleChanged: {
                 if (visible) {

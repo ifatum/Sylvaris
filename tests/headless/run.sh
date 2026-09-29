@@ -32,7 +32,7 @@ fi
 printf '%s\n' "$bg" >"$out/sway.conf"
 
 cleanup() {
-    kill "${qs_pid:-}" "${sway_pid:-}" "${dbus_pid:-}" 2>/dev/null || true
+    kill "${qs_pid:-}" "${pw_pid:-}" "${sway_pid:-}" "${dbus_pid:-}" 2>/dev/null || true
     wait 2>/dev/null || true
     rm -rf "$rt"
 }
@@ -77,6 +77,15 @@ done < <(env | grep -E '^(SYLVARIS_GREET_[A-Z]+|GREETD_SOCK)=' || true)
 hl_env+=("${gpu_env[@]}")
 if [ -n "${HL_NIRI_SOCKET:-}" ]; then
     hl_env+=(NIRI_SOCKET="$HL_NIRI_SOCKET")
+fi
+
+if [ -n "${HL_PIPEWIRE:-}" ]; then
+    "${hl_env[@]}" pipewire >"$out/pipewire.log" 2>&1 &
+    pw_pid=$!
+    for _ in $(seq 50); do
+        [ -S "$rt/pipewire-0" ] && break
+        sleep 0.1
+    done
 fi
 
 "${hl_env[@]}" "$qs_bin" -p "$entry" >"$out/qs.log" 2>&1 &

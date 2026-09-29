@@ -1,6 +1,6 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
-import { DEFAULT_ISLAND, validateIsland, activities, label, joined, custom, SHORTCUTS, shortcutsFor, placeOf, cardHeight, CHAT_APPS, chatOf, isCall, pickActions, takes, hiddenSite } from "../shell/lib/island.mjs"
+import { DEFAULT_ISLAND, validateIsland, activities, label, joined, custom, SHORTCUTS, shortcutsFor, placeOf, cardHeight, CHAT_APPS, chatOf, isCall, pickActions, takes, hiddenSite, voiceOf } from "../shell/lib/island.mjs"
 
 const idle = { flash: null, recording: { on: false }, alarm: null, focus: null, next: null, media: { title: "", playing: false } }
 
@@ -218,4 +218,22 @@ test("media from a hidden site stays out of the island", () => {
     const s = { media: { title: "Video", playing: true, url: "https://www.youtube.com/watch?v=1" } }
     assert.deepEqual(activities(s, DEFAULT_ISLAND), [])
     assert.deepEqual(activities(s, Object.assign({}, DEFAULT_ISLAND, { hideSites: [] })).map(a => a.kind), ["media"])
+})
+
+test("voiceOf finds a voice chat from an app using the microphone", () => {
+    assert.deepEqual(voiceOf([{ id: 296, app: "vesktop", binary: "electron", muted: false }]), { id: 296, app: "Discord", glyph: "speech", muted: false })
+    assert.deepEqual(voiceOf([{ id: 1, app: "OBS Studio", binary: "obs", muted: false }, { id: 2, app: "Firefox", binary: "firefox", muted: true }]), { id: 2, app: "Firefox", glyph: "voice", muted: true })
+    assert.deepEqual(voiceOf([{ id: 3, app: "", binary: "signal-desktop", muted: false }]).app, "Signal")
+    assert.equal(voiceOf([{ id: 1, app: "OBS Studio", binary: "obs", muted: false }]), null)
+    assert.equal(voiceOf([]), null)
+})
+
+test("an ongoing voice chat comes right after an incoming call and follows the calls switch", () => {
+    const voice = { id: 296, app: "Discord", glyph: "speech", muted: false, elapsed: 65000 }
+    const s = Object.assign({}, idle, { voice: voice, media: { title: "Song", playing: true } })
+    assert.deepEqual(activities(s, DEFAULT_ISLAND).map(a => a.kind), ["voice", "media"])
+    assert.deepEqual(activities(Object.assign({}, s, { call: { app: "Signal", sender: "Ola" } }), DEFAULT_ISLAND).map(a => a.kind), ["call", "voice", "media"])
+    assert.deepEqual(activities(s, Object.assign({}, DEFAULT_ISLAND, { calls: false })).map(a => a.kind), ["media"])
+    assert.equal(label(Object.assign({ kind: "voice" }, voice)), "Discord · 1:05")
+    assert.equal(label(Object.assign({ kind: "voice" }, voice, { muted: true })), "Discord · muted")
 })

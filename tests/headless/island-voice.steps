@@ -1,0 +1,17 @@
+sleep 1.5
+syl set parts.island true
+sleep 2.5
+check sylvaris island | grep -q '"items":\[\]'
+bg pw-record -P '{ application.name = "vesktop" application.process.binary = "electron" }' "$OUT/mic.wav" > "$OUT/rec.log" 2>&1 & echo $! > "$OUT/rec.pid"; wait
+wait sylvaris island | grep -q '"kind":"voice","label":"Discord · 0:0'
+syl island open
+sleep 1
+shot island-voice
+syl island mute
+wait sylvaris island | grep -q '"label":"Discord · muted"'
+sleep 0.5
+shot island-voice-muted
+syl island mute
+wait sylvaris island | grep -q '"label":"Discord · 0:'
+check kill $(cat "$OUT/rec.pid")
+wait ! sylvaris island | grep -q '"kind":"voice"'

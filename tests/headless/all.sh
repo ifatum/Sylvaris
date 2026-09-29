@@ -25,6 +25,9 @@ for steps in "$here"/*.steps; do
     if [ "$name" = keybinds-sync ] || [ "$name" = remote-text ]; then
         extra=(env SYLVARIS_DEMO=0)
     fi
+    if [ "$name" = island-voice ]; then
+        extra=(env SYLVARIS_DEMO=0 HL_PIPEWIRE=1)
+    fi
     if [ "$name" = lock ]; then
         extra=(env SYLVARIS_PAM_DIR="$here/../fixtures/pam")
     fi

@@ -83,6 +83,21 @@ export function chatOf(n) {
     return CHAT_APPS.find(a => browser ? a.web !== undefined && a.web.test(text) : a.app.test(who)) || null
 }
 
+export function voiceOf(streams) {
+    const list = Array.isArray(streams) ? streams : []
+    for (const s of list) {
+        const chat = CHAT_APPS.find(a => a.app.test(String(s.app || "") + " " + String(s.binary || "")))
+        if (chat)
+            return { id: s.id, app: chat.label, glyph: chat.glyph, muted: s.muted === true }
+    }
+    for (const s of list) {
+        const name = String(s.app || "").trim() || String(s.binary || "").trim()
+        if (BROWSERS.test(String(s.app || "").trim()) || BROWSERS.test(String(s.binary || "").trim()))
+            return { id: s.id, app: name.charAt(0).toUpperCase() + name.slice(1), glyph: "voice", muted: s.muted === true }
+    }
+    return null
+}
+
 export function isCall(n) {
     const category = String(n.category || "")
     if (category !== "")
@@ -103,6 +118,8 @@ export function activities(s, cfg) {
     const out = []
     if (cfg.calls && s.call)
         out.push(Object.assign({ kind: "call" }, s.call))
+    if (cfg.calls && s.voice)
+        out.push(Object.assign({ kind: "voice" }, s.voice))
     const f = s.flash
     if (f && f.kind in FLASHES && (FLASHES[f.kind] === null || cfg[FLASHES[f.kind]]))
         out.push(f)
@@ -129,6 +146,8 @@ export function label(a) {
         return a.sender || a.app
     case "call":
         return (a.sender || a.app) + " calling"
+    case "voice":
+        return a.app + " · " + (a.muted ? "muted" : elapsed(a.elapsed))
     case "device":
         return a.battery >= 0 ? a.name + " · " + a.battery + "%" : a.name
     case "recording":

@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Services.Notifications
+import Quickshell.Services.Pipewire
 import qs
 import qs.services
 import qs.plugins.diver
@@ -28,6 +29,14 @@ Scope {
     property int lastNote: -1
     property var devicesBefore: []
     property int replyTo: -1
+    property var voiceSince: ({})
+    readonly property var captures: Demo.enabled || !root.cfg.calls ? [] : Pipewire.nodes.values.filter(n => n.isStream && !n.isSink)
+    readonly property var voiceBase: I.voiceOf(root.captures.filter(n => n.audio).map(n => ({
+                    id: n.id,
+                    app: n.properties["application.name"] || "",
+                    binary: n.properties["application.process.binary"] || "",
+                    muted: n.audio.muted
+                })))
     readonly property var screenInfo: Compositor.screenFor(Compositor.focusedName())
     readonly property var capture: root.peers.capture === undefined ? null : root.peers.capture
     readonly property bool recording: root.capture !== null && root.capture.recording
@@ -44,6 +53,9 @@ Scope {
     }
     readonly property var items: I.activities({
         call: root.call,
+        voice: root.voiceBase === null ? null : Object.assign({}, root.voiceBase, {
+            elapsed: root.now - (root.voiceSince[root.voiceBase.id] || root.now)
+        }),
         flash: root.flash,
         recording: root.capture === null ? null : {
             on: root.capture.recording,
@@ -192,6 +204,7 @@ Scope {
                 notification: "notify",
                 message: "notify",
                 call: "notify",
+                voice: "",
                 alarm: "clock",
                 focus: "clock",
                 next: "clock",
@@ -201,6 +214,10 @@ Scope {
 
     function act(kind: string, what: string): void {
         const a = root.items.find(x => x.kind === kind) || null;
+        if (kind === "voice") {
+            root.voice(a, what);
+            return;
+        }
         if (what === "open") {
             const part = root.partFor(kind);
             root.close();
@@ -213,6 +230,7 @@ Scope {
             root.chat(a, what);
             return;
         }
+
         if (what.indexOf("seek:") === 0) {
             const x = Number(what.slice(5));
             if (kind === "volume")
@@ -234,6 +252,30 @@ Scope {
         else if (kind === "notification" && a !== null) {
             Notifications.dismiss(a.id);
             root.flash = null;
+        }
+    }
+
+    function voice(a: var, what: string): void {
+        if (a === null)
+            return;
+        if (what === "mute") {
+            const n = root.captures.find(x => x.id === a.id);
+            if (n !== undefined && n.audio)
+                n.audio.muted = !n.audio.muted;
+            return;
+        }
+        const w = Compositor.windows.find(x => {
+            const v = I.voiceOf([{
+                    id: 0,
+                    app: x.appId || "",
+                    binary: ""
+                }]);
+            return v !== null && v.app === a.app;
+        });
+        if (w !== undefined) {
+            root.close();
+            root.hotScreen = "";
+            Compositor.activate(w);
         }
     }
 
@@ -288,6 +330,21 @@ Scope {
         };
     }
 
+    onVoiceBaseChanged: {
+        if (root.voiceBase === null) {
+            root.voiceSince = ({});
+        } else if (root.voiceSince[root.voiceBase.id] === undefined) {
+            const next = Object.assign({}, root.voiceSince);
+            root.now = Date.now();
+            next[root.voiceBase.id] = root.now;
+            root.voiceSince = next;
+        }
+    }
+
+    PwObjectTracker {
+        objects: root.captures
+    }
+
     onFlashChanged: {
         if (root.replyTo >= 0 && (root.flash === null || root.flash.id !== root.replyTo))
             root.replyTo = -1;
@@ -329,7 +386,7 @@ Scope {
     Timer {
         interval: 1000
         repeat: true
-        running: root.recording || root.cfg.diver && (Diver.focusEnd > root.now || Diver.next !== null)
+        running: root.recording || root.voiceBase !== null || root.cfg.diver && (Diver.focusEnd > root.now || Diver.next !== null)
         onTriggered: root.now = Date.now()
     }
 

@@ -135,6 +135,8 @@ export const GLYPHS = {
     gamepad: g(0xF0296),
     desktop: g(0xF01C5),
     brightness: g(0xF00DF),
+    mic: g(0xF036C),
+    micOff: g(0xF036D),
     download: g(0xF01DA),
     upload: g(0xF0552),
     planner: g(0xF00F0),
