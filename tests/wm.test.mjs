@@ -108,12 +108,12 @@ test("the capability table matches what each compositor's code path can do", asy
         assert.deepEqual(Object.keys(caps).sort(), Object.keys(CAPABILITIES.hyprland).sort())
 })
 
-test("the capability table in docs/guide.md is generated from lib/wm.mjs", async () => {
+test("the capability table in docs/compositors.md is generated from lib/wm.mjs", async () => {
     const { capabilityTable } = await import("../shell/lib/wm.mjs")
     const { readFileSync } = await import("node:fs")
-    const guide = readFileSync(new URL("../docs/guide.md", import.meta.url), "utf8")
-    const start = guide.indexOf("## Compositor support")
-    assert.ok(start >= 0, "docs/guide.md needs a Compositor support section")
+    const guide = readFileSync(new URL("../docs/compositors.md", import.meta.url), "utf8")
+    const start = guide.indexOf("## What each compositor supports")
+    assert.ok(start >= 0, "docs/compositors.md needs a What each compositor supports section")
     const rows = guide.slice(start).split("\n").filter(l => l.startsWith("|"))
     const table = []
     for (const l of rows) {

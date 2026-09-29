@@ -1,6 +1,6 @@
 # Architecture
 
-Sylvaris is a desktop shell written in QML and JavaScript on top of [Quickshell](https://quickshell.org). This page explains how the pieces fit together. [CONTRIBUTING.md](CONTRIBUTING.md) covers setup, tests and commit style; [docs/guide.md](docs/guide.md) covers what each part does for users.
+Sylvaris is a desktop shell written in QML and JavaScript on top of [Quickshell](https://quickshell.org). This page explains how the pieces fit together. [CONTRIBUTING.md](CONTRIBUTING.md) covers setup, tests and commit style; [docs/](docs/README.md) covers what each part does for users.
 
 ## Processes
 
@@ -47,7 +47,7 @@ Everything in `shell/lib/*.mjs` is plain JavaScript with no QML imports and no s
 
 Only `services/Compositor.qml` and `lib/wm.mjs` know whether Hyprland (Lua or classic config), niri or sway is running. `lib/wm.mjs` translates Sylvaris verbs (`workspace`, `move-to`, `focus`, `minimize`, ...) into each compositor's commands and reduces niri's event stream into the common workspace shape. Windows come from the foreign-toplevel protocol, which all three support.
 
-Where a feature cannot work everywhere, it is gated by a capability flag in `CAPABILITIES` in `lib/wm.mjs`, read through `Compositor.can("<flag>")`. The UI hides or explains what a compositor cannot do. `tests/wm.test.mjs` checks the table against the code paths that implement each feature, and the table in [docs/guide.md](docs/guide.md#compositor-support) is generated from it.
+Where a feature cannot work everywhere, it is gated by a capability flag in `CAPABILITIES` in `lib/wm.mjs`, read through `Compositor.can("<flag>")`. The UI hides or explains what a compositor cannot do. `tests/wm.test.mjs` checks the table against the code paths that implement each feature, and the table in [docs/compositors.md](docs/compositors.md#what-each-compositor-supports) is generated from it.
 
 ## Configuration
 

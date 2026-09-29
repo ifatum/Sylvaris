@@ -32,6 +32,7 @@
       <b>SylCenter</b> control center with orbits<br>
       <b>SylClock</b> live sky, weather, calendar<br>
       <b>SylNotify</b> notifications that stay out of the way<br>
+      <b>SylIsland</b> live activities you can control<br>
       <b>SylDeck</b> dock that hides when windows open<br>
       <b>SylPad</b> launcher, grid or list
     </td>
@@ -75,7 +76,7 @@
 
 ```nix
 {
-  inputs.sylvaris.url = "github:naxce/Sylvaris";
+  inputs.sylvaris.url = "github:ifatum/Sylvaris";
 
   outputs = { sylvaris, ... }: {
     homeConfigurations.me = home-manager.lib.homeManagerConfiguration {
@@ -96,7 +97,7 @@
 }
 ```
 
-Every setting is a typed Home Manager option. For the lock screen's PAM service and the SylGreet login screen, also import `sylvaris.nixosModules.sylvaris`. Not on Nix? [docs/install.md](docs/install.md) has steps for Arch, Fedora, Debian, Ubuntu, openSUSE, Void, Gentoo and others, plus `make install`.
+Every setting is a typed Home Manager option. For the lock screen's PAM service and the SylGreet login screen, also import `sylvaris.nixosModules.sylvaris`. Every option is in [docs/nix.md](docs/nix.md). Not on Nix? [docs/install.md](docs/install.md) has steps for Arch, Fedora, Debian, Ubuntu, openSUSE, Void, Gentoo and others, plus `make install`.
 
 ## 🚀 Start
 
@@ -132,7 +133,7 @@ Resident memory of the Sylvaris process, including Quickshell, Qt and, with a GP
 
 ## 📖 Learn more
 
-The [guide](docs/guide.md) covers every part, command and setting, theme bundles, plugins and development. [ARCHITECTURE.md](ARCHITECTURE.md) explains how the shell is built, [CONTRIBUTING.md](CONTRIBUTING.md) how to work on it, and [CHANGELOG.md](CHANGELOG.md) what changed.
+The [documentation](docs/README.md) covers every part, command and setting, theme bundles, plugins, Nix and development, one page each. [ARCHITECTURE.md](ARCHITECTURE.md) explains how the shell is built, [CONTRIBUTING.md](CONTRIBUTING.md) how to work on it, and [CHANGELOG.md](CHANGELOG.md) what changed.
 
 ## 💛 Credits
 

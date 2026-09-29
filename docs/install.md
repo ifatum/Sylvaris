@@ -1,19 +1,38 @@
 # Installing Sylvaris
 
-Sylvaris runs on any Linux distribution with a Wayland compositor: Hyprland, sway or niri. On NixOS, use the flake as the [README](../README.md) shows. Everywhere else, follow the steps for your distribution and then [install Sylvaris](#install-sylvaris).
+Sylvaris runs on any Linux distribution with a Wayland compositor: Hyprland, sway or niri. On NixOS or with Home Manager, use the flake as [Nix and Home Manager](nix.md) shows. Everywhere else, follow the steps for your distribution and then [install Sylvaris](#install-sylvaris).
 
 You need:
 
 - Quickshell 0.3.1 or newer. Check with `qs --version`; if your distribution ships an older one, [build it from source](#quickshell-from-source).
 - The fonts Inter and JetBrainsMono Nerd Font.
-- The tools listed below. The [guide](guide.md#install-without-nix) says which part needs which tool, and a tool can be left out once you turn off every part that uses it.
+- The tools listed below. [Which part needs which tool](#which-part-needs-which-tool) says what each is for, and a tool can be left out once you turn off every part that uses it.
+
+## Which part needs which tool
+
+| Tool | Needed by |
+|---|---|
+| `pipewire` (`pw-cli`, `pw-metadata`, `pw-play`) | bar, center, clock, diver, media, settings |
+| `python3` with `cryptography` | bar, center, clock, diver, media, settings, sync |
+| `notify-send` (libnotify) | bar, capture, center, clock, diver, settings |
+| `pactl` | bar, capture, center, media |
+| `wlsunset` | center, settings |
+| `curl` | clock, settings |
+| NetworkManager (`nmcli`) | center |
+| `wlr-randr` | center |
+| `wl-clipboard` | center, clip, capture |
+| `grim`, `slurp`, `wf-recorder`, `ffmpeg` | capture |
+| `gdbus` (glib) | lock, only for "lock when the system asks" |
+| `git` | plugins, only to install from Git |
+
+`python3`, `notify-send` and `pw-play` serve Diver, which the bar, center, clock and settings show too; `python3` also talks to AirPods. Wi-Fi in the bar and center reads NetworkManager over D-Bus, so keep the daemon running. `socat` makes the `sylvaris` command fast; without it commands fall back to `qs ipc`, but `sylvaris watch` needs it. `ffmpeg` only tidies finished recordings so they upload everywhere.
 
 ## Arch Linux and derivatives
 
 ```sh
 sudo pacman -S --needed quickshell qt6-svg socat inter-font ttf-jetbrains-mono-nerd \
   pipewire pipewire-pulse libpulse python-cryptography libnotify wlsunset curl \
-  networkmanager wlr-randr wl-clipboard grim slurp wf-recorder glib2 git make
+  networkmanager wlr-randr wl-clipboard grim slurp wf-recorder ffmpeg glib2 git make
 ```
 
 For the login screen, also install `greetd` and `sway`. Manjaro, EndeavourOS and CachyOS use the same packages.
@@ -28,7 +47,7 @@ Quickshell comes from a COPR:
 sudo dnf copr enable errornointernet/quickshell
 sudo dnf install quickshell qt6-qtsvg socat rsms-inter-fonts pipewire pipewire-pulseaudio \
   pulseaudio-utils python3-cryptography libnotify wlsunset curl NetworkManager wlr-randr \
-  wl-clipboard grim slurp wf-recorder glib2 git make
+  wl-clipboard grim slurp wf-recorder ffmpeg glib2 git make
 ```
 
 For the login screen, also install `greetd` and `sway`. JetBrainsMono Nerd Font is not packaged, so [install it by hand](#fonts-by-hand).
@@ -55,7 +74,7 @@ Debian stable does not have it yet, so [build it from source](#quickshell-from-s
 sudo apt install qml6-module-qtquick-effects qml6-module-qtquick-shapes \
   qml6-module-qt-labs-folderlistmodel socat fonts-inter pipewire pipewire-pulse \
   pulseaudio-utils python3-cryptography libnotify-bin wlsunset curl network-manager \
-  wlr-randr wl-clipboard grim slurp wf-recorder libglib2.0-bin git make
+  wlr-randr wl-clipboard grim slurp wf-recorder ffmpeg libglib2.0-bin git make
 ```
 
 For the login screen, also install `greetd` and `sway`. JetBrainsMono Nerd Font is not packaged, so [install it by hand](#fonts-by-hand).
@@ -67,7 +86,7 @@ Quickshell is in the `home:AvengeMedia:danklinux` repository on the Open Build S
 ```sh
 sudo zypper install quickshell socat pipewire pipewire-pulseaudio pulseaudio-utils \
   python3-cryptography libnotify-tools wlsunset curl NetworkManager wlr-randr \
-  wl-clipboard grim slurp wf-recorder glib2-tools git make
+  wl-clipboard grim slurp wf-recorder ffmpeg glib2-tools git make
 ```
 
 For the login screen, also install `greetd` and `sway`. [Install both fonts by hand](#fonts-by-hand). If `zypper` cannot find one of the names, `zypper search <tool>` shows what it is called.
@@ -78,7 +97,7 @@ Void does not package Quickshell, so [build it from source](#quickshell-from-sou
 
 ```sh
 sudo xbps-install -S socat pipewire python3-cryptography libnotify wlsunset curl \
-  NetworkManager wlr-randr wl-clipboard grim slurp wf-recorder glib git make
+  NetworkManager wlr-randr wl-clipboard grim slurp wf-recorder ffmpeg glib git make
 ```
 
 `pactl` comes with `pulseaudio-utils` or your PipeWire setup; `xbps-query -Rs <tool>` finds the package if a name differs. For the login screen, also install `greetd` and `sway`, and enable services with `ln -s /etc/sv/<name> /var/service/` instead of `systemctl`. [Install both fonts by hand](#fonts-by-hand).
@@ -92,11 +111,11 @@ emerge --sync guru
 emerge gui-apps/quickshell net-misc/socat
 ```
 
-Install the other tools from the list in the [guide](guide.md#install-without-nix) with `emerge`, and the fonts [by hand](#fonts-by-hand) if you prefer not to use an overlay.
+Install the other tools from [the list](#which-part-needs-which-tool) with `emerge`, and the fonts [by hand](#fonts-by-hand) if you prefer not to use an overlay.
 
 ## Other distributions
 
-Install Quickshell from your distribution or [from source](#quickshell-from-source), then the tools from the [guide](guide.md#install-without-nix) under whatever names your package manager uses.
+Install Quickshell from your distribution or [from source](#quickshell-from-source), then [the tools](#which-part-needs-which-tool) under whatever names your package manager uses.
 
 ### Quickshell from source
 
@@ -117,7 +136,7 @@ fc-cache -f
 ## Install Sylvaris
 
 ```sh
-git clone https://github.com/naxce/Sylvaris
+git clone https://github.com/ifatum/Sylvaris
 cd Sylvaris
 sudo make install install-pam
 ```
@@ -126,7 +145,7 @@ This puts `sylvaris` in `/usr/local/bin`, the shell in `/usr/local/share/sylvari
 
 To try it without installing, run `bin/sylvaris` from the clone. A copy in `~/.config/quickshell/sylvaris` takes priority over the installed one, which is handy for editing.
 
-Then start it with your compositor, as the [guide](guide.md#start-it-with-your-compositor) shows. For example in Hyprland:
+Then start it with your compositor, as [getting started](start.md#2-start-it-with-your-compositor) shows. For example in Hyprland:
 
 ```lua
 hl.on("hyprland.start", function() hl.exec_cmd("sylvaris") end)
