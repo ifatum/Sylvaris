@@ -16,7 +16,7 @@ export const PART_PACKAGES = {
     lock: ["glib"],
     polkit: [],
     clip: ["wl-clipboard"],
-    island: [],
+    island: ["wtype"],
     viewer: ["wl-clipboard", "glib"],
     access: [],
     plugins: ["git"],
@@ -28,6 +28,7 @@ export const PART_PACKAGES = {
 }
 
 export const PACKAGE_BINS = {
+    wtype: ["wtype"],
     pulseaudio: ["pactl"],
     pipewire: ["pw-cli", "pw-metadata"],
     python: ["python3"],

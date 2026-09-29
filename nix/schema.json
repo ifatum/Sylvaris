@@ -176,7 +176,7 @@
     "calls": true,
     "keepPaused": true,
     "hover": true,
-    "seconds": 3,
+    "seconds": 5,
     "position": "top-center",
     "idle": "pill",
     "reveal": "always",
