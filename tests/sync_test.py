@@ -71,6 +71,42 @@ class SyncTest(unittest.TestCase):
         gtk = os.path.join(self.home, "gtk-3.0", "gtk.css")
         self.assertEqual(sync.ensure_line(gtk, "@import 'sylvaris.css';"), "created")
 
+    def test_symlinked_files_are_written_through_the_link(self):
+        dots = os.path.join(self.home, "dotfiles")
+        os.makedirs(dots)
+        os.makedirs(os.path.join(self.home, "kitty"))
+        real_conf = os.path.join(dots, "kitty.conf")
+        with open(real_conf, "w") as f:
+            f.write("font_size 12\n")
+        link_conf = os.path.join(self.home, "kitty", "kitty.conf")
+        os.symlink(real_conf, link_conf)
+        self.assertEqual(sync.ensure_line(link_conf, "include sylvaris.conf"), "added")
+        self.assertTrue(os.path.islink(link_conf))
+        with open(real_conf) as f:
+            self.assertEqual(f.read(), "font_size 12\ninclude sylvaris.conf\n")
+        real_theme = os.path.join(dots, "theme.conf")
+        with open(real_theme, "w") as f:
+            f.write("old")
+        link_theme = os.path.join(self.home, "kitty", "sylvaris.conf")
+        os.symlink(real_theme, link_theme)
+        self.assertEqual(sync.write(link_theme, "new"), "written")
+        self.assertTrue(os.path.islink(link_theme))
+        with open(real_theme) as f:
+            self.assertEqual(f.read(), "new")
+        self.assertEqual([n for n in os.listdir(dots) if n.endswith(".part")], [])
+
+    def test_files_from_the_nix_store_are_left_alone(self):
+        store = os.path.realpath("/nix/store")
+        if not os.path.isdir(store):
+            self.skipTest("no /nix/store here")
+        entry = next((os.path.join(store, n) for n in os.listdir(store) if n.endswith(".drv")), None)
+        if entry is None:
+            self.skipTest("no file in /nix/store to point at")
+        link = os.path.join(self.home, "managed.conf")
+        os.symlink(entry, link)
+        self.assertTrue(sync.write(link, "x").startswith("failed"))
+        self.assertTrue(os.path.islink(link))
+
     def test_firefox_profiles(self):
         root = os.path.join(self.home, ".mozilla", "firefox")
         os.makedirs(os.path.join(root, "abc.default"))

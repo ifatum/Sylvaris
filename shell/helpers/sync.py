@@ -2,6 +2,7 @@
 import configparser
 import json
 import os
+import shutil
 import subprocess
 import sys
 
@@ -9,17 +10,24 @@ PREF = 'user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);'
 
 
 def write(path, content):
+    target = os.path.realpath(path)
     try:
-        with open(path) as f:
+        with open(target) as f:
             if f.read() == content:
                 return "same"
     except OSError:
         pass
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    tmp = path + ".part"
+    if target.startswith("/nix/store/"):
+        return "failed: " + path + " is managed by Nix"
+    os.makedirs(os.path.dirname(target), exist_ok=True)
+    tmp = target + ".part"
     with open(tmp, "w") as f:
         f.write(content)
-    os.replace(tmp, path)
+    try:
+        shutil.copymode(target, tmp)
+    except OSError:
+        pass
+    os.replace(tmp, target)
     return "written"
 
 
@@ -33,14 +41,11 @@ def ensure_line(path, line, first=False):
             return "add this line yourself: " + line
         new = line + "\n" + text if first else text + ("" if text.endswith("\n") or text == "" else "\n") + line + "\n"
         try:
-            with open(path, "w") as f:
-                f.write(new)
+            write(path, new)
         except OSError:
             return "add this line yourself: " + line
         return "added"
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w") as f:
-        f.write(line + "\n")
+    write(path, line + "\n")
     return "created"
 
 
