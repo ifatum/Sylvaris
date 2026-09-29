@@ -6,3 +6,7 @@ shot ws-niri-numbers
 syl set bar.workspaceIcons paw
 sleep 0.8
 shot ws-niri-paw
+check kill $(pgrep -f '^sleep 600$')
+sleep 3.5
+check [ "$(pgrep -fc '^sleep 600$')" = 1 ]
+check sylvaris wm state | grep -q '"windows":2'

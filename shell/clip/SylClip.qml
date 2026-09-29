@@ -151,11 +151,28 @@ Popup {
         atomicWrites: true
     }
 
+    property bool watchUp: true
+    property int watchRetries: 0
+
+    Timer {
+        id: watchAgain
+        interval: Math.min(60000, 2000 * Math.pow(2, root.watchRetries))
+        onTriggered: {
+            root.watchRetries++;
+            root.watchUp = true;
+        }
+    }
+
     Process {
-        running: !Demo.enabled
+        running: !Demo.enabled && root.watchUp
         command: ["wl-paste", "--watch", "echo", "changed"]
+        onExited: {
+            root.watchUp = false;
+            watchAgain.restart();
+        }
         stdout: SplitParser {
             onRead: {
+                root.watchRetries = 0;
                 if (!grab.running)
                     grab.running = true;
                 else

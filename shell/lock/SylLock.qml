@@ -86,11 +86,28 @@ Scope {
         onLoadFailed: root.surface = {}
     }
 
+    property bool monitorUp: true
+    property int monitorRetries: 0
+
+    Timer {
+        id: monitorAgain
+        interval: Math.min(60000, 2000 * Math.pow(2, root.monitorRetries))
+        onTriggered: {
+            root.monitorRetries++;
+            root.monitorUp = true;
+        }
+    }
+
     Process {
-        running: root.cfg.logind && !Demo.enabled
+        running: root.cfg.logind && !Demo.enabled && root.monitorUp
         command: ["gdbus", "monitor", "--system", "--dest", "org.freedesktop.login1"]
+        onExited: {
+            root.monitorUp = false;
+            monitorAgain.restart();
+        }
         stdout: SplitParser {
             onRead: line => {
+                root.monitorRetries = 0;
                 if (L.isLockSignal(line, L.sessionPath(Quickshell.env("XDG_SESSION_ID") || "")))
                     root.lock();
             }

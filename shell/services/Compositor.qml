@@ -216,11 +216,28 @@ Singleton {
         }
     }
 
+    property bool niriStreamUp: true
+    property int niriStreamRetries: 0
+
+    Timer {
+        id: niriStreamAgain
+        interval: Math.min(60000, 2000 * Math.pow(2, root.niriStreamRetries))
+        onTriggered: {
+            root.niriStreamRetries++;
+            root.niriStreamUp = true;
+        }
+    }
+
     Process {
-        running: root.name === "niri"
+        running: root.name === "niri" && root.niriStreamUp
         command: ["niri", "msg", "--json", "event-stream"]
+        onExited: {
+            root.niriStreamUp = false;
+            niriStreamAgain.restart();
+        }
         stdout: SplitParser {
             onRead: line => {
+                root.niriStreamRetries = 0;
                 try {
                     const next = W.niriReduce(root.niriState, JSON.parse(line));
                     if (next !== root.niriState)
