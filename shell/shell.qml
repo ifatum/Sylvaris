@@ -89,7 +89,7 @@ ShellRoot {
     readonly property var boot: [Tokens, Ipc, Config, Settings, Theme, Resin, Compositor, Keybinds].concat(root.live.filter(name => root.services[name] !== undefined).map(name => root.services[name]()))
 
     readonly property var openPanel: {
-        for (const name of ["center", "clock", "media", "notify", "paper"]) {
+        for (const name of ["center", "clock", "media", "notify", "paper", "clip", "capture", "access", "diver", "fatest"]) {
             const p = root.part(name);
             if (p !== null && p.wanted && p.screenInfo && p.placed !== undefined)
                 return {

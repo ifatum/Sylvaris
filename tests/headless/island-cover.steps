@@ -1,0 +1,11 @@
+sleep 1.5
+syl set parts.island true
+sleep 2
+check sylvaris island state | grep -q '"covered":false'
+syl clip open
+sleep 1
+check sylvaris island state | grep -q '"covered":true'
+shot clip-island
+syl clip close
+sleep 1
+check sylvaris island state | grep -q '"covered":false'
