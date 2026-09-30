@@ -91,13 +91,19 @@ Item {
             return Icons.GLYPHS.planner;
         case "custom":
             return Icons.GLYPHS.info;
+        case "privacy":
+            return Icons.GLYPHS.micOff;
+        case "inuse":
+            return a.camera ? Icons.GLYPHS.camera : Icons.GLYPHS.mic;
+        case "status":
+            return Icons.GLYPHS[a.glyph] || Icons.GLYPHS.info;
         default:
             return Icons.GLYPHS.musicNote;
         }
     }
 
     function tintOf(a: var): color {
-        return a !== null && (a.kind === "recording" || a.kind === "alarm" || a.kind === "voice" && a.muted) ? Theme.danger : Theme.accent;
+        return a !== null && (a.kind === "recording" || a.kind === "alarm" || a.kind === "privacy" || a.kind === "voice" && a.muted) ? Theme.danger : Theme.accent;
     }
 
     function headOf(a: var): string {
@@ -122,7 +128,12 @@ Item {
             return a.title;
         case "next":
         case "custom":
+        case "status":
             return a.text;
+        case "privacy":
+            return "Mic and cameras off";
+        case "inuse":
+            return a.apps.join(", ");
         default:
             return a.title || a.artist;
         }
@@ -153,6 +164,12 @@ Item {
             return "Starts " + I.label(a);
         case "custom":
             return "Sylvaris";
+        case "status":
+            return a.state;
+        case "privacy":
+            return a.combo !== "" ? "Privacy mode · " + a.combo + " to undo" : "Privacy mode";
+        case "inuse":
+            return "Using the " + (a.mic && a.camera ? "microphone and camera" : a.camera ? "camera" : "microphone");
         default:
             return a.artist || a.player || "";
         }
@@ -171,7 +188,9 @@ Item {
                 alarm: ["snooze", "done"],
                 focus: ["end"],
                 volume: ["mute"],
-                notification: ["dismiss"]
+                notification: ["dismiss"],
+                privacy: ["undo"],
+                inuse: ["block"]
             })[kind] || [];
     }
 
@@ -199,6 +218,10 @@ Item {
             return Icons.GLYPHS.eye;
         case "openapp":
             return Icons.GLYPHS.open;
+        case "undo":
+            return Icons.GLYPHS.mic;
+        case "block":
+            return Icons.GLYPHS.micOff;
         case "accept":
             return Icons.GLYPHS.voice;
         default:

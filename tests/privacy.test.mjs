@@ -1,10 +1,10 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
 import { execFileSync } from "node:child_process"
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, chmodSync } from "node:fs"
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, chmodSync, symlinkSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
-import { cameraArgs, parseCameras } from "../shell/lib/privacy.mjs"
+import { cameraArgs, parseCameras, cameraUsersArgs, parseUsers } from "../shell/lib/privacy.mjs"
 
 function sysfs() {
     const root = mkdtempSync(join(tmpdir(), "syl-usb-"))
@@ -46,4 +46,21 @@ test("parseCameras falls back to zeros on junk", () => {
 test("cameraArgs defaults to the real usb device directory", () => {
     assert.equal(cameraArgs("off")[4], "/sys/bus/usb/devices")
     assert.equal(cameraArgs("off")[5], "off")
+})
+
+test("camera users come from processes holding a video device, without pipewire itself", () => {
+    const root = mkdtempSync(join(tmpdir(), "syl-proc-"))
+    const proc = (pid, comm, target) => {
+        mkdirSync(join(root, pid, "fd"), { recursive: true })
+        writeFileSync(join(root, pid, "comm"), comm + "\n")
+        symlinkSync(target, join(root, pid, "fd", "5"))
+    }
+    proc("10", "zoom", "/dev/video0")
+    proc("11", "zoom", "/dev/video1")
+    proc("12", "wireplumber", "/dev/video0")
+    proc("13", "firefox", "/dev/snd/pcmC0D0c")
+    const a = cameraUsersArgs(root)
+    assert.deepEqual(parseUsers(execFileSync(a[0], a.slice(1), { encoding: "utf8" })), ["zoom"])
+    assert.deepEqual(parseUsers("pipewire\n\nobs\nobs\n"), ["obs"])
+    assert.equal(cameraUsersArgs()[4], "/proc")
 })

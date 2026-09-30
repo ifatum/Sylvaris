@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Services.Notifications
 import Quickshell.Services.Pipewire
@@ -8,6 +9,7 @@ import qs.services
 import qs.plugins.diver
 import "../lib/island.mjs" as I
 import "../lib/notify.mjs" as N
+import "../lib/privacy.mjs" as P
 
 Scope {
     id: root
@@ -30,7 +32,23 @@ Scope {
     property var devicesBefore: []
     property int replyTo: -1
     property var voiceSince: ({})
-    readonly property var captures: Demo.enabled || !root.cfg.calls ? [] : Pipewire.nodes.values.filter(n => n.isStream && !n.isSink)
+    property var cameraUsers: []
+    readonly property bool performance: Settings.values.performance
+    property string netAnnounced: ""
+    readonly property string netName: {
+        for (const i of NetworkService.items) {
+            if (i.connected)
+                return i.name;
+        }
+        return NetworkService.wiredConnected ? "Wired" : "";
+    }
+    readonly property var inuse: root.cfg.privacy ? I.inUse(root.captures.map(n => ({
+                    app: n.properties["application.name"] || "",
+                    binary: n.properties["application.process.binary"] || "",
+                    video: !n.audio,
+                    monitor: n.properties["stream.capture.sink"] === "true"
+                })), root.cameraUsers, root.voiceBase === null ? "" : root.voiceBase.app) : null
+    readonly property var captures: Demo.enabled || !root.cfg.calls && !root.cfg.privacy ? [] : Pipewire.nodes.values.filter(n => n.isStream && !n.isSink)
     readonly property var voiceBase: I.voiceOf(root.captures.filter(n => n.audio).map(n => ({
                     id: n.id,
                     app: n.properties["application.name"] || "",
@@ -62,6 +80,10 @@ Scope {
             elapsed: root.now - (root.voiceSince[root.voiceBase.id] || root.now)
         }),
         flash: root.flash,
+        privacy: Privacy.active ? {
+            combo: Keybinds.wanted["privacy toggle"] || Keybinds.external["privacy toggle"] || ""
+        } : null,
+        inuse: root.inuse,
         recording: root.capture === null ? null : {
             on: root.capture.recording,
             started: root.capture.started,
@@ -136,6 +158,8 @@ Scope {
             return BluetoothService.enabled;
         case "night":
             return NightLight.enabled;
+        case "privacy":
+            return Privacy.active;
         case "record":
             return root.recording;
         default:
@@ -260,6 +284,8 @@ Scope {
             what === "done" ? Diver.done(a.id) : Diver.snooze(a.id, 10);
         else if (kind === "volume")
             Audio.toggleMute();
+        else if (kind === "privacy" || kind === "inuse")
+            Privacy.set(kind === "inuse");
         else if (kind === "notification" && a !== null) {
             Notifications.dismiss(a.id);
             root.flash = null;
@@ -385,6 +411,7 @@ Scope {
         onTriggered: {
             root.devicesBefore = BluetoothService.items;
             root.lastNote = Notifications.list.length > 0 ? Notifications.list[0].id : -1;
+            root.netAnnounced = root.netName;
             root.armed = true;
         }
     }
@@ -476,8 +503,93 @@ Scope {
     }
 
     Connections {
+        target: Privacy
+        enabled: root.armed
+
+        function onActiveChanged() {
+            root.show(I.status("privacy", Privacy.active));
+        }
+    }
+
+    Connections {
+        target: Dnd
+        enabled: root.armed
+
+        function onEnabledChanged() {
+            root.show(I.status("dnd", Dnd.enabled));
+        }
+    }
+
+    Connections {
+        target: NightLight
+        enabled: root.armed
+
+        function onEnabledChanged() {
+            root.show(I.status("night", NightLight.enabled));
+        }
+    }
+
+    Connections {
+        target: NetworkService
+        enabled: root.armed
+
+        function onEnabledChanged() {
+            root.show(I.status("wifi", NetworkService.enabled));
+        }
+    }
+
+    onPerformanceChanged: {
+        if (root.armed)
+            root.show(I.status("performance", root.performance));
+    }
+    onNetNameChanged: netTimer.restart()
+
+    Timer {
+        id: netTimer
+        interval: 2000
+        onTriggered: {
+            if (!root.armed || root.netName === root.netAnnounced) {
+                root.netAnnounced = root.netName;
+                return;
+            }
+            if (root.netName !== "")
+                root.show(I.status("network", true, root.netName));
+            else if (NetworkService.enabled)
+                root.show(I.status("network", false, root.netAnnounced));
+            root.netAnnounced = root.netName;
+        }
+    }
+
+    Timer {
+        interval: 3000
+        repeat: true
+        triggeredOnStart: true
+        running: root.cfg.privacy && !Demo.enabled && !Privacy.active
+        onTriggered: {
+            if (!usersProc.running)
+                usersProc.running = true;
+        }
+        onRunningChanged: {
+            if (!running)
+                root.cameraUsers = [];
+        }
+    }
+
+    Process {
+        id: usersProc
+        command: P.cameraUsersArgs("")
+        stdout: StdioCollector {
+            onStreamFinished: root.cameraUsers = P.parseUsers(text)
+        }
+    }
+
+    Connections {
         target: BluetoothService
         enabled: root.armed
+
+        function onEnabledChanged() {
+            root.show(I.status("bluetooth", BluetoothService.enabled));
+        }
 
         function onItemsChanged() {
             const d = I.joined(root.devicesBefore, BluetoothService.items);

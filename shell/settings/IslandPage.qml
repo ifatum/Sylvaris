@@ -323,6 +323,16 @@ Column {
                     subtitle: "Stay on top with answer and decline until the app ends them"
                 },
                 {
+                    key: "privacy",
+                    title: "Microphone and camera",
+                    subtitle: "Which apps are using them, and privacy mode (sylvaris privacy) while it is on"
+                },
+                {
+                    key: "status",
+                    title: "Switch changes",
+                    subtitle: "Do not disturb, night light, performance mode, Wi-Fi, Bluetooth and the network going up or down"
+                },
+                {
                     key: "notifications",
                     title: "Notifications",
                     subtitle: "Instead of toasts"

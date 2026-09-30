@@ -1,6 +1,6 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
-import { DEFAULT_ISLAND, validateIsland, activities, label, joined, custom, SHORTCUTS, shortcutsFor, placeOf, cardHeight, CHAT_APPS, chatOf, isCall, pickActions, takes, hiddenSite, voiceOf, tucked } from "../shell/lib/island.mjs"
+import { DEFAULT_ISLAND, validateIsland, activities, label, joined, custom, SHORTCUTS, shortcutsFor, placeOf, cardHeight, CHAT_APPS, chatOf, isCall, pickActions, takes, hiddenSite, voiceOf, tucked, inUse, status } from "../shell/lib/island.mjs"
 
 const idle = { flash: null, recording: { on: false }, alarm: null, focus: null, next: null, media: { title: "", playing: false } }
 
@@ -248,4 +248,40 @@ test("tucked hides the island at the edge only in hover mode and while nothing n
     assert.equal(tucked("hover", Object.assign({}, calm, { hot: true })), false)
     assert.equal(tucked("hover", Object.assign({}, calm, { pinned: true })), false)
     assert.equal(tucked("hover", Object.assign({}, calm, { alert: true })), false)
+})
+
+test("privacy mode stays in the island with an undo and hides the apps-in-use row", () => {
+    const s = { privacy: { combo: "SUPER+SHIFT+P" }, inuse: { apps: ["Firefox"], mic: true, camera: false }, media: { title: "Song", playing: true } }
+    assert.deepEqual(activities(s, DEFAULT_ISLAND).map(a => a.kind), ["privacy", "media"])
+    assert.deepEqual(activities({ inuse: s.inuse }, DEFAULT_ISLAND).map(a => a.kind), ["inuse"])
+    assert.deepEqual(activities(s, Object.assign({}, DEFAULT_ISLAND, { privacy: false })).map(a => a.kind), ["media"])
+    assert.equal(label({ kind: "privacy" }), "Mic and cameras off")
+    assert.equal(label({ kind: "inuse", apps: ["Firefox"], mic: true, camera: true }), "Firefox · mic and camera")
+    assert.equal(validateIsland({ privacy: "yes" }).privacy, true)
+})
+
+test("inUse names the apps using the microphone or a camera", () => {
+    const streams = [
+        { app: "Firefox", binary: "firefox", video: false, monitor: false },
+        { app: "cava", binary: "cava", video: false, monitor: true },
+        { app: "Quickshell", binary: ".quickshell-wrapped", video: false, monitor: false },
+        { app: "Vesktop", binary: "electron", video: false, monitor: false },
+        { app: "OBS", binary: "obs", video: true, monitor: false }
+    ]
+    assert.deepEqual(inUse(streams, ["zoom"], "Vesktop"), { apps: ["Firefox", "OBS", "zoom"], mic: true, camera: true })
+    assert.deepEqual(inUse([], ["Firefox"], ""), { apps: ["Firefox"], mic: false, camera: true })
+    assert.equal(inUse(streams.slice(1, 4), [], "Vesktop"), null)
+})
+
+test("status flashes a switch change and privacy on is left to its own row", () => {
+    assert.deepEqual(status("dnd", true), { kind: "status", id: "dnd", on: true, text: "Do not disturb", glyph: "dnd", state: "On" })
+    assert.equal(status("network", false, "Home").state, "Disconnected")
+    assert.equal(status("network", true, "Home").text, "Home")
+    assert.equal(status("nope", true), null)
+    assert.deepEqual(activities({ flash: status("wifi", false) }, DEFAULT_ISLAND).map(a => a.kind), ["status"])
+    assert.deepEqual(activities({ flash: status("wifi", false) }, Object.assign({}, DEFAULT_ISLAND, { status: false })), [])
+    assert.deepEqual(activities({ flash: status("privacy", true) }, DEFAULT_ISLAND), [])
+    assert.deepEqual(activities({ flash: status("privacy", false) }, DEFAULT_ISLAND).map(a => a.kind), ["status"])
+    assert.equal(label(status("night", true)), "Night light on")
+    assert.deepEqual(SHORTCUTS.privacy.run, ["privacy", "toggle"])
 })

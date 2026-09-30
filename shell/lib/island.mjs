@@ -1,7 +1,7 @@
 import { elapsed } from "./capture.mjs"
 
 export const DEFAULT_ISLAND = {
-    media: true, recording: true, diver: true, volume: true, devices: true, notifications: false, messages: true, calls: true, keepPaused: true, hover: true, seconds: 5,
+    media: true, recording: true, diver: true, volume: true, devices: true, notifications: false, messages: true, calls: true, privacy: true, status: true, keepPaused: true, hover: true, seconds: 5,
     position: "top-center", idle: "pill", reveal: "always", shortcuts: ["notify", "center", "media", "screenshot", "record", "dnd"],
     screens: "focused", hideSites: ["youtube.com", "youtu.be"]
 }
@@ -28,10 +28,23 @@ export const SHORTCUTS = {
     night: { label: "Night light", glyph: "nightLight", run: ["nightlight", "toggle"], needs: "NightLight" },
     settings: { label: "Settings", glyph: "settings", run: ["settings", "toggle"], needs: "settings" },
     power: { label: "Power", glyph: "power", run: ["power", "toggle"], needs: "power" },
-    lock: { label: "Lock", glyph: "lock", run: ["lock", "now"], needs: "lock" }
+    lock: { label: "Lock", glyph: "lock", run: ["lock", "now"], needs: "lock" },
+    privacy: { label: "Privacy", glyph: "micOff", run: ["privacy", "toggle"], needs: "Audio" }
 }
 
-const FLASHES = { volume: "volume", notification: "notifications", message: "messages", device: "devices", custom: null }
+const FLASHES = { volume: "volume", notification: "notifications", message: "messages", device: "devices", status: "status", custom: null }
+
+const STATUS = {
+    dnd: { text: "Do not disturb", glyph: "dnd" },
+    night: { text: "Night light", glyph: "nightLight" },
+    performance: { text: "Performance mode", glyph: "performance" },
+    wifi: { text: "Wi-Fi", glyph: "wifi", offGlyph: "wifiOff" },
+    bluetooth: { text: "Bluetooth", glyph: "bluetooth", offGlyph: "bluetoothOff" },
+    network: { text: "Network", glyph: "wifi", offGlyph: "wifiOff", on: "Connected", off: "Disconnected" },
+    privacy: { text: "Mic and cameras", glyph: "mic", offGlyph: "micOff", on: "Off", off: "Back on" }
+}
+
+const SELF = /^(\.?quickshell(-wrapped)?|qs)$/i
 
 export const CHAT_APPS = [
     { id: "discord", label: "Discord", glyph: "speech", app: /discord|vesktop|vencord|webcord|armcord|legcord|equibop|dorion/i, web: /discord\.com/i },
@@ -100,6 +113,36 @@ export function voiceOf(streams) {
     return null
 }
 
+export function status(id, on, name) {
+    const s = STATUS[id]
+    if (s === undefined)
+        return null
+    return { kind: "status", id: id, on: on === true, text: name || s.text, glyph: on || s.offGlyph === undefined ? s.glyph : s.offGlyph, state: on ? s.on || "On" : s.off || "Off" }
+}
+
+export function inUse(streams, cameraUsers, voiceApp) {
+    const apps = []
+    let mic = false
+    let camera = false
+    for (const s of Array.isArray(streams) ? streams : []) {
+        const name = String(s.app || "").trim() || String(s.binary || "").trim()
+        if (s.monitor || name === "" || SELF.test(String(s.binary || "").trim()) || SELF.test(name) || name === voiceApp)
+            continue
+        if (s.video)
+            camera = true
+        else
+            mic = true
+        if (!apps.includes(name))
+            apps.push(name)
+    }
+    for (const name of Array.isArray(cameraUsers) ? cameraUsers : []) {
+        camera = true
+        if (!apps.some(a => a.toLowerCase() === String(name).toLowerCase()))
+            apps.push(name)
+    }
+    return apps.length === 0 ? null : { apps: apps, mic: mic, camera: camera }
+}
+
 export function isCall(n) {
     const category = String(n.category || "")
     if (category !== "")
@@ -123,10 +166,14 @@ export function activities(s, cfg) {
     if (cfg.calls && s.voice)
         out.push(Object.assign({ kind: "voice" }, s.voice))
     const f = s.flash
-    if (f && f.kind in FLASHES && (FLASHES[f.kind] === null || cfg[FLASHES[f.kind]]))
+    if (f && f.kind in FLASHES && (FLASHES[f.kind] === null || cfg[FLASHES[f.kind]]) && !(f.kind === "status" && f.id === "privacy" && f.on && cfg.privacy))
         out.push(f)
     if (cfg.recording && s.recording && s.recording.on)
         out.push(Object.assign({ kind: "recording" }, s.recording))
+    if (cfg.privacy && s.privacy)
+        out.push(Object.assign({ kind: "privacy" }, s.privacy))
+    else if (cfg.privacy && s.inuse)
+        out.push(Object.assign({ kind: "inuse" }, s.inuse))
     if (cfg.diver && s.alarm)
         out.push(Object.assign({ kind: "alarm" }, s.alarm))
     if (cfg.diver && s.focus)
@@ -162,6 +209,12 @@ export function label(a) {
         return a.mins <= 0 ? "now" : "in " + a.mins + "m"
     case "media":
         return a.title || a.artist
+    case "privacy":
+        return "Mic and cameras off"
+    case "inuse":
+        return a.apps.join(", ") + " · " + (a.mic && a.camera ? "mic and camera" : a.camera ? "camera" : "mic")
+    case "status":
+        return a.text + " " + a.state.toLowerCase()
     default:
         return a.text || ""
     }

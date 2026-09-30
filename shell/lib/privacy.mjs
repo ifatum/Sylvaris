@@ -24,3 +24,17 @@ export function parseCameras(text) {
     const at = i => Number.isInteger(n[i]) && n[i] >= 0 ? n[i] : 0
     return { blocked: at(0), live: at(1), denied: at(2) }
 }
+
+export function cameraUsersArgs(root) {
+    return ["sh", "-c", "find \"$1\"/[0-9]*/fd -maxdepth 1 -lname '/dev/video*' 2>/dev/null | while read -r f; do cat \"${f%/fd/*}/comm\" 2>/dev/null; done", "sh", root || "/proc"]
+}
+
+export function parseUsers(text) {
+    const out = []
+    for (const line of String(text).split("\n")) {
+        const name = line.trim()
+        if (name !== "" && !/^(pipewire|wireplumber)$/.test(name) && !out.includes(name))
+            out.push(name)
+    }
+    return out
+}

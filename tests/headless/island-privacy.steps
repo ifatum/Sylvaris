@@ -1,0 +1,26 @@
+sleep 1.5
+syl set parts.island true
+syl set island.media false
+sleep 2.5
+syl privacy on
+sleep 0.5
+check sylvaris island | grep -q '"kind":"privacy","label":"Mic and cameras off"'
+check ! sylvaris island | grep -q '"kind":"status"'
+syl island open
+sleep 0.8
+shot island-privacy
+syl island close
+syl privacy off
+sleep 0.5
+check sylvaris island | grep -q '"kind":"status","label":"Mic and cameras back on"'
+check ! sylvaris island | grep -q '"kind":"privacy"'
+syl dnd on
+sleep 0.5
+check sylvaris island | grep -q '"label":"Do not disturb on"'
+syl island open
+sleep 0.8
+shot island-status
+syl set island.status false
+syl dnd off
+sleep 0.5
+check ! sylvaris island | grep -q '"label":"Do not disturb off"'

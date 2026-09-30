@@ -582,13 +582,6 @@ ShellRoot {
         }
     }
 
-    function privacy(on: bool): void {
-        Privacy.set(on);
-        const island = root.part("island");
-        if (island !== null)
-            island.say(on ? "Microphones and cameras off" : "Microphones and cameras on");
-    }
-
     function setting(key: string, value: string): string {
         if (key === "")
             throw new Error("usage: set <key> <value>");
@@ -999,9 +992,9 @@ ShellRoot {
             },
             privacy: {
                 default: "toggle",
-                toggle: () => root.privacy(!Privacy.active),
-                on: () => root.privacy(true),
-                off: () => root.privacy(false),
+                toggle: () => Privacy.set(!Privacy.active),
+                on: () => Privacy.set(true),
+                off: () => Privacy.set(false),
                 state: () => Privacy.state()
             },
             nightlight: {
