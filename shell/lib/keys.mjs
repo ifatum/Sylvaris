@@ -24,7 +24,8 @@ export const ACTIONS = [
     { id: "access zoom in", label: "Zoom in" },
     { id: "access zoom out", label: "Zoom out" },
     { id: "dnd toggle", label: "Do not disturb" },
-    { id: "nightlight toggle", label: "Night light" }
+    { id: "nightlight toggle", label: "Night light" },
+    { id: "privacy toggle", label: "Mute microphones and cameras" }
 ]
 
 const MODS = ["SUPER", "CTRL", "ALT", "SHIFT"]

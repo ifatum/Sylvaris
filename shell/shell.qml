@@ -582,6 +582,13 @@ ShellRoot {
         }
     }
 
+    function privacy(on: bool): void {
+        Privacy.set(on);
+        const island = root.part("island");
+        if (island !== null)
+            island.say(on ? "Microphones and cameras off" : "Microphones and cameras on");
+    }
+
     function setting(key: string, value: string): string {
         if (key === "")
             throw new Error("usage: set <key> <value>");
@@ -989,6 +996,13 @@ ShellRoot {
                 state: () => Headphones.state(),
                 noise: mode => Headphones.setNoise(mode),
                 awareness: v => Headphones.setAwareness(v === undefined ? !Headphones.awareness : v === "on")
+            },
+            privacy: {
+                default: "toggle",
+                toggle: () => root.privacy(!Privacy.active),
+                on: () => root.privacy(true),
+                off: () => root.privacy(false),
+                state: () => Privacy.state()
             },
             nightlight: {
                 toggle: () => NightLight.setEnabled(!NightLight.enabled),

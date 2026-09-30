@@ -19,3 +19,7 @@ syl state dnd
 syl audio up 10
 sleep 0.5
 syl config
+syl privacy
+check sylvaris privacy state | grep -q '"active":true'
+syl privacy off
+check sylvaris privacy state | grep -q '"active":false'

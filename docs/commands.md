@@ -48,6 +48,7 @@ To show the version in fastfetch, add `{ "type": "command", "key": "DE", "text":
 | `lock` | `now` `state` |
 | `media` | `toggle` `next` `previous` `seek <seconds>` `open [tab]` `close` `panel` |
 | `nightlight` | `toggle` `on` `off` |
+| `privacy` | `toggle` `on` `off` `state`: mutes every microphone and switches USB cameras off; cameras need `programs.sylvaris.cameraSwitch.enable` on NixOS |
 | `notify` | `toggle` `open` `close` `clear` `dismiss <id>` `invoke <id> [action]` |
 | `pad` | `toggle` `open` `close` `pick` |
 | `paper` | `toggle` `open` `close` `set <path>` `next` `prev` `reset` `current` |

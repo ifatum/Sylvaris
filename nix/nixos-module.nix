@@ -36,6 +36,8 @@ in
       description = "Add the sylvaris PAM service that SylLock checks passwords with.";
     };
 
+    cameraSwitch.enable = lib.mkEnableOption "switching USB cameras off and on for members of the users group, used by sylvaris privacy";
+
     greeter = {
       enable = lib.mkEnableOption "SylGreet as the greetd login screen, running in sway on every screen";
 
@@ -92,6 +94,11 @@ in
   config = lib.mkMerge [
     (lib.mkIf cfg.lock.enable {
       security.pam.services.sylvaris = { };
+    })
+    (lib.mkIf cfg.cameraSwitch.enable {
+      services.udev.extraRules = ''
+        ACTION=="add", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_interface", ATTR{bInterfaceClass}=="0e", RUN+="${lib.getExe' pkgs.coreutils "chgrp"} users /sys%p/../authorized", RUN+="${lib.getExe' pkgs.coreutils "chmod"} g+w /sys%p/../authorized"
+      '';
     })
     (lib.mkIf greet.enable {
       services.displayManager.enable = true;
