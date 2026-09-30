@@ -539,7 +539,7 @@ Scope {
             color: "transparent"
             exclusionMode: ExclusionMode.Normal
             exclusiveZone: 0
-            WlrLayershell.layer: WlrLayer.Top
+            WlrLayershell.layer: win.docked ? WlrLayer.Overlay : WlrLayer.Top
             WlrLayershell.namespace: "sylisland"
             WlrLayershell.keyboardFocus: root.replyTo >= 0 && root.pinned === win.name ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
             mask: Region {
