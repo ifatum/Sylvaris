@@ -323,6 +323,11 @@ Column {
                     subtitle: "Stay on top with answer and decline until the app ends them"
                 },
                 {
+                    key: "pinCalls",
+                    title: "Keep calls in view",
+                    subtitle: "During an incoming or ongoing call the island stays out, even in hover mode and over full-screen apps and games"
+                },
+                {
                     key: "privacy",
                     title: "Microphone and camera",
                     subtitle: "Which apps are using them, and privacy mode (sylvaris privacy) while it is on"

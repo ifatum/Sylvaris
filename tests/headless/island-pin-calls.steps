@@ -1,0 +1,21 @@
+sleep 1.5
+syl set parts.island true
+syl set island.reveal hover
+syl set island.media false
+sleep 2.5
+check sylvaris island state | grep -q '"calling":false'
+syl set island.reveal always
+syl set island.idle clock
+bg foot -e sleep 60
+sleep 1.5
+sway fullscreen enable
+sleep 1
+shot island-pin-idle
+bg notify-send -a Telegram -h string:category:call.incoming -A answer=Answer -A decline=Decline "Mia" "Incoming call" > "$OUT/call-action.txt"
+sleep 2
+check sylvaris island state | grep -q '"calling":true'
+shot island-pin-call
+syl set island.pinCalls false
+sleep 0.5
+check sylvaris island state | grep -q '"calling":false'
+syl island decline

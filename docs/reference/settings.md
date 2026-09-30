@@ -240,6 +240,7 @@ Explained in [island](../parts/island.md).
 | `island.notifications` | `false` |  |
 | `island.messages` | `true` |  |
 | `island.calls` | `true` |  |
+| `island.pinCalls` | `true` |  |
 | `island.privacy` | `true` |  |
 | `island.status` | `true` |  |
 | `island.keepPaused` | `true` |  |

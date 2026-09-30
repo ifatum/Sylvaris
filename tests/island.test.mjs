@@ -1,6 +1,6 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
-import { DEFAULT_ISLAND, validateIsland, activities, label, joined, custom, SHORTCUTS, shortcutsFor, placeOf, cardHeight, CHAT_APPS, chatOf, isCall, pickActions, takes, hiddenSite, voiceOf, tucked, inUse, status } from "../shell/lib/island.mjs"
+import { DEFAULT_ISLAND, validateIsland, activities, label, joined, custom, SHORTCUTS, shortcutsFor, placeOf, cardHeight, CHAT_APPS, chatOf, isCall, pickActions, takes, hiddenSite, voiceOf, tucked, inUse, status, inCall } from "../shell/lib/island.mjs"
 
 const idle = { flash: null, recording: { on: false }, alarm: null, focus: null, next: null, media: { title: "", playing: false } }
 
@@ -284,4 +284,14 @@ test("status flashes a switch change and privacy on is left to its own row", () 
     assert.deepEqual(activities({ flash: status("privacy", false) }, DEFAULT_ISLAND).map(a => a.kind), ["status"])
     assert.equal(label(status("night", true)), "Night light on")
     assert.deepEqual(SHORTCUTS.privacy.run, ["privacy", "toggle"])
+})
+
+test("inCall keeps the island up for an incoming or ongoing call unless pinCalls or calls is off", () => {
+    assert.equal(DEFAULT_ISLAND.pinCalls, true)
+    assert.equal(inCall(DEFAULT_ISLAND, { call: { sender: "Mia" }, voice: null }), true)
+    assert.equal(inCall(DEFAULT_ISLAND, { call: null, voice: { app: "Discord" } }), true)
+    assert.equal(inCall(DEFAULT_ISLAND, { call: null, voice: null }), false)
+    assert.equal(inCall(validateIsland({ pinCalls: false }), { call: { sender: "Mia" } }), false)
+    assert.equal(inCall(validateIsland({ calls: false }), { voice: { app: "Discord" } }), false)
+    assert.equal(validateIsland({ pinCalls: 1 }).pinCalls, true)
 })

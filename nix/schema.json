@@ -174,6 +174,7 @@
     "notifications": false,
     "messages": true,
     "calls": true,
+    "pinCalls": true,
     "privacy": true,
     "status": true,
     "keepPaused": true,

@@ -37,6 +37,8 @@ Messages and calls taken by the island skip the usual toasts.
 
 A voice chat you are already in sends no notification, so the island watches for a chat app (or a browser, for Meet and the web versions) using your microphone instead. The mute button mutes that app's microphone stream in PipeWire, so it works the same in every app; the app's own mute button may not show it. `calls` turns voice chats off along with incoming calls.
 
+While a call rings or a voice chat is going, the island stays out on top: it does not tuck away in hover mode, and it shows over full-screen apps and games. `island.pinCalls = false` lets it behave as usual during calls.
+
 ## Microphone and camera
 
 Apps recording from a microphone show up from their PipeWire streams; sound captured from your speakers, such as a visualiser, does not count. Cameras show up from their PipeWire streams and from any process holding a `/dev/video*` device, checked every 3 seconds. Privacy mode replaces that row, since nothing can use them then. `island.privacy = false` hides both; `island.status = false` hides the switch alerts.

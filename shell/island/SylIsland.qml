@@ -361,6 +361,10 @@ Scope {
             reveal: root.cfg.reveal,
             covered: root.covered,
             docked: root.docked,
+            calling: I.inCall(root.cfg, {
+                call: root.call,
+                voice: root.voiceBase
+            }),
             replying: root.replyTo >= 0,
             position: root.cfg.position,
             screen: root.screenInfo ? root.screenInfo.name : "",
@@ -616,13 +620,17 @@ Scope {
             readonly property var place: I.placeOf(win.wcfg.position)
             readonly property bool covered: root.avoid !== null && !root.avoid.docked && root.avoid.corner === win.wcfg.position && root.avoid.screen === win.name
             readonly property bool docked: root.avoid !== null && root.avoid.docked === true && root.avoid.corner === win.wcfg.position && root.avoid.screen === win.name
+            readonly property bool calling: I.inCall(win.wcfg, {
+                call: root.call,
+                voice: root.voiceBase
+            })
             readonly property bool edge: win.wcfg.reveal === "hover"
             readonly property real inset: win.edge ? Tokens.edgeMargin : 0
             readonly property bool hovering: bodyHover.hovered || stripArea.containsMouse
             readonly property bool tucked: I.tucked(win.wcfg.reveal, {
                 hot: root.hotScreen === win.name,
                 pinned: root.pinned === win.name,
-                alert: root.call !== null || root.flash !== null || win.docked
+                alert: root.call !== null || root.flash !== null || win.docked || win.calling
             })
             property real reveal: win.tucked ? 0 : 1
             readonly property bool onSurface: body.visible && body.y + body.height > 1 && body.y < win.height - 1
@@ -651,7 +659,7 @@ Scope {
             color: "transparent"
             exclusionMode: ExclusionMode.Normal
             exclusiveZone: 0
-            WlrLayershell.layer: win.docked ? WlrLayer.Overlay : WlrLayer.Top
+            WlrLayershell.layer: win.docked || win.calling ? WlrLayer.Overlay : WlrLayer.Top
             WlrLayershell.namespace: "sylisland"
             WlrLayershell.keyboardFocus: root.replyTo >= 0 && root.pinned === win.name ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
             mask: Region {
