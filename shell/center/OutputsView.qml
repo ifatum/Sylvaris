@@ -14,81 +14,116 @@ Item {
         onBack: root.closeRequested()
     }
 
-    Column {
+    Flickable {
         x: 28
         y: 84
         width: parent.width - 56
-        spacing: 8
+        height: volumeSlider.y - y - 16
+        contentHeight: list.height
+        clip: true
+        boundsBehavior: Flickable.StopAtBounds
 
-        Repeater {
-            model: Audio.sinks
-            delegate: Rectangle {
-                required property var modelData
-                width: parent.width
-                height: 56
-                radius: Tokens.radiusRow
-                color: "transparent"
+        Column {
+            id: list
+            width: parent.width
+            spacing: 8
 
-                Glass {
-                    anchors.fill: parent
-                    z: -1
-                    radius: parent.radius
-                    inner: true
-                    hot: rowHover.hovered
-                    offColor: modelData.current ? Theme.tintStrong : rowHover.hovered ? Theme.tintMid : Theme.tintSoft
+            Repeater {
+                model: Audio.sinks
+                delegate: Rectangle {
+                    required property var modelData
+                    width: parent.width
+                    height: 56
+                    radius: Tokens.radiusRow
+                    color: "transparent"
+
+                    Glass {
+                        anchors.fill: parent
+                        z: -1
+                        radius: parent.radius
+                        inner: true
+                        hot: rowHover.hovered
+                        offColor: modelData.current ? Theme.tintStrong : rowHover.hovered ? Theme.tintMid : Theme.tintSoft
+                    }
+
+                    border.width: modelData.current ? 1 : 0
+                    border.color: Theme.accent
+
+                    HoverHandler {
+                        id: rowHover
+                        cursorShape: Qt.PointingHandCursor
+                    }
+
+                    Glyph {
+                        id: speaker
+                        x: 18
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: Icons.GLYPHS.speaker
+                        size: 20
+                        color: Theme.accent
+                    }
+
+                    Text {
+                        textFormat: Text.PlainText
+                        anchors.left: speaker.right
+                        anchors.leftMargin: 14
+                        anchors.right: check.left
+                        anchors.rightMargin: 14
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: modelData.name
+                        elide: Text.ElideRight
+                        color: Theme.text
+                        font.family: Tokens.fontUi
+                        font.pixelSize: Tokens.bodySize
+                    }
+
+                    Glyph {
+                        id: check
+                        anchors.right: parent.right
+                        anchors.rightMargin: 18
+                        anchors.verticalCenter: parent.verticalCenter
+                        visible: modelData.current
+                        text: Icons.GLYPHS.check
+                        size: 20
+                        color: Theme.accent
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: Audio.setDefault(modelData.key)
+                    }
                 }
+            }
 
-                border.width: modelData.current ? 1 : 0
-                border.color: Theme.accent
+            Text {
+                textFormat: Text.PlainText
+                visible: Audio.streams.length > 0
+                topPadding: 12
+                text: "Apps"
+                color: Theme.textDim
+                font.family: Tokens.fontUi
+                font.pixelSize: Tokens.smallSize
+                font.weight: Font.DemiBold
+            }
 
-                HoverHandler {
-                    id: rowHover
-                    cursorShape: Qt.PointingHandCursor
-                }
-
-                Glyph {
-                    id: speaker
-                    x: 18
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: Icons.GLYPHS.speaker
-                    size: 20
-                    color: Theme.accent
-                }
-
-                Text {
-                    textFormat: Text.PlainText
-                    anchors.left: speaker.right
-                    anchors.leftMargin: 14
-                    anchors.right: check.left
-                    anchors.rightMargin: 14
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: modelData.name
-                    elide: Text.ElideRight
-                    color: Theme.text
-                    font.family: Tokens.fontUi
-                    font.pixelSize: Tokens.bodySize
-                }
-
-                Glyph {
-                    id: check
-                    anchors.right: parent.right
-                    anchors.rightMargin: 18
-                    anchors.verticalCenter: parent.verticalCenter
-                    visible: modelData.current
-                    text: Icons.GLYPHS.check
-                    size: 20
-                    color: Theme.accent
-                }
-
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: Audio.setDefault(modelData.key)
+            Repeater {
+                model: Audio.streams
+                delegate: Slider {
+                    required property var modelData
+                    width: parent.width
+                    value: modelData.muted ? 0 : modelData.volume
+                    icon: modelData.muted ? Icons.GLYPHS.volumeMute : Icons.GLYPHS.volume
+                    label: modelData.name
+                    trailing: Math.round(modelData.volume * 100) + "%"
+                    onMoved: v => Audio.setStreamVolume(modelData.key, v)
+                    onIconClicked: Audio.toggleStreamMute(modelData.key)
                 }
             }
         }
     }
 
     Slider {
+        id: volumeSlider
         x: 28
         y: parent.height - height - 28
         width: parent.width - 56

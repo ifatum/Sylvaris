@@ -33,6 +33,11 @@ Singleton {
         { id: 3, description: "HDMI Display" }
     ]
 
+    readonly property var streams: [
+        { id: 11, app: "Firefox", volume: 0.8 },
+        { id: 12, app: "Spotify", volume: 0.45 }
+    ]
+
     readonly property var player: ({ identity: "Music", title: "Evening Walk", artist: "The Example Band", art: "", playing: true })
 
     readonly property var outputs: [

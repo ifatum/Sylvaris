@@ -9,6 +9,8 @@ sylvaris view orbit-wifi     # open on a view
 
 Views are `compact`, `orbit-bluetooth`, `orbit-wifi`, `calendar`, `outputs`, `displays` and `hotspot`. Add `:<key>` to focus one device or network, for example `sylvaris view orbit-bluetooth:AA:BB:CC:DD:EE:FF`.
 
+The `outputs` view picks the sound output and, under Apps, gives every app that is playing its own volume slider; click an app's speaker icon to mute just that app.
+
 The Wi-Fi and Bluetooth views are orbits: your devices or networks circle a glowing core, and picking one turns the orbit into that device's actions (connect, forget, trust, battery, copy the address). While something connects, pairs or disconnects, its label says so.
 
 ## Tiles
