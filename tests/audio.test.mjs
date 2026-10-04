@@ -1,7 +1,7 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
 import { readFileSync } from "node:fs"
-import { bluezCardName, parseCards, profileKind, profileLabel, cardProfile } from "../shell/lib/audio.mjs"
+import { bluezCardName, parseCards, profileKind, profileLabel, cardProfile, streamName } from "../shell/lib/audio.mjs"
 
 const cards = parseCards(readFileSync(new URL("./fixtures/pactl-cards.json", import.meta.url), "utf8"))
 
@@ -42,4 +42,13 @@ test("cardProfile skips unavailable profiles", () => {
 
 test("cardProfile returns null for unknown devices", () => {
     assert.equal(cardProfile(cards, "AA:BB:CC:DD:EE:FF"), null)
+})
+
+test("streamName unwraps ALSA and Nix wrapper names and falls back when empty", () => {
+    assert.equal(streamName("Firefox", "x"), "Firefox")
+    assert.equal(streamName("PipeWire ALSA [.aplay-wrapped]", "x"), "aplay")
+    assert.equal(streamName("PipeWire ALSA [hl2_linux]", "x"), "hl2_linux")
+    assert.equal(streamName(".game-wrapped", "x"), "game")
+    assert.equal(streamName("", "pw-play"), "pw-play")
+    assert.equal(streamName(undefined, "alsa_playback.x"), "alsa_playback.x")
 })

@@ -54,3 +54,9 @@ export function cardProfile(cards, address) {
     const next = kind === "hifi" ? pick(profiles, "headset-head-unit", "headset") : pick(profiles, "a2dp-sink", "a2dp")
     return { card: name, active: card.active_profile, kind: kind, label: profileLabel(kind), next: next }
 }
+
+export function streamName(app, fallback) {
+    const alsa = /^PipeWire ALSA \[(.*)\]$/.exec(app || "")
+    const name = (alsa ? alsa[1] : app || "").replace(/^\.(.*)-wrapped$/, "$1")
+    return name || fallback
+}

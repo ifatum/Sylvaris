@@ -1,0 +1,8 @@
+syl center view outputs
+sleep 1.5
+pointer move 2000 402 mousedown 1 move 2100 402 move 2200 404 move 2300 405 mouseup 1
+sleep 0.8
+shot app-drag
+pointer move 2400 678 mousedown 1 move 2300 678 move 2150 679 move 2050 680 mouseup 1
+sleep 0.8
+shot global-drag

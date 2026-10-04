@@ -97,7 +97,7 @@ Item {
 
             Text {
                 textFormat: Text.PlainText
-                visible: Audio.streams.length > 0
+                visible: Audio.streamKeys.length > 0
                 topPadding: 12
                 text: "Apps"
                 color: Theme.textDim
@@ -107,16 +107,21 @@ Item {
             }
 
             Repeater {
-                model: Audio.streams
+                model: Audio.streamKeys
                 delegate: Slider {
-                    required property var modelData
+                    required property string modelData
+                    readonly property var stream: Audio.streams.find(s => s.key === modelData) || {
+                        name: "",
+                        volume: 0,
+                        muted: false
+                    }
                     width: parent.width
-                    value: modelData.muted ? 0 : modelData.volume
-                    icon: modelData.muted ? Icons.GLYPHS.volumeMute : Icons.GLYPHS.volume
-                    label: modelData.name
-                    trailing: Math.round(modelData.volume * 100) + "%"
-                    onMoved: v => Audio.setStreamVolume(modelData.key, v)
-                    onIconClicked: Audio.toggleStreamMute(modelData.key)
+                    value: stream.muted ? 0 : stream.volume
+                    icon: stream.muted ? Icons.GLYPHS.volumeMute : Icons.GLYPHS.volume
+                    label: stream.name
+                    trailing: Math.round(stream.volume * 100) + "%"
+                    onMoved: v => Audio.setStreamVolume(modelData, v)
+                    onIconClicked: Audio.toggleStreamMute(modelData)
                 }
             }
         }

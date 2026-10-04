@@ -52,6 +52,7 @@ Rectangle {
     MouseArea {
         id: drag
         anchors.fill: parent
+        preventStealing: true
         cursorShape: Qt.PointingHandCursor
         function pick(mx: real): void {
             root.moved(Math.max(0, Math.min(1, mx / width)));

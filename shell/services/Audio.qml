@@ -3,6 +3,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Services.Pipewire
+import "../lib/audio.mjs" as AudioLib
 
 Singleton {
     id: root
@@ -18,6 +19,7 @@ Singleton {
     readonly property bool muted: root.demo ? root.demoMuted : (root.sink !== null && root.sink.audio ? root.sink.audio.muted : false)
     readonly property var sinks: root.demo ? root.demoSinks() : root.realSinks()
     readonly property var streamNodes: root.demo ? [] : Pipewire.nodes.values.filter(n => n.isStream && n.isSink && n.audio && n.name.indexOf("sylvaris_eq") !== 0)
+    readonly property var streamKeys: root.demo ? Demo.streams.map(s => String(s.id)) : root.streamNodes.map(n => String(n.id))
     readonly property var streams: root.demo ? Demo.streams.map(s => {
         const l = root.demoStreamLevels[s.id] || {};
         return {
@@ -28,7 +30,7 @@ Singleton {
         };
     }) : root.streamNodes.map(n => ({
                 key: String(n.id),
-                name: n.properties["application.name"] || root.nodeName(n),
+                name: AudioLib.streamName(n.properties["application.name"], root.nodeName(n)),
                 volume: n.audio.volume,
                 muted: n.audio.muted
             }))
